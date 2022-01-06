@@ -1,0 +1,36 @@
+
+QGroupBox {
+    background-color: white;
+    border: 0px solid gray;
+    border-radius: 5px;
+    margin-top: 45px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    color: white;
+    margin-top: 10px;
+    margin-left: 20px;
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+}
+
+QGroupBox#gb_openContracts {
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    padding-top: -30px;
+    padding-left: 15px;
+    padding-right: 15px;
+    min-height: 350px;
+}
+
+QToolButton#ExplainOpen {
+    margin-bottom: 20px;
+    max-height: 26px;
+    max-width: 26px;
+    border: 0px;
+}

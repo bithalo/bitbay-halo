@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>703</width>
+    <height>777</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="PythonText">
+       <property name="text">
+        <string>Python/Smart Contract:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="ExplainPython">
+       <property name="toolTip">
+        <string>Help</string>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QComboBox" name="PythonSelect">
+     <item>
+      <property name="text">
+       <string>Select a contract...</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Halo Doge Demo</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Custom Python Contract</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="DescriptionPython">
+       <property name="text">
+        <string>Description:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="DescriptionPythonBox">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>90</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="PythonWarning">
+       <property name="text">
+        <string>Only approved code will be listed in the contract selection box. If you feel like your code is secure and creative, you may submit it to the lead developer for approval. Custom contracts are possible for experimentation and fun. Because it uses the internal Python interpreter in a P2P way, there is absolutely no limit to the amount of control you have with these contracts. Please click the &quot;?&quot; box for more explanation. You should have a good understanding of Halo's source code before proceeding.
+
+WARNING:
+Do not create or accept custom contracts unless you have an intimate understanding of programming, cryptocurrency, Python and Halo. Custom code can be used to completely control and compromise a computer. Anyone who tries to accept a custom contract will be warned. If you feel like your code is secure, you can have it reviewed for official approval and inclusion in the client.
+</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="7" column="1">
+      <widget class="QToolButton" name="LoadTheirPython">
+       <property name="toolTip">
+        <string>Attach an Image to your contract</string>
+       </property>
+       <property name="text">
+        <string>Load Python File</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QToolButton" name="LoadMyPython">
+       <property name="toolTip">
+        <string>Attach an Image to your contract</string>
+       </property>
+       <property name="text">
+        <string>Load Python File</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLineEdit" name="CodeYouRun">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QToolButton" name="LoadFormPython">
+       <property name="toolTip">
+        <string>Attach an Image to your contract</string>
+       </property>
+       <property name="text">
+        <string>Load Python File</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLineEdit" name="CodeTheyRun">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLineEdit" name="CodeOfferFormBox">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLabel" name="CodeEscrowText">
+       <property name="text">
+        <string>Code You Run During Escrow:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="QLabel" name="CodeEscrowText2">
+       <property name="text">
+        <string>Code They Run During Escrow:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="CodeFormText">
+       <property name="text">
+        <string>Code For Your Offer Form:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="PythonImageBox">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QToolButton" name="AttachImagePython">
+       <property name="toolTip">
+        <string>Attach an Image to your contract</string>
+       </property>
+       <property name="text">
+        <string>Attach an Image</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="PythonImage">
+       <property name="text">
+        <string>Image:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="1">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" colspan="2">
+      <widget class="QComboBox" name="DepositSettings9">
+       <item>
+        <property name="text">
+         <string>Use Recommend Deposits and Settings</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Deposits</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Make Me A Guarantor</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Make Them A Guarantor</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="MyDepositText9">
+       <property name="text">
+        <string>My Deposit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLineEdit" name="MyDepositBox9">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="MyDepositUSD9">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="TheirDepositText9">
+       <property name="text">
+        <string>Their Deposit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLineEdit" name="TheirDepositBox9">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="TheirDepositUSD9">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="TimeLimitText9">
+       <property name="text">
+        <string>Time Limit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLineEdit" name="TimeLimitBox9"/>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="TimeLimitDays9">
+       <item>
+        <property name="text">
+         <string>Days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hours</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="Notes9">
+       <property name="text">
+        <string>Notes/Extra Details:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="NotesBox9">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>90</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="SaveFuture9">
+       <property name="text">
+        <string>Save Form For The Future</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="SupplyAdditional9">
+       <property name="text">
+        <string>Supply Contact Information</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="ClearForm9">
+       <property name="text">
+        <string>Clear Form</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="SaveContinue9">
+       <property name="text">
+        <string>Save And Continue</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../../NEW UI/Halo.qrc"/>
+ </resources>
+ <connections/>
+</ui>

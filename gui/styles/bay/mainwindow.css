@@ -1,0 +1,186 @@
+QWidget {
+    font-family: 'Roboto';
+    font-size: 15px;
+}
+
+QLabel {
+    font-family: 'Roboto';
+    font-size: 15px;
+}
+
+QToolButton {
+    font-family: 'Roboto';
+    font-size: 15px;
+}
+
+QWidget#MainWindow {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #624ba5, stop: 1 #425baf);
+}
+
+/* QWidget#mainPanelWidget {
+    max-width: 1100px;
+} */
+
+QWidget#bottomPanel {
+    background-color: #2E3D99;
+    min-height: 42px;
+    max-height: 42px;
+    font-size: 13px;
+}
+
+QWidget#indicatorsBar {
+    background-color: #19255A;
+    min-width: 190px;
+    max-width: 190px;
+    min-height: 42px;
+    max-height: 42px;
+}
+
+QWidget#topPanelWidget {
+    min-height: 40px;
+    max-height: 40px;
+}
+
+QLabel#labelProgress {
+    color: white;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 13px;
+}
+
+QProgressBar#progressBar {
+    max-height: 18px;
+    background-color: #e4e5f1;
+    border: 0px solid grey;
+    border-radius: 0px;
+    padding: 0px;
+    margin: 4px;
+    color: #666666;
+    text-align: center;
+    font-size: 13px;
+}
+
+QProgressBar#progressBar::chunk {
+    background: #FFD402;
+    border-radius: 0px;
+    margin: 0px;
+}
+
+QToolButton#rescanButton {
+    border: 0px;
+    color: white;
+    margin-left: 20px;
+    font-size: 13px;
+    min-width: 80px;
+}
+QToolButton#rescanButton:hover {
+    color: #00dcef;
+}
+
+QDialog {
+    min-width: 400px;
+}
+
+QPushButton {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 25px;
+    min-width: 25px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+QPushButton:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+QLabel {
+    font-size: 14px;
+    color: #808080;
+    margin-bottom: 0px;
+}
+
+QLineEdit {
+    text-align: center;
+    border: 0px;
+    background-color: #f2f2f2;
+    min-height: 30px;
+}
+
+QTextEdit {
+    border: 0px;
+    background-color: #f2f2f2;
+    min-height: 30px;
+}
+
+QComboBox {
+    padding-right: 15px;
+    background: #ffffff;
+    color: rgb(90,80,165);
+    border-color: #f2f2f2;
+    border-width: 1.2px;
+    border-style: solid;
+    min-height: 30px;
+    padding-left: 10px;
+}
+QComboBox::drop-down {
+    min-width: 24px;
+    border: 0px solid #6c6c6c;
+    background-color: rgb(255,215,31);
+}
+QComboBox::down-arrow {
+    image: url(:/icons/spinbox_down_arrow);
+    width: 8px;
+    height: 8px;
+}
+
+QCheckBox {
+    font-size: 14px;
+    color: #808080;
+    spacing: 3px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/icons/checkbox_off24);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/icons/checkbox_on24);
+}
+
+QWebView {
+    border-color: #e2e2e2;
+    border-width: 1.2px;
+    border-style: solid;
+    background-color: #f2f2f2;
+}
+
+QLabel#SupplyText_2 {
+    background-color: #f2f2f2;
+}

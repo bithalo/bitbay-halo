@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Contacts</class>
+ <widget class="QWidget" name="Contacts">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>826</width>
+    <height>583</height>
+   </rect>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="gb_contacts">
+     <property name="title">
+      <string>Contacts</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="ContactLabel">
+          <property name="text">
+           <string>Add contacts to your BitBay Address Book</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QListWidget" name="ContactTable"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QToolButton" name="NewContact">
+          <property name="toolTip">
+           <string>Add New Contact</string>
+          </property>
+          <property name="text">
+           <string>Add New Contact</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="BackupContacts">
+          <property name="toolTip">
+           <string>Backup-up Contacts</string>
+          </property>
+          <property name="text">
+           <string>Back-up Contacts</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="l_links">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Links/Misc&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://bitbay.market/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://bitbay.market/&lt;/span&gt;&lt;/a&gt; The official BitBay website&lt;br/&gt;&lt;a href=&quot;https://www.reddit.com/r/BitBay/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.reddit.com/r/BitBay/&lt;/span&gt;&lt;/a&gt; BitBay community subreddit&lt;br/&gt;&lt;a href=&quot;https://www.davtonia.com/bitbay/bitbaybootstrap.zip&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;bitbaybootstrap.zip&lt;/span&gt;&lt;/a&gt; Download BitBay bootstrap.zip&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

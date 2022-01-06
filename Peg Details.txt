@@ -1,0 +1,146 @@
+Peg rules and details:
+Votes take 400 blocks to register 
+(delay is to avoid voting reorganizations and avoid recounts)
+The interest is 1% up to 3 times per interval (about 1-3% compound)
+If the number of votes is 1x, 2x or 3x of the other votes determines the change
+The liquid votes have a much stronger weight than reserve
+An input is measured by it's liquid/reserve proportion.
+Voting power is multiplied by voting weight. Since liquid funds get a lower
+probability to stake when heavily deflated, the votes can be increased up
+to a hundredfold in weight and the reserve is also made proportional to supply.
+Inputs mostly liquid get 5 coins, mostly reserve 10 coins reward
+Frozen reserve coins locks for 1 month and gets 20 coins reward
+Voluntarily frozen liquid coins locks for 4 months and gets 40 coins reward
+
+Initial vote algorithm tries to keep a fraction of the peak of Bitcoin
+Then it can gradually increase price from that peak (1%/mo)
+Users can set their own algoritm by the API
+Going to settings menu refreshes vote count
+Vote is selected from drop down box in settings
+
+Cannot spend until peg database is up to date
+if there is a reorganization of great amount such as 200 blocks then the user
+is forced to delete and rescan the entire peg database
+
+If liquidity pools are used to save space:
+This optional feature would require more tests and a fork but helps to scale
+Inputs are considered part of an accounts liquidity pool after hundreds of confirmations
+The pool is to save space, combining all inputs into one giant set of coins per account
+The major drawback is new outputs and spent inputs change the ratio of liquid/reserve
+That change can effect future commitments which is why it is not used as it's very complex
+Blocks get pruned and if an output is spent it's deleted and unspent goes to pool
+Frozen outputs do not get moved to pool for specific liquidity
+Block files notate exactly what was deducted from pools and inputs and outputs
+So when a reorganization happens, everything is reversed
+
+If liquidity pools are not used(default):
+All inputs for every account must be known (except for known burn addresses)
+The inputs are pruned when spent
+
+The peg system:
+Inputs can have up to 1200 steps of 1% deflation per step
+for a user to know what is frozen and liquid they must know exactly how
+many coins become reserve for each step PER INPUT.
+This manys each set of coins has various liquidity and speed of freeze
+A user who wants to spend must send reserve coins back as change for valid TX
+A user who wants to move reserve or volunarily freeze liquid must burn a notification
+This notification must be in the same output position as the input
+The notification tells which output to send the frozen transfer to it can also split
+to multiple outputs. If it splits to two the liquidity and proportion of reserve/liquid
+is shared. This makes for fair withdraw from two party escrows. Otherwise if multiple
+outputs are used or if the amount isn't exact the reserve funds are taken from all users
+for each input as it's seen in order until none are left
+A user may also specify exactly what output he wants his liquidity to go to
+If a frozen transfer is done then it's 1 month for reserve(and any left over liquid)
+and it is 4 months for voluntarily frozen liquid funds(and must be purely liquid)
+Inflation and deflation will help protect the price and have it reflect the communities desires
+If funds are close to deflating to avoid reorganizations retroactively invalidating
+a valid transaction, the system sets aside a buffer as change until that time passes
+In escrow the users set aside a 19% buffer (21 steps) so advanced commitments are valid
+This is only for convenience as users are not always connected
+Also escrows require a certain "liquidity rating" for the speed at which funds freeze
+this is good to protect merchants against low liquidity or recently unfrozen coins
+The liquidity rating tells users the speed of freeze and can be seen in transaction details
+
+The database used for tests(in python):
+The database is organized by account and txid hash suffix. If looking up an account
+the first unique characters references the folder and then the file. The same is true for an input.
+Then there is a file for each of the top 300 blocks
+So we can lookup by block height, account(if pools are used) or txid
+If a txid is not in the database it is assumed to be new and split accordingly
+txids are checked against the supply rate at the time they were sent
+Deliberately frozen transactions are not part of the liquidity pool until spent
+They keep the original time for thawing when staked. So after the 4 months
+pass, a user still gets the bonus on his stakes until those coins are spent
+There is a basic index file storing all the peg data such as votes and block count
+The binary file structure helps avoid storing things in RAM and also scales well
+If liquidity pools are activated in the database then organize transactions by locktime
+There is a "remainder" for each liquidity pool on a txid (since it is shared 
+and not always divisible) and this causes a slightly uneven distribution
+Therefore, funds are deducted from a pool in a specific order. This means that
+a memory pool must organize transactions by their locktimes. This makes sure that
+users and stakers know when a transaction should be added to a block. This means
+that the stake is the last transaction to calculate.
+The stake reward is considered a range of liquidity the same way a new input is.
+The database is python uses bson and each output is 10kb. If accounts average less
+than 100 outputs then the system can probably support a million users before things
+need to be scaled up. The major load is processing time so techniques like sharing
+the block reward or node reputation and stakers using good equiptment should be
+considered. The binary database usually tries to keep files under 1mb
+
+For testing we whitelist so only accounts that are in the list are enforced
+So things are enforced only on a software level to test
+
+When the rate changes a transaction that was previously valid may be invalid and
+this is treated similar to double spend. To encourage the best practices in
+spending, the wallets are encouraged to make their users anticipate the change
+long in advance and prevent sending of the funds with a buffer or a freeze
+The mempool may also request more change near voting times(optional)
+Lastly the blocks will be the most strict enforcing the change at the moment the
+final vote confirms after 400 blocks. The Bitcoin blockchain also could have
+similar issues with checklocktimeverify as a TX may be valid but another user
+spends it first and reorganization changes the timing of the TX. In the case
+of the peg, the liquidity can change when the supply officially changes.
+It's worth pointing out that no transaction in any network is safe from reorganization
+but enforcing a minimum confirmation for the rate change could prevent third party
+software from misunderstanding the protocol especially if pools are activated
+Blocks woulds have to organize transactions that take from an account pool by nlocktime
+
+For contracts users will want to give themselves a buffer of change in case there
+is a delay between communication and signing. They may also submit multiple signed
+versions of a transaction in case of changes. Specific broadcast times may be watched.
+It is indeed easier to send to escrow in one transaction over two however a buffer
+can be added as well or the transactions are timed to avoid rate changes.
+If funds freeze during escrow then they will be locked to their next destination
+
+For the initial implementation frozen funds are not moved to pool after expiry time
+however in future implementations if the database grows too large they can be moved
+Also the amount of new accounts may be limited in a certain way to scale. However
+it is more likely the chain itself would be designed to prune and scale. An extra
+database or notation method may eventually be used as well. The simplest way
+to solve scaling issues is to reduce or increase the number of steps on a fork.
+If the number of steps were cut in half and funds merged into adjacent keys then
+that could cut the database size and processing time in half! Also lightning network
+and liquid networks  and sidechains can be used to help this system scale.
+
+For exchanges:
+The standard exchange method is to track all trades with the software using a
+special orderbook. The liquidity for all users is shared to some extent in a big pool.
+So when spending exchanges try to maintain as few inputs as they can. It's possible
+special exchange accounts can be used specifically for getting change for reserve
+Because liquidity is shared, users may get lucky or unlucky during a deposit
+The balances are calculated by who is owed funds for each step. So it's actually
+possible for a users funds to be liquid in theory but on the exchange frozen
+Also the exchange always enforces a 3% buffer to give more time for withdraws
+There are two exchange settings to either import all liquidity or just the highest key
+An exchange should be accurate enough to track who pays who during a trade. If
+they don't then funds go into a pool and then are taken out of it to make fair trade
+When supply changes and balances recalculate there might be a moment where exchange is busy
+Then users resume trading once calculations are done. In the Python demo, the exchange
+tries to put all API commands in a queue so they are persistently written to disk
+and also so they can be made quickly and calculated later. Exchanges should follow
+all the instructions in the API documentation. The exchanges should warn users
+about sending frozen transfers to it.
+The exchange must list two balances BitBay Liquid and BitBay Reserve. It would
+be ideal if exchange has one account for deposits but then they need another
+way to find out who deposited the funds(perhaps have a single transfer to liquid pool)

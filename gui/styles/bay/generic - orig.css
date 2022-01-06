@@ -1,0 +1,54 @@
+QWidget {
+    font:"Roboto";
+    background-color:rgb(239,237,239);
+}
+
+QDialog {
+    font:"Roboto";
+    background-color:rgb(239,237,239);
+}
+
+QPushButton {
+    font:"Roboto";
+    background: rgb(255,215,31);
+    color: black;
+}
+
+QLabel {
+    font:"Roboto";
+    color: #808080;
+}
+
+QLineEdit {
+    font:"Roboto";
+    background: rgb(0, 255, 255);
+}
+
+QTextEdit {
+    font:"Roboto";
+    background-color: #f2f2f2;
+}
+
+QComboBox {
+    font:"Roboto";
+    background: #ffffff;
+    color: black;
+}
+QComboBox::drop-down {
+    background-color: rgb(255,215,31);
+}
+QComboBox::down-arrow {
+    image: url(:/icons/spinbox_down_arrow);
+    width: 7px;
+    height: 7px;
+}
+
+QCheckBox {
+    font:"Roboto";
+    color: black;
+}
+
+QWebView {
+    font:"Roboto";
+    background-color: #f2f2f2;
+}

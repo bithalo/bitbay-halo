@@ -1,0 +1,305 @@
+
+QGroupBox {
+    background-color: white;
+    border: 0px solid gray;
+    border-radius: 5px;
+    margin-top: 45px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    color: white;
+    margin-top: 10px;
+    margin-left: 20px;
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+}
+
+QGroupBox#receiveCoinsGroupBox {
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    padding-top: -30px;
+    padding-left: 15px;
+    padding-right: 15px;
+    min-height: 350px;
+    max-height: 600px;
+}
+
+QToolButton#ExplainReceive {
+    margin-bottom: 20px;
+    max-height: 26px;
+    max-width: 26px;
+    border: 0px;
+}
+
+QLabel {
+    font-size: 14px;
+    color: #808080;
+    margin-bottom: 0px;
+}
+
+QCheckBox {
+    font-size: 14px;
+    color: #808080;
+    margin-bottom: 0px;
+}
+
+QCheckBox#EnableBitmessage {
+    margin-left: 20px;
+}
+
+QCheckBox#EnableIRC {
+    margin-left: 30px;
+}
+
+
+QCheckBox#EnableEmail {
+    margin-left: 20px;
+}
+
+QLineEdit#receiveCoinAddressLineEdit, QLineEdit#receiveBitMessageAddressLineEdit {
+    font-family: "Roboto Mono";
+    font-size: 19px;
+    font-weight: bold;
+    text-align: center;
+    border: 0px;
+    border-bottom: 2px solid #ffce03;
+    background-color: #ffffff;
+    min-height: 30px;
+}
+
+QLabel#BitmessageStatus {
+    margin-top: 10px;
+}
+
+QLabel#MyEmail {
+    margin-top: 10px;
+}
+
+QLineEdit#receiveEmailLineEdit {
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    border: 0px;
+    border-bottom: 2px solid #ffce03;
+    background-color: #ffffff;
+    min-height: 35px;
+}
+
+QLineEdit#EmailBox {
+    font-size: 15px;
+    border: 0px;
+    background-color: #f2f2f2;
+    min-height: 35px;
+}
+
+QToolButton#CopyAddressToClipboard {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+QToolButton#CopyAddressToClipboard:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+QToolButton#CopyAddressToClipboard_2 {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+QToolButton#CopyAddressToClipboard_2:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+QToolButton#AddEmail_2 {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+QToolButton#AddEmail_2:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+
+
+QToolButton#AddEmail {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+QToolButton#AddEmail:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+
+
+QToolButton#OutboxButton {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+QToolButton#OutboxButton:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+QCheckBox {
+    font-size: 14px;
+    color: #808080;
+    spacing: 3px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/icons/checkbox_off24);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/icons/checkbox_on24);
+}

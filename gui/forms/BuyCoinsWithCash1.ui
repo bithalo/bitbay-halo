@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BuyCoinsWithCash1</class>
+ <widget class="QWidget" name="BuyCoinsWithCash1">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>696</width>
+    <height>647</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_6">
+   <property name="horizontalSpacing">
+    <number>20</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>15</number>
+   </property>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="CoinsForCashBuy">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>75</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Buy Coins With Cash</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="ExplainCashBuy">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Help</string>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="2" rowspan="3">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="2" column="0">
+      <widget class="QLabel" name="MyDepositText2">
+       <property name="text">
+        <string>My Deposit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Escrow System</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLineEdit" name="MyDepositBox2">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLineEdit" name="TheirDepositBox2">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="TimeLimitText2">
+       <property name="text">
+        <string>Time Limit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLineEdit" name="TimeLimitBox2"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="TheirDepositText2">
+       <property name="text">
+        <string>Their Deposit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QComboBox" name="DepositSettings2">
+       <item>
+        <property name="text">
+         <string>Use Recommend Deposits and Settings</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Deposits</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Request A Guarantor</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="TimeLimitDays2">
+       <item>
+        <property name="text">
+         <string>Days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hours</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="MyDepositUSD2">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="TheirDepositUSD2">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QComboBox" name="RateBox2">
+       <item>
+        <property name="text">
+         <string>Market Price</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Price per coin</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="ExchangeRate2">
+       <property name="text">
+        <string>Exchange Rate:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="PriceText2">
+       <property name="text">
+        <string>Price:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="PriceBox2">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="PriceUSD2">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="AmountText2">
+       <property name="text">
+        <string>Amount:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLineEdit" name="AmountBox2">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="AmountUSD2">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="MaxService2">
+       <property name="text">
+        <string>Maximum Service Charge:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="ServiceCharge2">
+       <item>
+        <property name="text">
+         <string>2%</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5%</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>10%</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>15%</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>20%</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0" colspan="2">
+      <widget class="QCheckBox" name="ShowAdvancedCashBuy">
+       <property name="text">
+        <string>Show Advanced Settings</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="MaxDecreaseBuyBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="perc7">
+       <property name="text">
+        <string>%</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QComboBox" name="MaxDecreaseBuy">
+       <item>
+        <property name="text">
+         <string>25% Maximum Decrease</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>No Limit</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Maximum Decrease</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="PriceTrackingTitle2">
+       <property name="text">
+        <string>Automatic price tracking:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="MaxIncreaseBuyBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QComboBox" name="MaxIncreaseBuy">
+       <item>
+        <property name="text">
+         <string>5% Maximum Increase</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Maximum Increase</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLabel" name="perc6">
+       <property name="text">
+        <string>%</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <spacer name="verticalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="2">
+    <layout class="QGridLayout" name="gridLayout_5">
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="LimitOrderText2">
+       <property name="text">
+        <string>Limit order sizes:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLabel" name="perc9">
+       <property name="text">
+        <string>%</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="MinOrderBuy">
+       <item>
+        <property name="text">
+         <string>25% Minimum Buy Order</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>50% Minimum Buy Order</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>100% Minimum Buy Order</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Minimum Buy Order</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="MaxOrderBuyBox"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="MinOrderBuyBox"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="perc8">
+       <property name="text">
+        <string>%</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QComboBox" name="MaxOrderBuy">
+       <item>
+        <property name="text">
+         <string>100% Maximum Buy Order</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>50% Maximum Buy Order</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>25% Maximum Buy Order</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Maximum Buy Order</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="verticalSpacing">
+      <number>12</number>
+     </property>
+     <item row="4" column="0">
+      <widget class="QCheckBox" name="CashMail2">
+       <property name="text">
+        <string>Cash In The Mail</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QCheckBox" name="MoneyGramCheck2">
+       <property name="text">
+        <string>MoneyGram</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="AgreeFund2">
+       <property name="text">
+        <string>You agree to fund using any of the checked methods below</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="DebitCheck2">
+       <property name="text">
+        <string>Prepaid Debit Card</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="WUCheck2">
+       <property name="text">
+        <string>Western Union</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="OtherCheck2">
+       <property name="text">
+        <string>Other</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="BankWireCheck2">
+       <property name="text">
+        <string>Bank Wire/SEPA</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="PayMentOptions2">
+       <property name="text">
+        <string>Payment Options:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="NotesText2">
+       <property name="text">
+        <string>Notes/Extra Details:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="NotesBox2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QCheckBox" name="SaveFuture2">
+       <property name="text">
+        <string>Save Form For The Future</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="SupplyAdditional2">
+       <property name="text">
+        <string>Supply Contact Information</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ClearForm2">
+       <property name="text">
+        <string>Clear Form</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="SaveContinue2">
+       <property name="text">
+        <string>Save And Continue</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../../NEW UI/Halo.qrc"/>
+ </resources>
+ <connections/>
+</ui>

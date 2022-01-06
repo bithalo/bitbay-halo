@@ -1,0 +1,227 @@
+
+QGroupBox {
+    background-color: white;
+    border: 0px solid gray;
+    border-radius: 5px;
+    margin-top: 45px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+QGroupBox#walletsGroupBox {
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 5px;
+    padding-top: 0px;
+    padding-left: 15px;
+    padding-right: 15px;
+    max-height: 300px;
+}
+
+QGroupBox#smartContractsGroupBox {
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 10px;
+    padding-top: -20px;
+    min-height: 260px;
+    max-height: 300px;
+}
+
+QGroupBox#needHelpGroupBox {
+    margin-top: 40px;
+    margin-left: 10px;
+    margin-right: 20px;
+    padding-top: -20px;
+    min-height: 260px;
+    max-height: 300px;
+}
+
+QGroupBox::title {
+    color: white;
+    margin-top: 10px;
+    margin-left: 20px;
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+}
+
+QGroupBox#needHelpGroupBox::title {
+    margin-left: 10px;
+}
+
+QToolButton:hover {
+    color: #624ba5;
+}
+
+QToolButton#OpenAccount {
+    border: 0px;
+    /* background-color: #eeeeee; */
+}
+
+QToolButton#JointAccount {
+    border: 0px;
+}
+
+QToolButton#VideoLibrary {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#supportButton {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#BuyAnything {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#Custom {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#BuyCoins {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#Barter {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#FindJob {
+    border: 0px;
+    min-height: 120px;
+}
+
+QToolButton#HireSomeone {
+    border: 0px;
+    min-height: 120px;
+}
+
+QLabel#MyAddress_7 {
+    font-size: 14px;
+    color: #808080;
+}
+
+QLineEdit#myAddressLineEdit {
+    font-family: "Roboto Mono";
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    min-height: 30px;
+    min-width: 250px;
+    border: 0px;
+    border-bottom: 2px solid #ffce03;
+    background-color: #ffffff;
+}
+
+QLineEdit#le_actualBalance, QLineEdit#le_availableBalance {
+    font-size: 21px;
+    font-weight: bold;
+    text-align: center;
+    border: 0px;
+    border-bottom: 2px solid #ffce03;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    min-height: 35px;
+}
+
+QToolButton#tb_copyAddressToClipboard {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+QToolButton#tb_copyAddressToClipboard:pressed {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+QToolButton#Conversion {
+    background: rgb(255,215,31);
+    color: rgb(59,65,145);
+    border: 1px solid rgb(255,255,255);
+    border-right: 2px solid rgb(255,255,255);
+    border-right-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 0,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    border-bottom: 2px solid rgb(255,255,255);
+    border-bottom-color: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0      #ffffff,
+        stop: 0.5    #ffffff,
+        stop: 0.5001 #b6bdca,
+        stop: 1      #b6bdca
+    );
+    min-height: 25px;
+    min-width: 25px;
+    margin-top: 12px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+QToolButton#Conversion:pressed {
+    margin-top: 14px;
+    margin-left: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+QLabel#l_actualBalance {
+    font-size: 14px;
+    color: #808080;
+}
+
+QLabel#l_availableBalance {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #808080;
+}
+
+QLabel#Symbol_1 {
+    font-size: 20px;
+    color: #808090;
+}
+
+QLabel#Symbol_2 {
+    font-size: 20px;
+    color: #808090;
+}

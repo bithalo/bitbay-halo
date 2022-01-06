@@ -1,0 +1,58 @@
+
+QWidget#leftPanel {
+    border-right: 1px solid #523b95;
+    min-width: 190px;
+    max-width: 190px;
+}
+
+QWidget#leftPanelLogoWidget {
+    min-height: 110px;
+    max-height: 110px;
+    min-width: 190px;
+    max-width: 190px;
+    padding-left: 20px;
+    background-image: url(:/images/logo1);
+    background-repeat: no-repeat;
+}
+
+QToolButton {
+    min-width: 190px;
+    min-height: 30px;
+    border: 0px;
+    color: white;
+    padding-left: 20px;
+    font-family: 'Roboto';
+    font-size: 15px;
+}
+
+QToolButton:checked {
+    color: #00dcef;
+    font-weight: bold;
+}
+
+QToolButton:pressed {
+    color: blue;
+    font-weight: bold;
+}
+
+QToolButton:hover {
+    color: #00dcef;
+}
+
+QLabel#walletLeftPanelLabel {
+    color: #ffce03;
+    padding-left: 20px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+QLabel#smartContractsLeftPanelLabel {
+    color: #ffce03;
+    padding-left: 20px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 14px;
+}

@@ -1,0 +1,1 @@
+pyinstaller .\BitMessage\bitmessagemain.py -F --icon=BitMHalo.ico

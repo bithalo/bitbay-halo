@@ -1,0 +1,74 @@
+QWidget {
+    font:"Roboto";
+    background-color:rgb(255,255,255);
+}
+
+QDialog {
+    font:"Roboto";
+    background-color:rgb(255,255,255);
+}
+
+QPushButton {
+    font:"Roboto";
+    background: rgb(255,215,31);
+    color: black;
+}
+
+QLabel {
+    font:"Roboto";
+    color: #646464;
+}
+
+QLineEdit {
+    font:"Roboto";
+    border: 0px;
+    border-radius: 0px;
+    border-style: none;
+    border-width: 0px;    
+    background-color:rgba(241, 241, 241, 100%);
+}
+
+QTextEdit {
+    font:"Roboto";
+    border: 0px;
+    border-radius: 0px;
+    border-style: none;
+    border-width: 0px;    
+    background-color:rgba(241, 241, 241, 100%);
+}
+
+QListWidget { 
+    background-color:rgba(251, 251, 251, 100%);
+}
+
+QComboBox {
+    font:"Roboto";
+    background-color:rgba(251, 251, 251, 100%);
+    color: black;
+}
+QComboBox::drop-down {
+    background-color: rgb(255,215,31);
+}
+QComboBox::down-arrow {
+    image: url(:/icons/spinbox_down_arrow);
+    width: 7px;
+    height: 7px;
+}
+
+QCheckBox {
+    font:"Roboto";
+    color: black;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/icons/checkbox_off24);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/icons/checkbox_on24);
+}
+
+QWebView {
+    font:"Roboto";
+    background-color: #f2f2f2;
+}

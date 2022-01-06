@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>697</width>
+    <height>639</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_5">
+   <property name="horizontalSpacing">
+    <number>20</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>15</number>
+   </property>
+   <item row="2" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="BuyImageText">
+       <property name="text">
+        <string>Image:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="BuyImageBox">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="BuyAttachImage">
+       <property name="toolTip">
+        <string>Attach an Image to your contract</string>
+       </property>
+       <property name="text">
+        <string>Attach an Image</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>:/Images/images/icon_openaccount_active.png</normaloff>:/Images/images/icon_openaccount_active.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0" colspan="2">
+      <widget class="QComboBox" name="DepositSettings6">
+       <item>
+        <property name="text">
+         <string>Use Recommend Deposits and Settings</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom Deposits</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Make Me A Guarantor</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Make Them A Guarantor</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="MyDepositText6">
+       <property name="text">
+        <string>My Deposit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLineEdit" name="MyDepositBox6">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="MyDepositUSD6">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="TheirDepositText6">
+       <property name="text">
+        <string>Their Deposit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLineEdit" name="TheirDepositBox6">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="TheirDepositUSD6">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="TimeLimitText6">
+       <property name="text">
+        <string>Time Limit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLineEdit" name="TimeLimitBox6"/>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="TimeLimitDays6">
+       <item>
+        <property name="text">
+         <string>Days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hours</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="BuyText">
+       <property name="text">
+        <string>Buy Something:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="ExplainBuy">
+       <property name="toolTip">
+        <string>Help</string>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="DescriptionBuy">
+       <property name="text">
+        <string>Description:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="DescriptionBuyBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1" rowspan="2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" colspan="2">
+      <widget class="QComboBox" name="BuySelect">
+       <item>
+        <property name="text">
+         <string>Normal Sale</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Reverse Auction</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="BuyoutBuyText">
+       <property name="text">
+        <string>Buyout Price:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLineEdit" name="BuyoutBuyBox">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="BuyoutBuyUSD">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="BidBuyText">
+       <property name="text">
+        <string>Starting Bid:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLineEdit" name="BidBuyBox">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="BidBuyUSD">
+       <item>
+        <property name="text">
+         <string>USD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Coins</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="DurationBuyText">
+       <property name="text">
+        <string>Duration:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLineEdit" name="DurationBuyBox">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="DurationBuyDays">
+       <item>
+        <property name="text">
+         <string>Days</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ClearForm6">
+       <property name="text">
+        <string>Clear Form</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="SaveContinue6">
+       <property name="text">
+        <string>Save And Continue</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QCheckBox" name="SaveFuture6">
+       <property name="text">
+        <string>Save Form For The Future</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="SupplyAdditional6">
+       <property name="text">
+        <string>Supply Contact Information</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="Notes6">
+       <property name="text">
+        <string>Notes/Extra Details:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="NotesBox6">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="1">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="ShippingBuyText">
+       <property name="text">
+        <string>Shipping:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QCheckBox" name="ShippingCityBuy">
+       <property name="text">
+        <string>Supply Shipping City in Advance</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QCheckBox" name="LocalPickupBuy">
+       <property name="text">
+        <string>Request Local Pickup</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QComboBox" name="ShipCountryBuy">
+       <item>
+        <property name="text">
+         <string>Can Ship From Any Country</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Only Ship From Certain Countries</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLabel" name="ShipToBuyText">
+       <property name="text">
+        <string>Can Ship From:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QLineEdit" name="ShipToBuyBox"/>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>2</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../../NEW UI/Halo.qrc"/>
+ </resources>
+ <connections/>
+</ui>

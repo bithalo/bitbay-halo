@@ -1,0 +1,35 @@
+<RCC>
+<qresource prefix="icons/tabs">
+    <file alias="chat_on">../icons/base/icon_chat_active.png</file>
+    <file alias="chat_off">../icons/base/icon_chat_inactive.png</file>
+    <file alias="contacts_on">../icons/base/icon_contacts_active.png</file>
+    <file alias="contacts_off">../icons/base/icon_contacts_inactive.png</file>
+    <file alias="history_on">../icons/base/icon_history_active.png</file>
+    <file alias="history_off">../icons/base/icon_history_inactive.png</file>
+    <file alias="home_on">../icons/base/icon_home_active.png</file>
+    <file alias="home_off">../icons/base/icon_home_inactive.png</file>
+    <file alias="makeoffer_on">../icons/base/icon_makeoffer_active.png</file>
+    <file alias="makeoffer_off">../icons/base/icon_makeoffer_inactive.png</file>
+    <file alias="orders_on">../icons/base/icon_orders_active.png</file>
+    <file alias="orders_off">../icons/base/icon_orders_inactive.png</file>
+    <file alias="market_on">../icons/base/icon_owl_active.png</file>
+    <file alias="market_off">../icons/base/icon_owl_inactive.png</file>
+    <file alias="pendingoffers_on">../icons/base/icon_pendingoffer_active.png</file>
+    <file alias="pendingoffers_off">../icons/base/icon_pendingoffer_inactive.png</file>
+    <file alias="receive_on">../icons/base/icon_recieve_active.png</file>
+    <file alias="receive_off">../icons/base/icon_recieve_inactive.png</file>
+    <file alias="send_on">../icons/base/icon_send_active.png</file>
+    <file alias="send_off">../icons/base/icon_send_inactive.png</file>
+</qresource>
+<qresource prefix="icons">
+    <file alias="attention_on">../icons/base/icon_attention_active.png</file>
+    <file alias="attention_off">../icons/base/icon_attention_inactive.png</file>
+</qresource>
+<qresource prefix="images">
+    <file alias="bg1">../images/bg_bitbay.png</file>
+    <file alias="bg2">../images/bg_bitbay_2.png</file>
+    <file alias="navbar_arrow">../images/navbar_arrow_bay.png</file>
+    <file alias="bg_switch_to_bithalo_01">../images/bg_switch_to_bithalo_01.png</file>
+    <file alias="bg_switch_to_bithalo_02">../images/bg_switch_to_bithalo_02.png</file>
+</qresource>
+</RCC>

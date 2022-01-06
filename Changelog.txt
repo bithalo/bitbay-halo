@@ -1,0 +1,372 @@
+Halo v2.5
+Updated BitBayd to revert staking spam fix which can cause forks
+Added Coingecko price feed as an alternative for when Coinmarketcap changes it's logic
+Updated BitMHalo
+
+Halo v2.3
+Updated staking logic to solve splits when network is evenly divided trust vs length
+
+Halo v2.2
+Fixed minor issues with balance and spending
+Fixed liquidity bugs from prior versons and added checks
+Fixed some bugs with contracts to work with the peg
+Improved performance of threads
+Improved loading times and performance
+Updated BitBayd
+
+Halo v2.11
+Fixed bugs concerning interaction with API
+Fixed where listfrozen API command wasn't being called
+Added links to PDFs and updated help boxes
+Settings now shows reward values for different stakes
+Minor advance sending improvements
+Made foundation bot
+Added console window
+
+Halo v2.0
+Using mechanize package for better web scraping and form submission
+Fixed fpaste pastebin and instead using pastebin.com
+Fixed memory use issue with bitbayd and storing extra pegdata in RAM
+Fixed price feeds from coinmarketcap
+Updated proxy technique
+
+Halo v1.38
+Updated various things
+Fixed stepic library
+Fixed Pyelliptic for Bitmessage
+Fixed BitHalo broadcasting services
+Updated Templates
+Fixed different web services and added redundancy
+Made peg on markets use same github service for algorithm
+Updated pyblackcointools for more sighashes
+Integrated peg for fork
+
+Halo v1.37
+Fixed multistaking issue where rewards drop over time
+Improved clean up of old market orders
+Updated to newest Bitmessage with BitMHalo refactor
+
+Halo v1.36
+The interest rate is now variable 1-3%
+Lots of improvements to peg system.
+Account pools removed for first peg version because liquidy changes are complex
+Notes added to the code to explain some of the things required to finish pools
+It's possible to drop the number of steps or add pools when scaling is required
+Now 6a is used for basic voting so the peg doesn't get bloated
+Increased confirmations in Halo to 5 confirmations near rate change
+Coded the exchange management system to track the peg
+Coded the exchange API and Python implementation
+Save liquidity for faster balance loading
+Started making c++ version of peg
+Ran tests and fixed bugs
+
+Halo v1.35
+Completed and improved all the peg logic for peg demo
+Modified escrow system for multiple versions of a transaction for the peg
+Made contracts always counter/bid due to rapid change in peg rates
+Adapted all spending and contracting functions for the peg
+Made all subpremium logic and notifications
+Added peg support for all advanced transactions
+Added help boxes and explanations for peg
+Made liquidity rating system
+Added GUI support for the peg
+Multiple bug fixes and GUI improvements
+
+Halo v1.34
+The entire economy changed created the peg demo system
+changed the c++ code to run a validator in Python (when enabled)
+made algorithm for voting and entire voting system and rewards for the peg
+created the database of more than 45k file combinations and efficient storage
+created the thread and transaction checking the liquidity system and reserve system
+voluntary freezing system and transfer of locked frozen funds
+many more changes to the software very deep and subtle peg logic
+peg system is both account driven and utxo driven
+created strategy for handling reorganizations with confirmations
+fixed slow wallet bug for very large wallets
+activated remaining templates for Halo
+improved broadcasting
+
+Halo v1.33
+Finalized autopay and escrow window for employment templates
+Security features for autopay and notary of payments
+Made API method for sending transactions
+Completed API for interacting with Python using signed commands
+Completed Python Contracts
+Completed Barter Contracts
+Completed all major features in Halo
+Some features temporarily deactivated until next release
+
+Halo v1.32
+Fixed exotic spend for higher burn amount
+Fixed webview UI loading issue on Linux
+Halo now encrypts contract keys into the order for protecting both parties with backup
+Added status bar icons for the modern gui
+Made it so BitHalo advises if the fee per kilobyte is too low for a busy network
+made it so offers don't clear after a month so the market can stay filled for active users
+Fixed issue where RPC is busy when broadcasting transactions and software was not waiting properly
+improved modern GUI of other forms
+Fixed locking mechanism
+updated explanation text
+
+Halo v1.31
+Added new modern GUI, improved user experience
+Added Hire Someone and Find Job templates however not yet activated
+Check for valid address checksum
+
+Halo v1.30
+Fixed bug where spending more than the balance crashes Halo caused from moving some code in the previous update
+Removed internet explorer from Mac build
+Coded theoretical foundation to withdraw BitcoinCash from BitHalo
+changed how we detect combo box items in templates to prime for potential translations
+added Buy/Sell templates
+Fixed requests certificate issue with packaging in Linux
+Check for valid donation address
+Changed default path for saving keys and backup in Mac Wine so it's outside the package
+Updated Wine Engine
+improved messages for busy client
+fixed old orders that do not expire
+improved performance and fixes
+updated base64 icons
+improved inbox cleaning
+computers timestamp is now check for accuracy
+improved address import for staking list
+added email cache for increasing the speed of message download for IMAP
+Fixed Screen Options for High Sierra on Mac
+
+Halo v1.29
+Fixed BitMHalo file locking hack and improved it with RPC calls to get an accurate lock
+Added redundant timing based on timestamp on more things in case the current block isn't logged
+Added Checklocktimeverify transactions and exotic spend
+Full user interface for exotic spend and notary
+Optimized the change function a bit more
+Changed several functions to work with other inputs and sign exotic inputs
+Fixed bug where images don't update
+Added function for checking and sending mempool transactions
+Added ability to handle SSL errors by forcing TLS
+Updated file hashing algorithm to Sha256
+Automatically add nodes if they are in the config file
+improved ui/ux bugs when entering passwords and unpacking values
+
+Halo v1.28
+Made it possible to manually import and export messages in case of failure of messaging system
+Added option for donating the profits from a stake
+Add price tracking for custom contracts set the foundation for tracking in future orders
+Fixed bug where coinmarketcap is down and causes other threads to check the internet slowing down GUI
+Various other user friendly changes
+Sync Mac build in advance to make for faster connection and less bugs while syncing
+Set to attempt more connection tries in Mac and also allow for staying connected so if a reindex is going on, the user can wait for it
+Made Wine build so it doesn't allow forceful windows exit corrupting the blockchain on Mac
+Increased amount of time to connect, allow user to stay connected
+Added ability to add to config from debug
+Made breaking for change default less compulsive to reduce transaction costs(up to 10 of each denomination before breaking above that level and 25 inputs max)
+Requests package SSL dependencies fixed. May eventually update system python to 2.7.13 if problems persists
+Splash screen repaint which should hopefully solve missing or grey splash on some Linux
+As a reminded if you run the static linux build running the sh file directly, it doesn't show console window. To see it run the sh file from the console.
+Cleared forms before loading to prevent data from not loading correctly
+
+Halo v1.27
+Added admin method to build into manifest
+Made it so pastebin can be updated for existing orders with missing images on resubmit
+Started to track memory leaks for better performance
+checked data type for querying history in case of erroneous data
+checked data being returned from Electrum in BitHalo raw tx in case of erroneous data
+added splash screen for submitting TX and also added wait function for waiting for download thread to unlock causing false rejections
+added splash for image compression during upload
+fixed balance issue in multistake on same input
+fixed issue where the number of keys connected changes too early
+made it so wallet does not unlock for spending unless requested
+added image cache to make software more responsive because png conversion for computers without jpeg driver is slow
+added custom video library link per coin
+staking is now off by default so users must activate it manually. Since a new user might get confused when funds become unspendable upon deposit
+added sh file to build for linux to (potentially) improve QT performance on some systems
+fixed other minor user interface issues
+added extra tips for guiding new users
+we now check for bitmessage timeouts
+reindex option added if daemon fails to load
+Updated reputation system with redundant public key for resubmission to match original sender instead of temporary key
+Users can now accept a market order with either bitmessage or email even if the original offer prefers email
+Added more notifications for messages within escrow
+add more nodes for BlackHalo
+generate bitmessage addresses based on rpcpassword in addition to keys. In this way switching single keys that you load with won't generate a different address
+This makes the address harder to figure out by looking at a script which is safer. Also joint accounts now have a cleaner way of distinguishing their Bitmessage
+Added foundation for basic market messaging to update orders. Now users can alert of a change in quantity
+Fixed issue when busy signing the daemon might be busy after signatures making users think the network itself is busy
+
+Halo v1.26
+Made font sizes in pixels instead of points since PyQt4 has no dpi adjustment for UI
+Added anti-keylogger
+Made clear key location on exit
+Added proxy/tor option
+Added email login on account loading to protect password
+Added ability to filter other currencies
+Added way to activate debug file from UI
+Added custom splash screen for Halo coins
+AOL/Outlook typo fixed, removed support for Mail.com
+Enhanced user experience, various fixes
+Detected for when users move keys from known location
+Added generic encryption for sensitive data in temporary files
+Fixed balance float
+Fixed sorting and interface with the markets table
+Encrypt/Decrypt functions added in the menu
+Sign/Verify functions added in the menu
+Allowed for staking across multiple multisignature accounts
+Added Voting
+Added Cold Staking
+Updated pastebin url
+fixed email encoding/padding issues
+fixed live translator, moved from Google to Yandex
+Added more electrum servers for BitHalo
+Fixed new regex bug for checking BitHalo
+Improved coin switching
+Detect admin to avoid double exe python with tendo as admin (whenever possible)
+Disabled Electrum for BitHalo due to many changes in their nodes
+Added a few extra servers for BitHalo
+New Splash screens
+Add icons from hashes to distinguish orders
+Improved performance of email by enhancing method for read messages by uid and ordernumber
+Fixed linux bug for conflicting Qt libraries by adding Qt.conf
+
+Halo v1.25
+Debugged crash on exit typo
+Changed over QT to POS 3.0
+Release date set to 21st of January
+Updated entire QT and daemon build
+Fixed threading exit management
+Created platform specific exit
+Fixed identifier for base64 image submissions which confuses resubmit function since sometimes they match
+if timeserver crashes software displays local computer time
+Reverted accidental change to guarantor broadcast ID
+tested Linux and Mac builds fully updated
+
+Halo v1.24
+Stability updates, patched major RPC timeout issue causing disconnect during sync
+Fixed mysterious bug JPEG QT plugin not loading on some computers by converting to PNG
+Added nodes from online servers to Bitbay for stability. Shared Peers.dat until new seeds are made
+Crashed clients leave Bitmessage or daemon running preventing reloading, launching Halo in Windows now reboots
+Economized checking of unspent transactions by only looking for changes
+Did preliminary work for larger update with advanced settings menu
+The changes in advanced settings, staking and payment will be listed in next changelog
+Fixed bug where Bitmessage fails and causes email to stall.
+Tested reliability of Halo RPC
+
+Halo v1.23
+version was changed to notify of updated client
+Many changes made not listed here
+Staking was tested and worked properly will be included later
+Building scripts made for bitbayd, blackcoind in all platforms
+Entire build automated to an extent
+Disconnect issues given resolutions with reconnection and detection
+Fonts fixed to be more flexible based on size
+Windows 10 compatibility and crashes fixed
+BitHalo blockchain queries modified
+Joint account issues fixed
+Timeouts for urls fixed
+Addition changes and performance enhancements
+BitMHalo fixed and windows build more complete
+
+Halo v1.22
+Fixed the fee not automated issue. Fee raising should be forced in contracts for large amounts of inputs
+Fixed BitHalo signature library for high S curve update to miners
+Tripled fee per input in BitHalo to speed up confirmations. Expensive but Bitcoin is too slow otherwise
+Enhanced Email Authentication
+Gave fail safe if a sender of an input crashes the unspent list. Now only daemon crash can make the unspent not appear
+Added debugger for users to send bug reports
+fixed some ui issues with p2m and minor p2m foreign character bug
+Fixed major performance update. UI and Scanning of messages doesn't conflict.
+Message handling improved for markets
+fixed criteria for autoaccept on Custom contracts
+clicking on full size blank image bug fix
+Fixed pay to email encoding and reading from Imap
+Fixed balance processing error from input reading
+many other changes
+Completed cross platform builds. Major update focused on compatibility with Mac and Linux
+Made OBF packages and automation scripts
+Fixed slow performance bugs and thread crashing bug
+Enhanced speed of contracts, better thread management
+Fixed thousands of minor warnings from PyCharm
+Updated github with scripts and builds
+
+Halo v1.21
+Made fixes to imap supporting more providers and scanning spam folder
+Fixed timestamp agreement on acceptance
+Fixed market loading address bug for some computers
+Made some of the messages more user friendly
+Inbox cleanup added
+Added salt for extra high security random numbers
+Increased performance of UI  and file handling by making new file handling thread and reducing redundancy
+Added pay to public key input signing and scripting in pyblackcointools
+made some preliminary staking commands
+fixed other minor performance issues and internet checking
+
+Halo v1.2
+Made the Bitmessage address deterministic
+Gave Bitmessage a custom data directory
+Made it possible to add markets as channels
+Created the market system, major update.
+Decentralized moderation system and reputation system made.
+Public key verification of identity and secure order data hashed.
+Added outbox system for seeing outgoing emails
+Fixed balance for first time user bug and unconfirmed parsing issue
+Fixed RPC bug for new Blackcoin daemon
+Fixed Timing issue with delayed time
+Added USD and BTC exchange rates from Internet
+Added automatic posting of images to pastebin to save POW time, reduce bloat
+Designed the markets system
+Designed reputation system based on public keys
+Designed user interface for markets and templates
+Made new hashing function for unordered dictionaries
+Halo creates log file if client crashes
+Made major improvements to Halo to make it cross platform
+
+Halo v1.1
+Changed the main UI
+Totally redesigned history panel many changes made
+Created an "ACTUAL" vs AVAIABLE balance
+Made it so that money that leaves the account doesnt deduct the balance if we expect change
+Gave Bithalo a way to connect to more APIs other than electrum.
+Added new parsing for two more APIs (Biteasy and Blockchain.info)
+Made it so entire accounts life history is not shown in Account now its only the spendable coins like in BlackHalo
+Made it so BlackHalo and BitHalo could get the senders address from checking scripts and previous transactions
+Fixed order of denomination system
+made denomination system more efficient by enhancing how change is broken for
+Added ability to limit the number of inputs used for loose change
+Fixed it so unconfirmed coins work well with the available and actual balance
+Added redundancy check for senders address with electrum servers
+Fixed UI issues on the import.
+Made it so both UIs stylesheets get switched
+Added "Hide keys in image" so now your keys are a JPEG or PNG.
+Changed other functions that depended on loading private keys to support images
+Hid password while typing
+Made information boxes for explaining Halo. The target is to make instructional videos.
+Got remaining buttons to work such as check boxes
+Made the notifications work. Currently only notified on offers.
+Made it so any attached images are compressed to under 20 kilobytes and changed to base64
+Made more detailed offer panel with descriptions and images
+Made the backup not store images
+Fixed bug where tx1 got confused with the tx1 from encrypted message
+Fixed some file closing
+Made pay to email system
+Made it so multiple addresses can be paid from joint accounts
+Added Joint account automation and template
+Made Advanced Sending Settings
+Made Coins into an object for easy switching of daemons
+Made First Time user Wizard and totally new UI features.
+Fix non-canonical signature problem in pybitcointools
+Made some changes to escrow checking
+Made the contacts display nicer
+Many other changes
+
+Halo v1.0 (no version change yet)
+If blackcoind disconnects, Halo reconnects
+Calculated fee by inputs/outputs (not multisignature is about 2 times more bytes than regular)
+Made maximum inputs to 80 (for the change system)
+Fixed minor coin switching bug
+Made it so the timestamp can't be higher than the highest block (resulting in nonstandard rejected tx if the drift is low)
+Made installer default to C:\Halo so that admin privelages were not required on some computers (unlike Program Files)
+fix minor application path bug for cfg
+made the backup file copy itself after reaching 10 megabytes
+added some basic Troubleshooting to the documentation
+added more emails to the list of providers
+updated Bitmessage to 4.4 and allowed users to experiment with bitmessage contracting (although we plan on remanufacturing it)
+Added escrow extensions if both parties agree
+Added "Rescan" button within the client in case balance is incorrect or other errors

@@ -1,0 +1,147 @@
+API Documentation For Python Halo Peg Exchange:
+
+Almost all commands will return either data, True or give some string message otherwise.
+It's important for a server to read the source for this so they can update on their end.
+
+SetPassword(newpassw='', passw='') 
+#The default password is blank. If not set, it's not required for commands.
+
+StartExchange(passw='', start=1, isrunning=0)
+#To start and stop the exchange thread. Stopping may take a minute or so. If you
+#set isrunning to 1 it will tell you if the exchange is busy. Once the exchange
+#is loaded you can start checking balances and performing trades.
+
+ShutDown(passw='')
+#It can take several minutes to shut down and save all the data. For exchanges it is
+#recommended to carefully plan times when the exchange goes offline to protect data.
+
+ExchangePassword(xpassw='',passw='')
+#This is required if your wallet is password protected. The Python API doesn't
+#check to see if there is a password nor does it check for it's validity. So please
+#make sure this info is correct before proceeding or withdraws will get declined.
+
+GenerateDepositAddress(passw='')
+#This is a generic command for giving users a new deposit address. It's important
+#to archive the key returned for your own records as redundant backup.
+#This function will return the key and True if successful.
+
+GetSpendable(address='',passw='')
+#To avoid interfering with RPC commands it's a good idea to get the Spendable list
+#of inputs for the entire exchange with this command. If the data is too much you can
+#get it for each receive address one at a time. If the input is a change input it will 
+#tell you and for tracking users deposits you can only deposit transactions that are
+#not change from account maintenance or withdraws.
+
+Deposit(name, txids, passw='')
+#Name refers to the users name who made the deposit. Txids is a list of transaction IDs.
+#This function should only be called once per transaction ID. Returns true if succesful
+
+GetDeposits(txid='', passw='')
+#This is used to check the status of a deposit so it is no longer pending. Since the deposits
+#can take longer to confirm for the exchange database. If txid field is blank it returns all txids.
+#Once the transaction shows as registered, the exchange can show it in the balance. An exchange
+#Should not allow transactions to be added to their balance sheet if it is not confirmed
+
+GetBalance(user, passw='')
+#You can check the balance of an individual user or the exchange. The exchange will not only return
+#liquid and reserve but also subpremium and frozen balances as well. A users balance shows only
+#liquid and reserve. If the software is busy it will say so and the exchange should try again later.
+#A busy signal should only happen for a few seconds while it's copying the new balances from the database.
+#If the balance in your exchange database is greater than the returned balance then funds might be
+#processing and you can reflect that how you want to the users. This only happens if the exchange gets
+#shut down during account maintenance and isn't give a full interval to update it's balances.
+
+Trade(user1, amount, user2, style='liquid', passw='')
+#This function calculates a trade between two users. The correct way to do this is to actually know
+#who is buying from whom in your orderbook. This way completely accurate numbers are calculated.
+#The alternative way to use this function is to leave user2 as blank '' and then there are two options
+#if the user is selling coins then make the amount value negative and it will be deducted and added
+#to a pool. If the user is buying coins then he will withdraw from the pool if available. So therefore
+#if you want to process an orderbook without knowing exactly who traded with each other then first
+#do all of your deductions/debits for that timestamp and then do all of your credits for the
+#same/similar timestamp. So a debit should always be done before a credit to ensure it returns true.
+#For the first Python implementation, there will be a moment where the entire exchange is updating
+#the balances. To avoid accounting errors or approving trades/withdraws based on the old balance
+#the software might tell the exchange it's busy. This delay should not last long. If the function
+#states that it's busy simply tell the users to wait a minute or so or let the trades stack on the book.
+#This system also allows trading reserve coins. So an exchange may want two orderbooks. This is useful
+#if the reserves are treated like a speculative future. It also gives users a way to understand the
+#value of reserve coins. The amount field should not be below zero if user1 and user2 is known.
+#If those users are know the deduction is made from user1 and given to user2. For fees the exchange
+#should simply perform a trade between the user and the exchanges account. The exchange should keep
+#a lot of their profits mixed in the liquidity pool to assist in maintenance of inputs and outputs.
+#This function will True if successful.
+
+ExchangeSettings(exchangeaccounts='', exchangefeeaccount='', commission='', exchangeconfirmations='', passw='')
+#This is for setting the change address used by the exchange. This is required for account maintenance
+#and also for withdraws. The variable must be a list and it's probably best to have a single account.
+#This is because usually only the first account in the list is used. The exchangefeeaccount is a string
+#and this account is for receiving the commission from a withdraw. This extra fee is good for paying
+#transaction costs and maintenance costs. Lastly the commission can be set. The minimum is one coin
+#and the maximum is usually 10 coins. Then there is a percentage of the transaction size which can
+#be charged. The object should be a dictionary such as {'min':100000000,'max':1000000000,'percent':.001}
+#The standard number of exchange confirmations is 7 and that should not be too high or else the change
+#for withdraws would take too long to register and effect the balance when it refreshes for trading.
+#However setting it for 15 confirmations is a good upper limit and it cannot go below 7 confirmations.
+#It may take a couple seconds for the variables to register in the database.
+
+Withdraw(user, amount, address, style='liquid', passw='')
+#This is for withdraws of funds both liquid and reserve. The user must set a valid address for withdraw.
+#The withdraws process around when the votes finish counting to give maximum time for maintaining accounts.
+#This means that withdraws could take up to 6 hours however usually they will be less than 3 hours.
+#Withdraws usually get pooled together so an even amount of liquidity can be used and as few transactions
+#as possible are made. There is a limit to how many withdraws the exchange will process each hour and
+#that can be increased as the capacity is tested. When withdraws are made the funds are calculated
+#for the account and reserved so that if it fails they can be returned to a user. If the exchange
+#shuts down for example some withdraws may expire and therefore the users will have to submit them
+#again. There is other functions needed to check the status of withdraws. This function returns
+#True or False and a unique ID for checking it's status.
+
+CheckWithdraw(ID, clear=0, passw='')
+#This function will tell you the status of a withdraw and it's predicted transaction ID. If the
+#withdraw expires or the TXID never shows on the chain then it's possible the user will have to
+#submit the withdraw again and they should be notified. It's best to let the software handle it.
+#The system has built in malleability protection. So it will check for a notarized payment
+#and then update accordingly. Also it's possible to ask to clear the ID from the database which
+#needs to be done manually by setting the clear flag to 1. If you want to clear the master ID
+#you will notice that is the ID supplied by the results of the query. If it was already cleared
+#then the result will not be a dictionary. The key won't show up until the transaction is made.
+
+GetCycle(passw='')
+#This is an important command which must be called frequently when running the Python version of the
+#exchange monitor. This will tell the exchange when the exchange cycle has changed and then the
+#exchange must update the orderbook values to reflect the new balances. There is multiple strategies
+#to handling rate changes. The recommended action is to call this function, query user balances
+#and then reduce the users orders by the proportion their balnce has changed rounding down. If the
+#exchange chooses not to do this, then when executing a trade they must check to see if a users
+#balance is adequate before trading and if not then to simply trade what is available and remove
+#the remaining orders. This does mean that some buy and sell walls will not report their true
+#values since some of those coins might have become reserve while waiting. It makes sense to query
+#this change multiple times per second and also query the balances every trade just to be sure.
+
+API(command)
+#If the exchange tracker is also running Halo then this command can be used to run "exec" statements.
+#This only works if the exchange signs each statement to ensure calls are completely secure. Also
+#the user should probably submit it with a nonce to avoid repeat submissions. The API public key
+#would need to be loaded in advance to unlock this feature. This feature gives an almost unlimited
+#amount of control over the code in real time. This is only for very advanced users and it is
+#not really needed for running exchanges.
+#Example of how to use this:
+#sig=highlevelcrypto.sign(txhash('nonce=1\nprint "Hello world"'), privatekey)
+#sig=base64.b64encode(sig)
+#HaloRPC = xmlrpclib.ServerProxy('http://localhost:55779')
+#HaloRPC.API({'sig':sig,'exec':'nonce=1\nprint "Hello world"'})
+
+General security considerations when running the exchange tracker is of course to back up the database
+in real time to protect against any crashes. If for some reason the database gets lost or other issues
+arise and it needs to be reconstructed then the exchange should perform the following careful steps
+to recover the correct liquidity in user balances:
+First take all the funds that are not original user deposits but belong to users deposit them to one
+of the exchanges user accounts that is owned by the exchange. Then trade them to the exchange "pool".
+Then restore all user deposits for all the known TXIDs. Then compare the difference to what users do
+not have in their balances. Then simply take the remaining funds in the exchanges possession that are in
+the pool and proceed to trade them back into the users accounts. If the exchange at least remembers reserve
+and liquid balances it is possible to set the style of the trade so that each user account gets exactly what
+they had before the situation arose. Therefore, the exchange should at a minimum always store the users
+liquid and reserve balances in their own database. Also if running the API through Halo then it's not
+possible to use the Halo wallet for contracts or transactions while running the exchange.

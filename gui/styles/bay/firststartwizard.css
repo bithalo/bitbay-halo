@@ -1,0 +1,14 @@
+
+QWidget#Form {
+    background-color:#ffffff;min-width:600px;
+}
+
+QToolButton {
+    border: 0px;
+    margin-right: 20px;
+}
+
+QLabel#l_header1, QLabel#l_header2, QLabel#l_header3, QLabel#l_header4, QLabel#l_header5, QLabel#l_header6, QLabel#l_header7, QLabel#l_header8, QLabel#l_header9 {
+    font-size: 22px;
+    color: #624fa9;
+}
