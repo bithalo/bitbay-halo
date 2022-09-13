@@ -1,3 +1,18 @@
+Halo v3.0
+Created entire system for BitBay bridge so BitBay can go from/to other networks
+Automation of bridge management and voting system using selenium
+Added voting system on BitBay side for managing the bridge
+Added voting on public key that can bypass freeze for certain exchanges
+fixed errors with images and translations within Halo
+Made it so blackcoin in BlackHalo loads optionally so they can choose to build it
+Made it so any python templates have to be signed by the users API key for security
+
+Halo v2.7
+fixed translation broken API allowed for import of API key and 2nd translation service
+made strong improvements to exec commands including user signature database for approved code
+added automatic translation to translation editor
+allowed user to add their own ssl cert file
+
 Halo v2.5
 Updated BitBayd to revert staking spam fix which can cause forks
 Added Coingecko price feed as an alternative for when Coinmarketcap changes it's logic

@@ -124,6 +124,11 @@ class Ui_MainWindow(object):
             if self.language=="en" or self.language=="DEFAULT":
                 self.translist=[]
                 return False
+            if self.yandexAPI == "": #For now google translate is too slow without API access although this can be expanded upon
+                print "Yandex API key not available"
+                return False
+            else:
+                ytrans = YandexTranslate(self.yandexAPI)
             #The Yandex site has a 10K text size limit, so we do multiple requests
             xpos=0
             numby=0
@@ -1460,7 +1465,7 @@ if __name__ == "__main__":
     NewCoin1['name']="BitBay"
     NewCoin1['website']="http://bitbaymarket.net/"#"http://www.thebitbay.org/"  and bitbaymarket is also under Bitbays control
     NewCoin1['videolibrary']="https://www.youtube.com/watch?v=CIU4s2G8jU8&list=PL4MGGKJn4DizGw7oBXwzETMVLNCZ6G2_t"
-    NewCoin1['updatewindows']="http://www.davtonia.com/bitbay/bitbayupdatewin.zip"
+    NewCoin1['updatewindows']="https://bithalo.github.io/bithalo/downloads/BitBayUpdateWin.html"
     NewCoin1['TabText']="rgb(255, 255, 255)"
     NewCoin1['splash']="LoadingBitBay.png"
     NewCoin1['HaloName']="BitBay"
@@ -1484,7 +1489,7 @@ if __name__ == "__main__":
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://bitbay.market/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">http://bitbay.market/</span></a><span style=\" font-size:15px;\">  The official BitBay website</span></p>\n"
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://bitbaymarket.net/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">http://bitbaymarket.net/</span></a><span style=\" font-size:15px;\">  BitBay mirror websites</span></p>\n"
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.reddit.com/r/bitbay/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">http://www.reddit.com/r/bitbay/</span></a><span style=\" font-size:15px;\">  BitBay community subreddit</span></p>\n"
-        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.davtonia.com/blackhalo/bitbaybootstrap.zip\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">bitbaybootstrap.zip</span></a><span style=\" font-size:15px;\">  Download BitBay bootstrap.zip.</span></p>\n"
+        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://github.com/bitbaymarket/bitbay-bootstrap/releases\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">bitbaybootstrap.zip</span></a><span style=\" font-size:15px;\">  Download BitBay bootstrap.zip.</span></p>\n"
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"www.Blackhalo.info\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">www.Blackhalo.info</span></a><span style=\" font-size:15px;\">  BlackHalo, the worlds first contracting software</span></p>\n"
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"www.BitHalo.org\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">www.BitHalo.org</span></a><span style=\" font-size:15px;\">  The original BitHalo Website</span></p>\n"
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"www.NightTrader.org\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">www.NightTrader.org</span></a><span style=\" font-size:15px;\">  NightTrader decentralized exchange</span></p>\n"

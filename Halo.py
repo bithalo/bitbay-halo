@@ -99,7 +99,7 @@ try:
                     return ""
                 window.translist.append(text)
             else:
-                exec("translateThis="+window.translations[window.language][text])
+                translateThis=ast.literal_eval(window.translations[window.language][text])
                 return QtCore.QString.fromUtf8(translateThis)
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
@@ -184,11 +184,14 @@ import gc
 import socks
 import hashlib
 from yandex_translate import YandexTranslate
+import gtranslate as gtranslate2
 import struct
 import bsonjs
 #import numpy as np
 import ujson
 import mechanize
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
 try:
     from requests.adapters import HTTPAdapter
@@ -271,6 +274,7 @@ global SALT
 global RPC
 global FileSave
 global RunPython
+global TheBridgeThread
 global ThePeg
 global prevmsig
 global accounttype
@@ -279,6 +283,7 @@ global uploadnew
 global unlockpasswords
 global SilenceUI #For automating message boxes
 global langlist
+global gcodes
 global mylang
 global translations
 global UIDS
@@ -343,6 +348,10 @@ global notDownloading
 global coininfo
 global OffSetNotify
 global CoinGecko
+global YandexAPI
+global BridgeAdmin
+global BridgeDriver
+global MySettingsInfo
 
 reqsession=""
 
@@ -361,6 +370,7 @@ connection_original = socket.create_connection
 
 import inspect #So you can run from command line
 
+YandexAPI = ""
 CoinGecko = 1
 OffSetNotify = True
 coininfo = {}
@@ -375,6 +385,7 @@ TestnetPeg=False
 translations={}
 mylang="DEFAULT"
 langlist={}
+gcodes={}
 uploadnew={}
 prevmsig={'ID':'','Dir':'','mscript':'','msigaddr':'','Halo':''}
 checkbitmessage=0
@@ -432,7 +443,7 @@ mycfg='default'
 globperc=0
 globcount=0
 rescanning=0
-clientversion="2.5"
+clientversion="3.0"
 UpdateMessage=clientversion
 versioncheck=0#After we check, we set this to one
 changearray=[]
@@ -490,6 +501,9 @@ GlobalMaxInputs=''
 globliq=[]
 RunHalo=True
 lockdownload2=0
+BridgeAdmin = False
+BridgeDriver = ""
+MySettingsInfo = ""
 
 #https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list
 Coins=[]#Soon will need more variables like the minimum fee and magic byte
@@ -530,7 +544,7 @@ NewCoin['ProgressBarColor']="#545d6d"
 NewCoin['TabGradient']="qlineargradient(x1:1, y1:1, x2:1, y2:0, stop:0 #009ee3, stop: 0.4 rgba(0, 90, 177, 250), stop:1 rgb(0, 50, 100, 250))"
 NewCoin['NavBarIcon']="/images/navbar_arrow_bc.png"
 NewCoin['default market']="Halo Market"
-NewCoin['IRC']="https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#Blackcoin" #http://webchat.freenode.net?channels=BitHalo,#Blackcoin&amp;uio=OT10cnVlJjExPTIzNg6b"
+NewCoin['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#Blackcoin" #http://webchat.freenode.net?channels=BitHalo,#Blackcoin&amp;uio=OT10cnVlJjExPTIzNg6b"
 NewCoin['nodes']=["104.6.159.189","107.195.147.153","112.113.96.138","113.108.186.130","113.234.214.8","117.157.64.230","117.172.25.189","118.212.114.93","118.42.39.231","124.238.85.96","139.130.157.220","163.172.184.165","163.172.223.239","173.239.230.36","173.239.236.43","173.239.236.5","173.244.48.182","173.33.214.129","176.25.84.234","178.137.89.197","183.14.252.56","184.4.178.115","185.173.206.30","188.137.32.82","192.40.95.25","195.122.202.2","195.20.153.254","195.252.67.115","200.120.151.178","209.197.159.209","211.142.221.137","211.142.221.158","212.180.229.134","213.231.101.1","217.108.209.165","217.182.192.7","23.127.82.251","24.10.184.3","24.166.255.203","24.86.78.11","39.128.196.9","41.190.30.206","46.5.2.80","47.180.44.129","5.172.236.41","59.53.16.209","59.53.26.24","61.56.213.25","62.2.214.45","65.128.88.11","67.174.248.255","72.241.235.204","73.109.27.226","73.216.144.216","73.25.146.40","76.84.68.134","77.144.221.131","79.114.236.118","80.148.28.210","82.23.136.107","83.170.70.50","83.215.142.159","83.9.244.60","84.55.104.197","85.24.180.24","86.147.66.127","86.63.70.12","87.245.126.33","88.196.136.31","91.59.127.135","91.59.98.229","92.73.213.106","93.217.127.230","94.212.239.213","96.36.231.150","96.90.184.145"]
 NewCoin['links']=""
 NewCoin['Moderator']=0
@@ -572,7 +586,7 @@ NewCoin1['ProgressBarColor']="#a5d1e4"#545d6d
 NewCoin1['TabGradient']="qlineargradient(x1:1, y1:1, x2:1, y2:0, stop:0 #009ee3, stop: 0.4 rgba(0, 90, 177, 250), stop:1 rgb(0, 50, 100, 250))"
 NewCoin1['NavBarIcon']="/images/navbar_arrow_bay.png"
 NewCoin1['default market']="BitBay"
-NewCoin1['IRC']="https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#BitBay" #http://webchat.freenode.net?channels=BitHalo,#BitBay&amp;uio=OT10cnVlJjExPTIzNg6b"
+NewCoin1['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#BitBay" #http://webchat.freenode.net?channels=BitHalo,#BitBay&amp;uio=OT10cnVlJjExPTIzNg6b"
 NewCoin1['nodes']=["195.181.242.206","151.236.221.10","108.61.163.182", "45.79.94.206","139.162.226.144","172.104.25.65","172.104.248.46","172.105.241.170","172.104.185.75","104.236.208.150","188.166.39.223","128.199.118.67","104.255.33.162","194.135.84.161","23.227.190.163","45.56.109.7","104.172.24.79","106.187.50.153","158.69.27.82","24.37.11.106","40.112.149.192","69.254.222.98","85.25.146.74","195.181.242.206","108.61.99.30","109.200.226.214","142.44.212.178","213.231.38.119","37.120.48.130","37.139.5.225","47.97.184.125","72.199.168.135","74.222.195.230","80.7.81.121","88.180.217.67","88.90.82.209","92.110.86.245","94.193.173.249","95.216.45.141","98.214.246.87","104.237.4.26","108.46.55.204","109.86.81.235","109.88.194.34","116.240.94.131","157.52.132.37","212.200.52.123","217.121.36.200","68.198.145.62","69.250.107.102","76.201.148.44","77.0.188.237","77.8.93.125","86.130.87.94","92.14.229.173","108.46.151.50","108.61.163.182","110.140.74.185","116.203.21.198","139.162.226.144","172.104.185.75","172.105.241.170","45.79.94.206","5.189.144.187","51.254.49.230","67.44.176.225","80.4.51.126","91.121.217.70","91.207.172.123","212.24.97.214","108.249.214.97","151.64.22.175","173.239.93.120","173.77.163.177","183.106.37.96","185.183.107.172","185.183.107.174","185.244.212.20","192.30.89.67","193.37.253.101","194.59.251.111","195.206.183.167","213.154.231.39","213.213.219.80","213.231.7.146","216.46.43.58","217.146.82.134","27.187.73.203","37.235.55.13","46.9.176.176","5.62.49.34","70.93.174.250","73.149.189.82","79.198.237.182","80.107.189.226","82.12.99.226","82.17.115.47","82.207.237.17","82.28.11.95","84.151.167.24","86.126.2.173","88.212.55.252","92.14.27.81","93.201.111.175","94.197.120.101"]
 #NewCoin1['nodes']=["104.172.24.79","104.200.154.17","106.187.50.153","149.12.14.174","158.69.27.82","188.123.16.129","198.74.56.141","217.25.213.221","217.25.213.224","217.25.213.238","23.105.132.100","24.37.11.106","37.110.214.70","40.112.149.192","45.56.109.7","5.71.234.101","50.41.194.116","50.41.197.104","50.41.197.146","50.41.197.167","50.41.197.171","50.41.198.128","50.41.198.32","50.41.198.58","50.41.198.60","50.41.201.69","51.255.64.57","69.254.222.98","78.98.122.3","80.39.197.10","83.128.183.212","85.25.146.74","94.137.30.246","95.153.32.38","98.113.150.90","104.237.2.192","108.61.10.90","213.226.252.45","91.158.109.188","159.203.184.167","162.216.46.117","104.236.208.150", "195.181.242.206", "188.166.39.223","128.199.118.67", "104.255.33.162", "194.135.84.161", "23.227.190.163", "201.166.110.218", "100.15.228.230", "104.237.4.33", "104.238.169.110", "104.238.169.120", "104.245.111.33", "104.6.159.189", "107.132.230.195", "107.15.192.58", "107.218.48.181", "108.200.103.205", "108.213.70.198", "108.214.8.13", "108.241.58.211", "108.248.114.128", "109.173.159.100", "110.140.43.184", "113.59.202.53", "116.15.203.21", "120.147.146.11", "120.55.51.151", "121.221.56.199", "123.231.125.91", "124.178.155.6", "132.198.204.255", "135.23.125.66", "144.217.215.134", "146.255.175.131", "147.30.87.116", "151.80.186.24", "169.0.109.203", "173.170.105.150", "173.239.236.61", "173.239.236.94", "173.239.240.39", "173.54.212.190", "174.26.159.221", "174.79.110.140", "176.11.27.206", "176.11.93.220", "176.228.218.17", "178.63.60.137", "179.57.114.240", "184.64.97.156", "185.11.108.170", "185.156.173.238", "185.156.173.248", "185.9.19.122", "188.113.203.196", "188.113.215.180", "188.113.217.172", "188.163.104.86", "188.165.203.89", "188.192.142.76", "188.230.151.241", "190.192.28.46", "190.72.246.166", "193.1.218.163", "193.80.38.164", "195.181.242.206", "201.166.110.183", "201.247.142.137", "208.157.168.106", "209.146.252.226", "209.6.92.112", "213.152.161.117", "216.67.74.89", "216.67.81.213", "217.21.201.135", "217.238.19.76", "217.39.127.111", "217.64.127.165", "24.21.46.228", "24.45.24.83", "24.57.212.150", "31.204.150.109", "31.204.152.200", "31.204.152.221", "31.204.153.46", "37.201.224.214", "37.228.224.103", "40.112.149.192", "46.39.243.165", "46.46.205.96", "5.189.156.99", "5.56.189.65", "5.62.41.4", "5.63.151.76", "50.240.204.70", "50.27.176.50", "50.27.236.224", "50.41.205.218", "51.254.45.117", "51.7.236.38", "51.7.254.211", "52.232.33.38", "58.96.240.42", "60.242.23.7", "62.178.40.4", "67.173.120.250", "67.230.49.214", "67.240.19.66", "68.100.192.184", "68.149.125.18", "68.46.238.155", "70.64.11.206", "71.245.121.203", "71.84.137.92", "72.169.81.141", "72.207.104.55", "72.22.148.78", "72.22.150.82", "72.238.5.0", "72.239.0.57", "72.48.127.219", "73.143.247.58", "73.162.63.60", "73.172.109.27", "73.202.23.41", "73.203.20.134", "73.241.114.206", "73.241.24.24", "73.25.146.40", "73.254.226.126", "73.76.129.232", "75.83.248.12", "76.125.29.166", "76.169.57.92", "76.29.66.137", "77.255.88.179", "77.255.92.80", "77.68.215.200", "79.69.139.140", "79.74.70.117", "79.75.39.24", "79.75.61.162", "80.101.212.164", "80.180.42.224", "80.229.17.69", "81.184.121.12", "82.101.198.115", "82.129.122.26", "82.217.167.158", "82.240.188.161", "82.41.55.9", "83.8.64.20", "84.240.71.197", "84.250.171.240", "85.170.176.192", "85.241.113.249", "85.25.146.74", "86.150.38.55", "86.167.182.70", "86.176.147.48", "88.114.185.201", "90.191.207.180", "92.1.234.190", "92.237.123.47", "93.194.192.28", "93.242.44.146", "94.212.36.91", "94.46.175.222", "95.34.149.205", "96.246.242.21", "98.145.4.235", "98.242.37.243", "99.238.244.2", "99.66.221.203", "1.129.109.58","100.2.93.10","104.223.25.122","108.190.240.82","110.140.93.40","113.59.203.138","121.7.251.133","124.29.237.241","14.200.165.55","144.217.72.204","145.130.170.169","146.198.52.2","154.57.227.227","162.72.254.164","172.111.155.214","172.56.12.106","172.56.12.184","172.56.12.212","172.56.12.221","172.56.13.152","172.56.13.189","172.56.13.31","172.56.6.52","172.56.7.127","173.22.3.50","173.239.236.85","174.69.221.184","176.24.209.169","176.27.192.166","184.14.108.222","184.55.176.66","184.6.74.147","184.98.164.92","185.161.201.13","188.113.197.220","188.113.197.236","188.113.213.212","188.113.215.236","188.241.58.126","188.6.131.67","190.20.105.78","190.20.140.160","194.72.180.68","195.113.111.18","196.11.63.162","196.53.32.11","203.57.210.108","204.228.139.246","208.54.80.130","208.54.80.131","212.197.143.196","212.3.195.175","24.10.135.27","24.176.251.84","24.225.204.112","24.234.86.102","24.242.103.47","31.52.213.184","36.232.141.220","37.136.11.61","39.109.134.176","45.28.140.116","46.208.58.217","46.233.215.30","46.235.32.6","46.4.37.190","5.198.101.104","50.41.223.118","51.7.254.198","62.57.193.29","65.95.224.6","67.165.94.226","67.183.29.189","68.197.208.77","69.197.188.186","69.203.109.7","69.55.254.61","70.119.124.134","70.122.32.5","70.71.157.109","71.197.52.238","72.199.168.135","72.22.151.109","72.70.60.136","73.212.89.38","73.222.225.197","73.54.180.205","73.66.212.224","73.76.16.176","75.100.38.214","76.23.184.131","76.69.65.236","77.172.214.202","78.124.25.100","78.132.17.232","78.132.69.249","78.20.105.124","79.169.12.17","79.31.132.209","79.75.35.83","80.122.24.98","80.215.210.252","81.99.72.84","82.1.131.229","82.20.109.111","82.25.54.171","82.33.136.156","82.33.203.110","85.164.9.224","85.214.140.15","85.229.153.141","86.152.216.229","86.22.249.27","88.106.105.181","88.165.92.58","88.169.109.52","89.162.20.164","89.247.193.105","89.64.11.38","89.64.13.222","92.15.203.251","93.193.46.60","95.211.199.131","95.211.95.246","96.232.82.36","98.16.141.39","98.194.66.113","99.20.141.243","94.102.52.66","80.82.64.64","107.218.48.181","108.61.163.182","108.61.99.30","110.140.136.223","115.189.87.188","124.148.154.249","13.88.29.127","139.162.226.144","151.229.82.253","152.0.255.216","171.112.186.7","172.104.185.75","172.105.241.170","173.239.222.132","173.239.226.8","173.249.21.191","174.50.118.218","174.65.17.23","178.78.92.212","184.64.223.125","185.163.111.252","195.181.242.206","210.84.54.238","213.122.117.130","24.214.124.183","24.96.192.15","45.79.94.206","46.4.37.190","5.189.164.59","5.79.102.19","50.203.99.102","50.37.21.201","51.254.49.230","68.46.238.155","70.119.124.134","71.105.34.144","72.227.170.97","73.8.31.127","74.101.0.66","77.56.58.236","79.230.56.27","79.66.224.67","79.67.93.131","80.4.51.126","85.229.154.208","85.25.146.74","94.130.64.143","107.218.48.181","108.61.163.182","108.61.99.30","110.140.136.223","115.189.87.188","124.148.154.249","13.88.29.127","139.162.226.144","151.229.82.253","152.0.255.216","171.112.186.7","172.104.185.75","172.105.241.170","173.239.222.132","173.239.226.8","173.249.21.191","174.50.118.218","174.65.17.23","178.78.92.212","184.64.223.125","185.163.111.252","195.181.242.206","210.84.54.238","213.122.117.130","24.96.192.15","45.79.94.206","46.4.37.190","5.189.164.59","5.79.102.19","50.203.99.102","50.37.21.201","51.254.49.230","68.46.238.155","70.119.124.134","71.105.34.144","72.227.170.97","73.8.31.127","74.101.0.66","77.56.58.236","79.230.56.27","79.66.224.67","79.67.93.131","80.4.51.126","85.229.154.208","85.25.146.74","94.130.64.143"]#The last 6 up until 201.166.110.218 are original/expired seed nodes and home node appended afterwards is chainz nodes, the ones prior are also from chainz ##Reliable nodes are "40.112.149.192", "195.181.242.206"
 NewCoin1['links']=("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -639,7 +653,7 @@ NewCoin2['ProgressBarColor']="#545d6d"
 NewCoin2['TabGradient']="qlineargradient(x1:1, y1:1, x2:1, y2:0, stop:0 #009ee3, stop: 0.4 rgba(0, 90, 177, 250), stop:1 rgb(0, 50, 100, 250))"
 NewCoin2['NavBarIcon']="/images/navbar_arrow.png"
 NewCoin2['default market']="Halo Market"
-NewCoin2['IRC']="https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#Blackcoin"#http://webchat.freenode.net?channels=BitHalo,#Blackcoin&amp;uio=OT10cnVlJjExPTIzNg6b"
+NewCoin2['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#Blackcoin"#http://webchat.freenode.net?channels=BitHalo,#Blackcoin&amp;uio=OT10cnVlJjExPTIzNg6b"
 NewCoin2['nodes']=["104.6.159.189","107.195.147.153","112.113.96.138","113.108.186.130","113.234.214.8","117.157.64.230","117.172.25.189","118.212.114.93","118.42.39.231","124.238.85.96","139.130.157.220","163.172.184.165","163.172.223.239","173.239.230.36","173.239.236.43","173.239.236.5","173.244.48.182","173.33.214.129","176.25.84.234","178.137.89.197","183.14.252.56","184.4.178.115","185.173.206.30","188.137.32.82","192.40.95.25","195.122.202.2","195.20.153.254","195.252.67.115","200.120.151.178","209.197.159.209","211.142.221.137","211.142.221.158","212.180.229.134","213.231.101.1","217.108.209.165","217.182.192.7","23.127.82.251","24.10.184.3","24.166.255.203","24.86.78.11","39.128.196.9","41.190.30.206","46.5.2.80","47.180.44.129","5.172.236.41","59.53.16.209","59.53.26.24","61.56.213.25","62.2.214.45","65.128.88.11","67.174.248.255","72.241.235.204","73.109.27.226","73.216.144.216","73.25.146.40","76.84.68.134","77.144.221.131","79.114.236.118","80.148.28.210","82.23.136.107","83.170.70.50","83.215.142.159","83.9.244.60","84.55.104.197","85.24.180.24","86.147.66.127","86.63.70.12","87.245.126.33","88.196.136.31","91.59.127.135","91.59.98.229","92.73.213.106","93.217.127.230","94.212.239.213","96.36.231.150","96.90.184.145"]
 NewCoin2['links']=""
 NewCoin2['Moderator']=0
@@ -655,8 +669,14 @@ app = QtGui.QApplication(sys.argv)
 #gstrans = goslate.Goslate()
 #googlelanglist={u'gu': u'Gujarati', u'zh-TW': u'Chinese (Traditional)', u'ga': u'Irish', u'gl': u'Galician', u'la': u'Latin', u'lo': u'Lao', u'tr': u'Turkish', u'lv': u'Latvian', u'lt': u'Lithuanian', u'th': u'Thai', u'tg': u'Tajik', u'te': u'Telugu', u'ta': u'Tamil', u'yi': u'Yiddish', u'ceb': u'Cebuano', u'yo': u'Yoruba', u'de': u'German', u'da': u'Danish', u'el': u'Greek', u'eo': u'Esperanto', u'en': u'English', u'zh': u'Chinese', u'eu': u'Basque', u'et': u'Estonian', u'es': u'Spanish',u'ru': u'Russian', u'zh-CN': u'Chinese (Simplified)', u'ro': u'Romanian', u'be': u'Belarusian', u'bg': u'Bulgarian', u'ms': u'Malay', u'bn': u'Bengali', u'jw':u'Javanese', u'bs': u'Bosnian', u'ja': u'Japanese', u'ca': u'Catalan', u'cy': u'Welsh', u'cs': u'Czech', u'pt': u'Portuguese', u'tl': u'Filipino', u'pa': u'Punjabi', u'vi': u'Vietnamese', u'pl': u'Polish', u'hy': u'Armenian', u'hr': u'Croatian', u'ht': u'Haitian Creole', u'hu': u'Hungarian', u'hmn': u'Hmong', u'hi': u'Hindi', u'ha': u'Hausa', u'mg': u'Malagasy', u'uz': u'Uzbek', u'ml': u'Malayalam', u'mn': u'Mongolian', u'mi': u'Maori', u'mk': u'Macedonian', u'ur': u'Urdu', u'mt': u'Maltese', u'uk': u'Ukrainian', u'mr': u'Marathi', u'my': u'Myanmar (Burmese)', u'af': u'Afrikaans', u'sw': u'Swahili', u'is': u'Icelandic', u'it': u'Italian', u'iw': u'Hebrew', u'kn': u'Kannada', u'ar': u'Arabic', u'km': u'Khmer', u'zu': u'Zulu', u'az': u'Azerbaijani', u'id': u'Indonesian', u'ig': u'Igbo', u'nl': u'Dutch', u'no': u'Norwegian', u'ne': u'Nepali', u'ny': u'Chichewa', u'fr': u'French', u'fa': u'Persian', u'fi': u'Finnish', u'ka': u'Georgian', u'kk': u'Kazakh', u'sr': u'Serbian', u'sq': u'Albanian', u'ko': u'Korean', u'sv': u'Swedish', u'su': u'Sundanese', u'st': u'Sesotho', u'sk': u'Slovak', u'si': u'Sinhala', u'so': u'Somali', u'sl': u'Slovenian'}
 #yandexlanglist2={'gu': 'Gujarati', 'gd': 'Scottish', 'ga': 'Irish', 'gl': 'Galician', 'lb': 'Luxembourgish', 'la': 'Latin', 'tt': 'Tatar', 'tr': 'Turkish', 'lv': 'Latvian', 'tl': 'Tagalog', 'th': 'Thai', 'tg': 'Tajik', 'te': 'Telugu', 'ta': 'Tamil', 'yi':'Yiddish', 'ceb': 'Cebuano', 'de': 'German', 'da': 'Danish', 'mhr': 'Mari', 'el': 'Greek', 'eo': 'Esperanto', 'en': 'English', 'zh': 'Chinese', 'eu': 'Basque','et': 'Estonian', 'es': 'Spanish', 'ru': 'Russian', 'ro': 'Romanian', 'jv': 'Javanese', 'be': 'Belarusian', 'bg': 'Bulgarian', 'ba': 'Bashkir', 'bn': 'Bengali','bs': 'Bosnian', 'ja': 'Japanese', 'ms': 'Malay', 'udm': 'Udmurt', 'xh': 'Xhosa', 'ca': 'Catalan', 'cy': 'Welsh', 'cs': 'Czech', 'pt': 'Portuguese', 'lt': 'Lithuanian', 'pa': 'Punjabi', 'pl': 'Polish', 'hy': 'Armenian', 'hr': 'Croatian', 'ht': 'Haitian(Creole)', 'hu': 'Hungarian', 'hi': 'Hindi', 'he': 'Hebrew', 'mg':'Malagasy', 'uz': 'Uzbek', 'ml': 'Malayalam', 'mn': 'Mongolian', 'mi': 'Maori','mk': 'Macedonian', 'ur': 'Urdu', 'mt': 'Maltese', 'uk': 'Ukrainian', 'mr': 'Marathi', 'af': 'Afrikaans', 'vi': 'Vietnamese', 'is': 'Icelandic', 'am': 'Amharic', 'it': 'Italian', 'sv': 'Swedish', 'ar': 'Arabic', 'az': 'Azerbaijan', 'id': 'Indonesian', 'pap': 'Papiamento', 'nl': 'Dutch', 'no': 'Norwegian', 'ne': 'Nepali', 'fr': 'French', 'fa': 'Persian', 'fi': 'Finnish', 'ka': 'Georgian', 'kk': 'Kazakh', 'sr': 'Serbian', 'sq': 'Albanian', 'ko': 'Korean', 'kn': 'Kannada', 'su':'Sundanese', 'sk': 'Slovakian', 'si': 'Sinhala', 'mrj': 'Hill-Mari', 'sl': 'Slovenian', 'ky': 'Kyrgyz', 'sw': 'Swahili'}
+
+#Yandex now charges for API access. So now only if the user has a key should it be used. Otherwise google translate for translations that aren't bulk
+
 gstrans = YandexTranslate('trnsl.1.1.20170227T075822Z.710cc070687ef49d.4773b96b2fa3e9cea7df423e9ab798c58d504036')
-langlist={'en-nl': 'Dutch', 'en-no': 'Norwegian', 'en-th': 'Thai', 'en-ne': 'Nepali', 'en-af': 'Afrikaans', 'en-am': 'Amharic', 'en-yi': 'Yiddish', 'en-ar': 'Arabic', 'en-jv': 'Javanese', 'en-pt': 'Portuguese', 'en-az': 'Azerbaijan', 'en-pl': 'Polish', 'en-id': 'Indonesian', 'en-pa': 'Punjabi', 'en-it': 'Italian', 'en-is': 'Icelandic', 'en-uk': 'Ukrainian', 'en-xh': 'Xhosa', 'en-lv': 'Latvian', 'en-lt': 'Lithuanian', 'en-lb': 'Luxembourgish', 'en-la': 'Latin', 'en-ga': 'Irish', 'en-gd': 'Scottish', 'en-ka': 'Georgian', 'en-gl': 'Galician', 'en-gu': 'Gujarati', 'en-kk': 'Kazakh', 'en-vi': 'Vietnamese', 'en-pap': 'Papiamento', 'en-fa': 'Persian', 'en-fi': 'Finnish', 'en-fr': 'French', 'en-uz': 'Uzbek', 'en-ja': 'Japanese', 'en-ur': 'Urdu', 'en-bs': 'Bosnian', 'en-bn': 'Bengali', 'en-be': 'Belarusian', 'en-bg': 'Bulgarian', 'en-ba': 'Bashkir', 'en-mhr': 'Mari', 'en-el': 'Greek','en': 'English', 'en-eo': 'Esperanto', 'en-ca': 'Catalan', 'en-et': 'Estonian', 'en-eu': 'Basque', 'en-mr': 'Marathi', 'en-ms': 'Malay', 'en-mt': 'Maltese','en-tt': 'Tatar', 'en-tr': 'Turkish', 'en-tl': 'Tagalog', 'en-mg': 'Malagasy', 'en-tg': 'Tajik', 'en-mi': 'Maori', 'en-te': 'Telugu', 'en-mk': 'Macedonian', 'en-ml': 'Malayalam', 'en-mn': 'Mongolian', 'en-es': 'Spanish', 'en-de': 'German','en-da': 'Danish', 'en-ceb': 'Cebuano', 'en-sl': 'Slovenian', 'en-sk': 'Slovakian', 'en-he': 'Hebrew', 'en-si': 'Sinhala', 'en-hi': 'Hindi', 'en-hr': 'Croatian', 'en-hu': 'Hungarian', 'en-ht': 'Haitian(Creole)', 'en-sv': 'Swedish', 'en-sw': 'Swahili', 'en-hy': 'Armenian', 'en-su': 'Sundanese', 'en-sr': 'Serbian', 'en-sq': 'Albanian', 'en-ro': 'Romanian', 'en-cy': 'Welsh', 'en-kn': 'Kannada', 'en-ko': 'Korean', 'en-cs': 'Czech', 'en-ru': 'Russian', 'en-ky': 'Kyrgyz', 'en-udm': 'Udmurt', 'en-ta': 'Tamil', 'en-mrj': 'Hill-Mari', 'en-zh': 'Chinese'}
+langlist={'en-nl': 'Dutch', 'en-no': 'Norwegian', 'en-th': 'Thai', 'en-ne': 'Nepali', 'en-af': 'Afrikaans', 'en-yi': 'Yiddish', 'en-ar': 'Arabic', 'en-jv': 'Javanese', 'en-pt': 'Portuguese', 'en-pl': 'Polish', 'en-id': 'Indonesian', 'en-pa': 'Punjabi', 'en-it': 'Italian', 'en-is': 'Icelandic', 'en-uk': 'Ukrainian', 'en-lv': 'Latvian', 'en-lt': 'Lithuanian', 'en-la': 'Latin', 'en-ga': 'Irish', 'en-ka': 'Georgian', 'en-gl': 'Galician', 'en-gu': 'Gujarati', 'en-kk': 'Kazakh', 'en-vi': 'Vietnamese', 'en-fa': 'Persian', 'en-fi': 'Finnish', 'en-fr': 'French', 'en-uz': 'Uzbek', 'en-ja': 'Japanese', 'en-ur': 'Urdu', 'en-bs': 'Bosnian', 'en-bn': 'Bengali', 'en-be': 'Belarusian', 'en-bg': 'Bulgarian', 'en-el': 'Greek','en': 'English', 'en-eo': 'Esperanto', 'en-ca': 'Catalan', 'en-et': 'Estonian', 'en-eu': 'Basque', 'en-mr': 'Marathi', 'en-ms': 'Malay', 'en-mt': 'Maltese', 'en-tr': 'Turkish', 'en-mg': 'Malagasy', 'en-tg': 'Tajik', 'en-mi': 'Maori', 'en-te': 'Telugu', 'en-mk': 'Macedonian', 'en-ml': 'Malayalam', 'en-mn': 'Mongolian', 'en-es': 'Spanish', 'en-de': 'German','en-da': 'Danish', 'en-ceb': 'Cebuano', 'en-sl': 'Slovenian', 'en-he': 'Hebrew', 'en-si': 'Sinhala', 'en-hi': 'Hindi', 'en-hr': 'Croatian', 'en-hu': 'Hungarian', 'en-sv': 'Swedish', 'en-sw': 'Swahili', 'en-hy': 'Armenian', 'en-su': 'Sundanese', 'en-sr': 'Serbian', 'en-sq': 'Albanian', 'en-ro': 'Romanian', 'en-cy': 'Welsh', 'en-kn': 'Kannada', 'en-ko': 'Korean', 'en-cs': 'Czech', 'en-ru': 'Russian', 'en-ta': 'Tamil', 'en-zh': 'Chinese'}
+gcodes={'Turkish': u'tr', 'Swedish': u'sv', 'Icelandic': u'is', 'Estonian': u'et', 'Telugu': u'te', 'Vietnamese': u'vi', 'Marathi': u'mr', 'Javanese': u'jw', 'Slovenian': u'sl', 'Gujarati': u'gu', 'Catalan': u'ca', 'Hindi': u'hi', 'Dutch': u'nl','Russian': u'ru', 'Korean': u'ko', 'Swahili': u'sw', 'Malagasy': u'mg', 'Danish': u'da', 'Indonesian': u'id', 'Latin': u'la', 'Croatian': u'hr', 'Ukrainian': u'uk', 'Welsh': u'cy', 'Bosnian': u'bs', 'Georgian': u'ka', 'Lithuanian': u'lt', 'Malay': u'ms', 'French': u'fr', 'Norwegian': u'no', 'Bengali': u'bn', 'Armenian': u'hy', 'Romanian': u'ro', 'Maltese': u'mt', 'Thai': u'th', 'Afrikaans': u'af','Kazakh': u'kk', 'Albanian': u'sq', 'Cebuano': u'ceb', 'Mongolian': u'mn', 'Nepali': u'ne', 'Finnish': u'fi', 'Uzbek': u'uz', 'Sundanese': u'su', 'Punjabi': u'pa', 'Spanish': u'es', 'Bulgarian': u'bg', 'Greek': u'el', 'Maori': u'mi', 'Latvian': u'lv', 'English': u'en', 'Malayalam': u'ml', 'Serbian': u'sr', 'Esperanto': u'eo', 'Italian': u'it', 'Portuguese': u'pt', 'Irish': u'ga', 'Czech': u'cs','Hungarian': u'hu', 'Chinese': u'zh', 'German': u'de', 'Tamil': u'ta', 'Japanese': u'ja', 'Belarusian': u'be', 'Kannada': u'kn', 'Galician': u'gl', 'Macedonian': u'mk', 'Persian': u'fa', 'Tajik': u'tg', 'Yiddish': u'yi', 'Hebrew': u'iw', 'Basque': u'eu', 'Urdu': u'ur', 'Polish': u'pl', 'Arabic': u'ar', 'Sinhala': u'si'}
+#Languages that are in Yandex but not Google:
+#extras={'en-am': 'Amharic','en-az': 'Azerbaijan','en-xh': 'Xhosa','en-lb': 'Luxembourgish','en-gd': 'Scottish','en-pap': 'Papiamento','en-ba': 'Bashkir','en-mhr': 'Mari','en-tt': 'Tatar','en-tl': 'Tagalog','en-sk': 'Slovakian','en-ht': 'Haitian(Creole)','en-ky': 'Kyrgyz','en-udm': 'Udmurt','en-mrj': 'Hill-Mari'}
 
 #Some systems have trouble loading Qt4 jpg plugin, so the workaround for now is to convert them to PNG using PIL
 def ConvertImage(img,filetype="base64",returnpixmap=True):
@@ -697,9 +717,12 @@ try:
         f.close()
 except:
     pass
+notifybuild = 0
 try:
     with open(os.path.join(application_path,"Halo.cfg"),'r') as f:
         line=f.readline().strip()
+        if "#Approved#" not in line:
+            notifybuild = line
         try:
             debug=int(line.split('#Debug#')[1].split('#')[0])
         except:
@@ -814,11 +837,15 @@ global HaloRPC
 xmlrpclib.Marshaller.dispatch[type(0L)] = lambda _, v, w: w("<value><i8>%d</i8></value>" % v)
 try:#Test to see if its already running we can send it a command to show itself
     HaloRPC = xmlrpclib.ServerProxy('http://localhost:55779')
+    socket.setdefaulttimeout(10)   
     HaloRPC.ShowHalo("password")
     sys.exit(1)
     #s.system.listMethods()
 except Exception, e:
-    pass
+    try:
+        socket.setdefaulttimeout(None) 
+    except:
+        pass
 cntme=0
 try:
     for directory in os.environ["PATH"].split(":"):
@@ -877,12 +904,45 @@ if os.name == 'nt' and MacWine == 0:
         QtGui.QMessageBox.information(msbx, "Halo", "Halo was already running or it was not a clean exit. The software has now cleaned up from the previous run. Please restart the client.")
         sys.exit(-1)
 
+if os.path.exists(os.path.join(application_path,"YandexAPI.txt")):
+    with open(os.path.join(application_path,"YandexAPI.txt"),'r') as f:
+        apikey=f.readline().strip()
+        gstrans = YandexTranslate(apikey)
+        YandexAPI = apikey
+if os.path.exists(os.path.join(application_path,"cacert.pem")):
+    os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(application_path,"cacert.pem")
+
 #if not isUserAdmin():
 #    runAsAdmin()
 #    from tendo import singleton
-#    #sington exits immediately... otherwise it notifies is twice. So to clean up on crashes we make a file that gets deleted on exit.
+#    #singleton exits immediately... otherwise it notifies if twice. So to clean up on crashes we make a file that gets deleted on exit.
 #    me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
 
+def messagebox(text, text2, text3):
+    msgBox = QtGui.QMessageBox()
+    msgBox.setWindowTitle(CoinSelect['HaloName'])
+    msgBox.setWindowIcon(QtGui.QIcon(application_path+'/images/' + CoinSelect['HaloName'] + '.png'))
+
+    if CoinSelect['moderngui']==1:
+        qss_main = open(application_path+'/gui/styles/bay/messagebox.css', 'r')
+        msgBox.setStyleSheet(qss_main.read()+"\nQMessageBox {background-color:#ffffff;}")
+    msgBox.setText(text)
+    msgBox.addButton(QtGui.QPushButton(text2), QtGui.QMessageBox.YesRole)
+    msgBox.addButton(QtGui.QPushButton(text3), QtGui.QMessageBox.YesRole)
+    response = msgBox.exec_()
+    return response
+res=0
+if notifybuild!=0 and CoinSelect['name'] != "BitBay":
+    if CoinSelect['name'] == "Bitcoin":
+        res=1
+    else:
+        res=messagebox(CoinSelect['daemon'] + " was not built by the Halo dev. Instead, it was taken from the official project release page. For the best security you can build the software yourself. Would you like to launch " + CoinSelect['name'] + "?" + " If you cancel, you can compile your own build and restart the software.","Proceed","Cancel")
+        if res==0:
+            with open(os.path.join(application_path,"Halo.cfg"), 'a+') as f:
+                f.write("#Approved#")
+                f.flush()
+                os.fsync(f)
+                f.close()
 #Windows
 if os.name == 'nt':
     startupinfo = subprocess.STARTUPINFO()
@@ -890,7 +950,10 @@ if os.name == 'nt':
     startupinfo.wShowWindow = subprocess._subprocess.SW_HIDE
     import win32process
     try:#We used to add the command -addnode=127.0.0.1 but got many instances of misbehaving
-        BlackHalo=subprocess.Popen(CoinSelect['daemon']+'.exe -port='+CoinSelect['port']+' -rpcport='+CoinSelect['rpcport']+' -datadir="'+sdir+'"',creationflags=win32process.CREATE_NO_WINDOW)#stdout=PIPE, stderr=PIPE
+        if res==0:
+            BlackHalo=subprocess.Popen(CoinSelect['daemon']+'.exe -port='+CoinSelect['port']+' -rpcport='+CoinSelect['rpcport']+' -datadir="'+sdir+'"',creationflags=win32process.CREATE_NO_WINDOW)#stdout=PIPE, stderr=PIPE
+        else:
+            BlackHalo=None
         BitMHalo=subprocess.Popen(("BitMHalo.exe path="+application_path),creationflags=win32process.CREATE_NO_WINDOW)# shell=True)#stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
         #BitMHalo=subprocess.Popen(("BitMHalo.py path="+application_path),shell=True)
     except:
@@ -902,7 +965,10 @@ else:
     #The frozen package can have issues finding the requests certificates so just fix it this way
     os.environ["REQUESTS_CA_BUNDLE"] = application_path + "/cacert.pem"
     try:
-        BlackHalo=subprocess.Popen([application_path+"/"+CoinSelect['daemon'], "-port="+CoinSelect['port'], "-rpcport="+CoinSelect['rpcport'], "-datadir="+sdir])
+        if res==0:
+            BlackHalo=subprocess.Popen([application_path+"/"+CoinSelect['daemon'], "-port="+CoinSelect['port'], "-rpcport="+CoinSelect['rpcport'], "-datadir="+sdir])
+        else:
+            BlackHalo=None
         BitMHalo=subprocess.Popen([application_path+"/BitMHalo", "path="+application_path])
     except:
         traceback.print_exc()
@@ -1436,22 +1502,23 @@ def Reconnect(rescan=0):#Sometimes the daemon disconnects after a while. The cau
     global sdir
     global rescanning
     global disconnected
-    byebye=procs[1]
-    try:#clean exit if we can
-        if os.name == 'nt':
-            subprocess.Popen(CoinSelect['daemon']+'.exe -port='+CoinSelect['port']+' -rpcport='+CoinSelect['rpcport']+' -datadir="'+sdir+'"'+' stop',creationflags=win32process.CREATE_NO_WINDOW)#stdout=PIPE, stderr=PIPE
-        else:
-            subprocess.Popen([application_path+"/"+CoinSelect['daemon'], "-port="+CoinSelect['port'], "-rpcport="+CoinSelect['rpcport'], "-datadir="+sdir], " stop")
-    except:
-        pass
-    time.sleep(3)
-    try:
-        byebye.terminate()
-        time.sleep(.1)
-        byebye.kill()
-    except:
-        pass
-    time.sleep(3)
+    if BlackHalo != None:
+        byebye=procs[1]    
+        try:#clean exit if we can
+            if os.name == 'nt':
+                subprocess.Popen(CoinSelect['daemon']+'.exe -port='+CoinSelect['port']+' -rpcport='+CoinSelect['rpcport']+' -datadir="'+sdir+'"'+' stop',creationflags=win32process.CREATE_NO_WINDOW)#stdout=PIPE, stderr=PIPE
+            else:
+                subprocess.Popen([application_path+"/"+CoinSelect['daemon'], "-port="+CoinSelect['port'], "-rpcport="+CoinSelect['rpcport'], "-datadir="+sdir], " stop")
+        except:
+            pass
+        time.sleep(3)
+        try:
+            byebye.terminate()
+            time.sleep(.1)
+            byebye.kill()
+        except:
+            pass
+        time.sleep(3)
     if disconnected == 1:#If its an RPC thing lets give it more time
         time.sleep(30)
     try:
@@ -1534,8 +1601,11 @@ def kill_subprocesses():
 
     time.sleep(0.3)
     for proc in procs:
-        if proc.poll() == None:
-            proc.kill()
+        try:
+            if proc.poll() == None:
+                proc.kill()
+        except:
+            pass
 #IRCMHalo=subprocess.Popen("IRCMHalo.py", shell=True)
 
 #Custom Main program loop... I'm old school like that
@@ -1737,6 +1807,8 @@ def Loop():
         AdvanceArray['InboxCleanTime']=time.time()
     if 'MySettings' not in AdvanceArray:
         AdvanceArray['MySettings']={'Proxy':'', 'AntiLogger':False, 'ManualLogin':False, 'ClearLocation':False, 'FilterOther':False, 'CreateDebug':False, 'Staking':False, 'ColdStake':'', 'PeggingVote':0, 'Voting':[]}
+    if 'bridgedb' not in AdvanceArray:
+        AdvanceArray['bridgedb']=ThePeg.Pegdatabase['bridgedb']
     MySettings.Load()
     AdvanceArray['clearnotxid']=1
     if 'StakingAccounts' not in AdvanceArray:
@@ -1823,8 +1895,10 @@ class PegThread(QtCore.QThread):
         self.Pegdatabase['startingblock']=1807400#1684900
         self.Pegdatabase['blockcount']=self.Pegdatabase['startingblock']#The count is for the block we don't have yet
         self.Pegdatabase['votesblockcount']=self.Pegdatabase['startingblock']#The count is for the block we don't have yet
+        self.Pegdatabase['votesblockcount2']=self.Pegdatabase['startingblock']
         self.Pegdatabase['supply']=0 #Measured in steps of 1% away from 100%
         self.Pegdatabase['votedata']={}#{'1684900':[0,0,0]}
+        self.Pegdatabase['votedata2']={}
         self.Pegdatabase['votecycle']=0
         self.Pegdatabase['prevhashes']=[]#Holds data about previous hashes
         #If needed, special accounts for exchanges can be activated
@@ -1878,7 +1952,28 @@ class PegThread(QtCore.QThread):
         #Eventually consider stronger defense for exhausting mempools
         #If the account pools becomes activated, then the software needs to have protocols to adjust liquidity every time something is deducted from a pool.
         #Also the system should prepare to check transactions planned in advance such as double deposit being aware that orders can become expired on liquidity change.
-        #The solution to this might be to simply send the tx1 or tx2 before negotiations ensuring the liquidity is not changed in proportion during pruning
+        
+        #Bridge and voting system:
+        #To add a bridge the address will refer to the BitBay data contract
+        self.testthis=1
+        self.Pegdatabase['bridgedb'] = {'TrustedStakers1':["bNgmCcxPKgQQqUe6rhNtbGWowMJFCuxjZ3", "bEfg9bMLSgmjB5TDiur9FscZij4XXrd8C5", "bTuZboysrngsaqJvRj4db4CV2Qa21Q5Jcb", "bMvqdtSZtxDDBEj6NBHAg38iCdvmFwALix", "bJvBcHh45A6mjfKhy8Qg9AagbWfHWB1abC", "bN2NGi2bF1cpcQcsxmY4daCpi2tQqW5tnS", "bS4MGJKwN3vWCSgmsmYfXoJzS3QHPCRtcB", "BJLZ29gAk9aGW9HoAnsEzqmWp6BX7tZEN8", "bP66u6L53PmFppSszfDnUN7dBh6jeNw1uJ", "B8FqutWoHU6ixFxceZDkqvWARLERuTc4DL"],'TrustedStakers2':["bZ8sJgk1VsgbNcqUqBY5hNR9kMaJ5kksEG","bYf1uCCEc4Ge5juuHntYpJvuZ6L6fkqc9w","bYCwwHbSGo85k86Bd5S7drLQ2m1EnUcqTq","bURCwQiJhTSX2JA72LmPwCG3vF9zCpPB6J","bUjrA5QmFntnGABYfeaHbSf5QKF1ptmztr","bJMBgyS6u4SPFwJKGpcgWnPSRcuXF8iTme","bFEEzRWNWKGxFmjAkT1SmjNs8VTD9eTYje","bCqaStDHVoU89DWDjRxrsGbVFBWhxBFdP3","bbn4mJawLC8C26gfw4TVAcfRftiRvb6hZz","bamTjYPT5R822PLgVXUUUdYG6mQTnwmLtj","bbaeKoaSbH23JP1PHM7Fa3oPAfDLQjA9fr","bbbVueUaexGJgxkh2o2Eicd7nKDkuygGoc","bE2sWfTAKR556uFwFjkeQcgMQTFZU2c5c6","bG5WbMoXhMYEVa52ucZWjnidsqTidH7XoV","bHcSb6MC3dxAZbyBSMtSfq81WUF8odrfs6","bLRmZWd5mhE8H5AeSdXuRgwsdXAfEPRdDD","bSg6gu7nH8aHwz2FTqfNF3h6TBExozfkMc","bU7Fr7yrYJWgx6dTqpLW7Xs2Ztc7DBShNC","bWVt3Qp1M2m3qNc2JgBcis6v2fu2ARoBzh","bZT1vZsC123vFHpxwiXYTAt9k9kpfmhD9Y","BGGVksKTGoemBpDTUJw9tVw9M2t7EtFfzz","BKmirMrh6b5ku5scpc7AcJiTh8GSbc3aHR","BRHq9ae4FGD2sgDjqhbJj1K5iszWxZsju8","BEvukYqnXVw9Bj6q613igbBzeu7L8qydfZ","BScLEZPVsLZHeHjciV9boq5j1i8VtcJNkV","BGLCn3mQ4y8eMqm12cZmNtHohag2FvW5oc","BNV91VFGsRHPSepK4WAS9Bg7ghK9T179mM","BEpKZUcf7xCChU1xUgy9cCkou5Ujda1FTe","BEdhKEgAT1TvF3NBpTHmnXDPTrxG8SqvPj","BADnKcGJCFrvjhGxNjNgLw4pWmMLZTPDHm","BAvARoTNQa4e3pZcpso9JMwJbDgLRV3kaG","B9MWeWrJei6UCfeMN4yVnGSsjXR2fzPE7S","BJq1ChAvpqMPQ35PA12T6cAvwksGW2zNMa","B87SXHvyT1nco2ufyQjSfgDM8aCjutnqcJ","BNWtRUezdG26bn3AKNwvG4He1X6tLbrqQj","B8xvFpfLfLSadfmAv87JhqyGMjB86MD6Kz","B5ERP1AVtwa7BrjSyw9saqWp2dVzypgmDX","BF2o4AHkviLxH1ksxfMJr9PUY4mq94nXAe","B6B7QJwDBCBnumDdVCusNaX9FecKMdeEPM","BT8Kbtrqq9EWGAADGUKkrvFDN4GLoAZ5Xu","BLwT7rbNPBDVqMLnBTfbt4ARpdexjM1U34","BGLu8AzqiapcbufCabop4VWCzqZbYP2wJ8","BNuv6rfyadJ8HjCGgBbYuE1AcNQZFQBuKs","BHGUmQJZVN2vGjKCup2rBw6xn9b24FQaPh","BBoGzB9UpLHP8XLNJNAm7iG7f3SgvCYGJa","BTWKXR8Mi3s64bUaGVYnwL1XqmP6aTMWC3","B6q2EoNLbDDabWoDawaZBwtAS3FURncaHq","B515mPDfT4rTiLRUJFid2zrFRiGySxgj4Z","BSmBt2aNscgogCShoetG9aiRbtLznD4HEU","BNz1ZmfSaZwS2pduJ5QaVeBeUVnqwRPC1p","B6mh9dJi5zVYH2coYeyEFbutWrt7389159","BAuzwad1RErngpU4vs4TGoN61otqDq9eKE","BMPh6mYvDcUrLxHJDxqopuNejZPYwz5C1s","B8oTydfgHLZvA8n5UijXiht3f8mX3cSYEj","BCfVrB6Wrec9H3LTuy6PunUXAwJEHBXbka","B6dNMw2yd4LAiefePu7FaHGY3ALNZuMk3h","BLaqBwjuvytkE1HYDCCKWsvJ9gPxNypPAf","BAnifB1UKBMqV4hu9DtTZ7Qj4JBAEm8dKB","BByxgD9v6YbxvmauuPdgqa8Yk2o5pekVPW","BAJfus7iFaQ4rFSke5KzE367qzvf5R9thM","BNFFzvTApN8JtFcWgjQHKCezKthuu6bDdv","BCJxZgskT61557Jf2DmtwYvHJVaeRrwok6","B6QNEmPwd3ZDdqWRp1o6cTXaDGnXwevkjA","BDAXuYqpAjvP6P1rCQmvcBabbXhkg9KPSb"],'N':[3,0,0],'T':[3,0,0],'X':[3,4,0],'B':[3,4,0],'M':[3,4,0],'exchanges':{},'bridges':[{'n':'Goerli Testnet','s':'ETH','l':['https://rpc.ankr.com/eth_goerli'],'i':5,'c':'0x8F093DBB0b56d99abBCD6fc8d283262641e12cA0'}]}
+        self.Pegdatabase['publishedmessages'] = {}
+        self.Pegdatabase['bridgeactive'] = True
+        self.Pegdatabase['bridgepool'] = {}
+        self.Pegdatabase['merklenonce'] = 0 #Current one being processed(after merklenonceTX advances)
+        self.Pegdatabase['merklenonceTX'] = 0 #Nonce where transactions are added        
+        self.Pegdatabase['merkleTimelimit'] = 86400 #One day
+        self.Pegdatabase['BridgeProcessBlock'] = {}
+        self.Pegdatabase['merklelist'] = {'0':{'timestamp':0,'transactions':[],'supply':0}}
+        self.Pegdatabase['txidreference'] = {}
+        self.Pegdatabase['fundsout'] = {}
+        self.Pegdatabase['netdata'] = {}
+        #Mint to BAY network merkles
+        #Some of the processing and storage may be in JavaScript for python testing
+        #We don't keep this persistent for testing because JavaScript recalculates it when it loads
+        self.Pegdatabase['merkles'] = {}
+        self.Pegdatabase['mints'] = {}
+        self.noncesync = {} #Stored temporarily. In production it's permanent based on merkle root processing.
     def stop(self):
         self.amrunning=False
     def run(self):
@@ -1994,7 +2089,7 @@ class PegThread(QtCore.QThread):
             self.amrunning=False
             traceback.print_exc()
     def scanblocks(self, blocks, blockcount=0):
-        global BLK
+        global BLK, timestamp
         inflate=MakeCipherOutputs('peginflate')[0]
         deflate=MakeCipherOutputs('pegdeflate')[0]
         nochange=MakeCipherOutputs('pegnochange')[0]
@@ -2026,6 +2121,226 @@ class PegThread(QtCore.QThread):
                     break
                 if self.Pegdatabase['blockcount']==blockcount+1:
                     break
+                if self.Pegdatabase['votesblockcount2']<=self.Pegdatabase['blockcount']-(self.interval*4):#More than the MAX orphans
+                    blockrange=(((self.Pegdatabase['votesblockcount2'] - self.Pegdatabase['startingblock']) / self.interval) * self.interval) + self.Pegdatabase['startingblock']
+                    if str(blockrange) not in self.Pegdatabase['votedata2']:
+                        self.Pegdatabase['votedata2'][str(blockrange)]={'proposals':{}}
+                    if str(blockrange-(self.interval*25)) in self.Pegdatabase['votedata2']:#prune old data
+                        self.Pegdatabase['votedata2'].pop(str(blockrange-(self.interval*25)))
+                    hsh=BLK.getblockhash(self.Pegdatabase['votesblockcount2'])
+                    block=BLK.getblock(hsh)
+                    trans=deserialize(BLK.getrawtransaction(block['tx'][1]))
+                    sender=script_to_address2(deserialize(BLK.getrawtransaction(trans['ins'][0]['outpoint']['hash']))['outs'][trans['ins'][0]['outpoint']['index']]['script'],85)
+                    rank=0
+                    if sender not in self.Pegdatabase['bridgedb']['TrustedStakers1']:
+                        rank=1
+                        if sender not in self.Pegdatabase['bridgedb']['TrustedStakers2']:
+                            rank=2
+                    rank2=rank
+                    try:
+                        outpos=0
+                        for out in trans['outs']:                            
+                            rank=rank2
+                            thesender=sender
+                            meaning=translate_script(out['script'])                            
+                            if meaning!={} and meaning['type']=="Notary/Burn":
+                                theproposal = txhash(meaning['message'])                                
+                                if meaning['message'][:5]=="**S**":#This staker is publishing on someones behalf, which can be useful in some circumstances
+                                    try:
+                                        if meaning['message'][5]=="#":#They used multiple outputs to communicate links
+                                                try:
+                                                    xpos=0
+                                                    remstr=""
+                                                    while meaning['message'][xpos+5]=="#":
+                                                        remstr+="#"
+                                                        xpos+=1
+                                                        meaning['message']+=translate_script(trans['outs'][outpos+xpos]['script'])['message']                                                
+                                                        if xpos==4:#message is too long
+                                                            float('a')
+                                                    meaning['message']=meaning['message'].replace(remstr,"")                                                    
+                                                except:
+                                                    traceback.print_exc()
+                                                    continue
+                                        signaturedata=ast.literal_eval(meaning['message'][5:])
+                                        #For now we only allow standard 2 of 2 p2sh and p2pkh type scripts to be verified
+                                        #In 2 of 2 multisignature only the first key listed must sign
+                                        #k=public keys, s=signature, m=message, n=nonce                                        
+                                        if len(signaturedata['k'])==2:
+                                            mscript = mk_multisig_script(signaturedata['k'],2,2)
+                                            myaddy = scriptaddr(mscript.decode('hex'))
+                                        else:
+                                            myaddy = pubtoaddr(signaturedata['k'][0],25)
+                                        rank=0
+                                        if myaddy not in self.Pegdatabase['bridgedb']['TrustedStakers1']:
+                                            rank=1
+                                            if myaddy not in self.Pegdatabase['bridgedb']['TrustedStakers2']:
+                                                rank=2
+                                        thesender=myaddy
+                                        if rank<2:
+                                            res=highlevelcrypto.verify(txhash(signaturedata['m']+str(signaturedata['n'])),base64.b64decode(signaturedata['s']),signaturedata['k'][0])
+                                            if res:
+                                                if txhash(signaturedata['m']+str(signaturedata['n'])) not in self.Pegdatabase['publishedmessages']:
+                                                    self.Pegdatabase['publishedmessages'][txhash(signaturedata['m']+str(signaturedata['n']))]=1
+                                                    meaning['message']=signaturedata['m']
+                                                    theproposal = txhash(meaning['message'])
+                                                else:
+                                                    continue
+                                        else:
+                                            continue
+                                    except:
+                                        traceback.print_exc()
+                                else:
+                                    if meaning['message'][:5]=="**N**" or meaning['message'][:5]=="**T**" or meaning['message'][:5]=="**X**" or meaning['message'][:5]=="**B**" or meaning['message'][:5]=="**M**":
+                                        if meaning['message'][5]=="#":#They used multiple outputs to communicate links
+                                            try:
+                                                xpos=0
+                                                remstr=""
+                                                while meaning['message'][xpos+5]=="#":
+                                                    remstr+="#"
+                                                    xpos+=1
+                                                    meaning['message']+=translate_script(trans['outs'][outpos+xpos]['script'])['message']                                                
+                                                    if xpos==4:#message is too long
+                                                        float('a')
+                                                meaning['message']=meaning['message'].replace(remstr,"")
+                                                theproposal = txhash(meaning['message'])
+                                            except:
+                                                traceback.print_exc()
+                                                continue
+                                if meaning['message'][:5]=="**N**" or meaning['message'][:5]=="**T**" or meaning['message'][:5]=="**X**" or meaning['message'][:5]=="**B**" or meaning['message'][:5]=="**M**":
+                                    if theproposal not in self.Pegdatabase['votedata2'][str(blockrange)]['proposals']:
+                                        self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]={'voted':{},'counts':[0,0,0],'counted':0}
+                                else:
+                                    continue
+                                if self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['counts'][rank] == self.Pegdatabase['bridgedb'][meaning['message'][2]][rank]:
+                                    continue #Maximum votes for this rank
+                                if thesender in self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['voted']:
+                                    if rank < 2:
+                                        continue#This person already voted. And the last tier is for anyone who wins a stake so they can vote multiple times
+                                if self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['counted'] == 1:
+                                    continue
+                                self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['counts'][rank]+=1
+                                if rank < 2:
+                                    self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['voted'][thesender]=1
+                                if self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['counts']==self.Pegdatabase['bridgedb'][meaning['message'][2]]:
+                                    self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['counted']=1
+                                    if meaning['message'][:5]=="**N**":
+                                        try:
+                                            newlist=ast.literal_eval(meaning['message'][5:])
+                                            if type(newlist) is list and len(newlist)==3:
+                                                if not isinstance(newlist[0],int) and not isinstance(newlist[1],int) and not isinstance(newlist[2],int):
+                                                    float('a')
+                                                if int(newlist[0])>=0 and int(newlist[1])>=0 and int(newlist[2])>=0 and (int(newlist[0])+int(newlist[0])+int(newlist[0]))>0:
+                                                    if int(newlist[0])<=50 and int(newlist[1])<=50 and int(newlist[2])<=100:#Set maximum votes and maximum increase or decrease per proposal
+                                                        if newlist[0] < self.Pegdatabase['bridgedb'][meaning['message'][2]][0]-1 or newlist[0] > self.Pegdatabase['bridgedb'][meaning['message'][2]][0]+1:
+                                                            float('a')
+                                                        if newlist[1] < self.Pegdatabase['bridgedb'][meaning['message'][2]][1]-1 or newlist[1] > self.Pegdatabase['bridgedb'][meaning['message'][2]][1]+1:                                                            
+                                                            float('a')
+                                                        if newlist[2] < self.Pegdatabase['bridgedb'][meaning['message'][2]][2]-10 or newlist[2] > self.Pegdatabase['bridgedb'][meaning['message'][2]][2]+10:
+                                                            float('a')
+                                                        self.Pegdatabase['bridgedb'][meaning['message'][2]]=deepcopy(newlist)
+                                        except:
+                                            traceback.print_exc()
+                                    if meaning['message'][:5]=="**T**":
+                                        try:
+                                            therank=int(meaning['message'][5])
+                                            addremove=int(meaning['message'][6])
+                                            addy=meaning['message'][7:]
+                                            b58check_to_hex(addy)
+                                            if addremove==1:
+                                                if therank==1:
+                                                    self.Pegdatabase['bridgedb']['TrustedStakers1'].append(addy)
+                                                if therank==2:
+                                                    self.Pegdatabase['bridgedb']['TrustedStakers2'].append(addy)
+                                            if addremove==2:
+                                                if therank==1:
+                                                    self.Pegdatabase['bridgedb']['TrustedStakers1'].remove(addy)
+                                                if therank==2:
+                                                    self.Pegdatabase['bridgedb']['TrustedStakers2'].remove(addy)
+                                        except:
+                                            traceback.print_exc()
+                                    if meaning['message'][:5]=="**X**":
+                                        try:
+                                            addremove=int(meaning['message'][5])
+                                            publickey=meaning['message'][6:]
+                                            get_pubkey_format(publickey)
+                                            if addremove==1:
+                                                    self.Pegdatabase['bridgedb']['exchanges'][publickey]=1
+                                            if addremove==2:
+                                                    self.Pegdatabase['bridgedb']['exchanges'].pop(publickey)
+                                        except:
+                                            traceback.print_exc()
+                                    if meaning['message'][:5]=="**B**":
+                                        try:
+                                            addremove=int(meaning['message'][5])                                            
+                                            bridgedata=ast.literal_eval(meaning['message'][6:])
+                                            #FORMAT: {'n':'BSC Mainnet','s':'BNB','l':['https://bsc-dataseed.binance.org/'],'i':56,'c':'0x...'}
+                                            #n=name,s=symbol,l=seed link,i=chainid,e=explorer                                            
+                                            if len(bridgedata) == 5 and 'n' in bridgedata and 's' in bridgedata and 'l' in bridgedata and 'i' in bridgedata and 'c' in bridgedata:
+                                                if isinstance(bridgedata['n'],str) and isinstance(bridgedata['s'],str) and isinstance(bridgedata['l'],list) and isinstance(bridgedata['i'],int) and isinstance(bridgedata['c'],str):
+                                                    chainid=int(bridgedata['i'])
+                                                    if addremove==1:
+                                                        sharednode=0
+                                                        lpos=0
+                                                        foundthis=0
+                                                        for thisnode in bridgedata['l'][lpos]:
+                                                            if not isinstance(thisnode,str):
+                                                                foundthis=1 #It's not a valid string
+                                                            if 'https://' not in bridgedata['l'][lpos]:
+                                                                bridgedata['l'][lpos]='https://'+bridgedata['l'][lpos]
+                                                                #It's required to use SSL. If nodes want to do custom encrypted P2P then that should be added manually
+                                                            lpos+=1
+                                                        if foundthis==0:
+                                                            bpos = 0
+                                                            for bridged in self.Pegdatabase['bridgedb']['bridges']:
+                                                                if bridged['n'] == bridgedata['n']:
+                                                                    if int(bridged['i']) != chainid:
+                                                                        foundthis = 2
+                                                                        break
+                                                                if int(bridged['i']) == chainid: #They want to update this bridge
+                                                                    foundthis = 1
+                                                                    break
+                                                                bpos += 1
+                                                            if foundthis==1:
+                                                                self.Pegdatabase['bridgedb']['bridges'].pop(bpos)
+                                                            if foundthis!=2:
+                                                                self.Pegdatabase['bridgedb']['bridges'].append(bridgedata)
+                                                                if bridgedata['n'] not in self.Pegdatabase['bridgepool']:
+                                                                    self.Pegdatabase['bridgepool'][bridgedata['n']]=[0]*1200
+                                                                if bridgedata['n'] not in self.Pegdatabase['fundsout']:
+                                                                    self.Pegdatabase['fundsout'][bridgedata['n']]=0
+                                                    if addremove==2:
+                                                        xpos=0
+                                                        for bridged in self.Pegdatabase['bridgedb']['bridges']:
+                                                            if bridged['n'] == bridgedata['n']:
+                                                                self.Pegdatabase['bridgedb']['bridges'].pop(xpos)
+                                                                break
+                                                            xpos+=1
+                                        except:
+                                            traceback.print_exc()
+                                    if meaning['message'][:5]=="**M**":
+                                        try:
+                                            if meaning['message'][5:]=="899104002d6f8e009ec6dee6844cba6603d02dc351812e422c9e166e3e670506":#txhash("pause")
+                                                self.Pegdatabase['bridgeactive'] = False                                                
+                                            if meaning['message'][5:]=="b677f2790c4aabe172484a329694cfb54ec9cd93b38a3d2082b6d456f5e96f2d":#txhash("resume")
+                                                self.Pegdatabase['bridgeactive'] = True
+                                                if self.Pegdatabase['merklelist']['0']['timestamp']==0:
+                                                    self.Pegdatabase['merklelist']['0']['timestamp']=block['time'] #Initiates
+                                            if self.Pegdatabase['bridgeactive']:
+                                                for bridged in self.Pegdatabase['bridgedb']['bridges']:
+                                                    if txhash(bridged['n'])[:16]==meaning['message'][5:][:16]:
+                                                        if bridged['n'] not in self.Pegdatabase['merkles']:
+                                                            self.Pegdatabase['merkles'][bridged['n']]={}
+                                                        themerkletree=meaning['message'][5:][16:]
+                                                        self.Pegdatabase['merkles'][bridged['n']][themerkletree]=1
+                                                        break
+                                        except:
+                                            traceback.print_exc()
+                            outpos+=1
+                        self.Pegdatabase['votesblockcount2']+=1
+                    except:
+                        traceback.print_exc()
+                        print 'skipping block - ', str(self.Pegdatabase['votesblockcount2'])
+                        return False
                 #If the pruning point is beyond this check or account pools are used this needs to be revised
                 if self.Pegdatabase['votesblockcount']<=self.Pegdatabase['blockcount']-(self.interval*2):
                     blockrange=(((self.Pegdatabase['votesblockcount'] - self.Pegdatabase['startingblock']) / self.interval) * self.interval) + self.Pegdatabase['startingblock']
@@ -2100,6 +2415,14 @@ class PegThread(QtCore.QThread):
             pegdir=application_path+"\\"+'pegdatabase'
         else:
             pegdir=application_path+"/"+'pegdatabase'
+        #We need to coordinate bridge processing precisely with block time limits. On reorganization we would reverse this as well(logically all TX would be emptied if that happens)
+        blkhash=BLK.getblockhash(block['height'])
+        if self.Pegdatabase['merklelist'][str(self.Pegdatabase['merklenonceTX'])]['timestamp'] + self.Pegdatabase['merkleTimelimit'] < block['time']: #Enought time has passed, can now start to process bridge merkle
+            self.Pegdatabase['merklelist'][str(self.Pegdatabase['merklenonceTX'])]['supply']=self.CurrentSupply(block['height'])
+            self.Pegdatabase['merklenonceTX']+=1
+            if str(self.Pegdatabase['merklenonceTX']) not in self.Pegdatabase['merklelist']:
+                self.Pegdatabase['merklelist'][str(self.Pegdatabase['merklenonceTX'])]={'timestamp':block['time'],'transactions':[], 'supply':0} #Supply set after processing
+            self.Pegdatabase['BridgeProcessBlock'][blkhash] = 1
         #Common keys:
         #inputs/outputs: known by txid and out, index(from output), pool, block
         #pool2(deduct on input), amount, frozen, ftype, stake, inputs(if pool), address
@@ -2107,6 +2430,7 @@ class PegThread(QtCore.QThread):
         #For whitelist testing we skip stakes and transactions if we aren't involved.
         #Maybe switch to numpy for array calculations maybe numba, cython, ujson, etc
         #NOTE2
+        sighashes=[1,2,3,80,129,130,131]
         skip=[]
         if block['previousblockhash'] != self.Pegdatabase['prevhashes'][-1] and checkonly==0:
             print "REORGANIZE!", block['previousblockhash'], self.Pegdatabase['prevhashes'][-1]
@@ -2153,6 +2477,32 @@ class PegThread(QtCore.QThread):
                     txlist.sort()
                     uniquehash=txhash(str(txlist))
                     self.queue.append(['*'+uniquehash,{el:elements[el]}])
+                for txid in pruneblock['6a']:                    
+                    try:
+                        thispos=0
+                        for el in self.Pegdatabase['merklelist'][str(self.Pegdatabase['txidreference'][txid])]['transactions']:
+                            if el['txid']==txid:
+                                self.Pegdatabase['merklelist'][str(self.Pegdatabase['txidreference'][txid])]['transactions'].pop(thispos)
+                                break
+                            thispos+=1
+                        self.Pegdatabase['txidreference'].pop(txid)
+                    except:
+                        traceback.print_exc()
+                txidtemp=txid.split(":")[0]
+                if txidtemp in self.Pegdatabase['mints']:
+                    txidtemp2=self.Pegdatabase['mints'][txidtemp]['txid']
+                    myname=self.Pegdatabase['mints'][txidtemp2]['network']
+                    self.Pegdatabase['fundsout'][myname] += self.Pegdatabase['mints'][txidtemp2]['total']
+                    xp=0
+                    for val in self.Pegdatabase['mints'][txidtemp2]['reserve']:
+                        self.Pegdatabase['bridgepool'][myname][xp] += val
+                        xp+=1
+                    self.Pegdatabase['mints'].pop(txidtemp2)
+                    self.Pegdatabase['mints'].pop(txidtemp)
+                if hsh in self.Pegdatabase['BridgeProcessBlock']:                    
+                    self.Pegdatabase['merklelist'].pop(str(self.Pegdatabase['merklenonceTX']))
+                    self.Pegdatabase['merklenonceTX']-=1
+                    self.Pegdatabase['BridgeProcessBlock'].pop(hsh)
                 commit=json_deep_copy(self.Pegdatabase)
                 commit['blockcount']-=1  
                 commit['prevhashes'].pop(-1)              
@@ -2196,19 +2546,116 @@ class PegThread(QtCore.QThread):
                 frozenpool={}                
                 txreservetotal=0
                 txliquidtotal=0
+                #Here the system should check for a mint. Also any signature verifications of course should happen.
+                #The signed input should match the address in the output. Since this is a simulation, the signature
+                #check would be done in bitbayd instead. This is just showing how to construct the input.
+                #BitBay's bridge hard fork is able to natively support this feature.
+                if len(trans['outs'])>0 and trans['outs'][1]['script'][:2]=="6a":
+                    try:
+                        thescript=translate_script(trans['outs'][1]['script'])
+                        if '**Y**' in thescript['message'][:5]:
+                            if not self.Pegdatabase['bridgeactive']:
+                                print "Bridge is not currently active"
+                                float('a')
+                            message=thescript['message'][5:]
+                            x=2
+                            while(x<len(trans['outs'])):
+                                if '6a' not in trans['outs'][x]['script'][:2]:
+                                    break
+                                message+=translate_script(trans['outs'][x]['script'])['message']
+                                x+=1
+                            message=ast.literal_eval(message)
+                            thename=''
+                            for bridged in self.Pegdatabase['bridgedb']['bridges']:                                
+                                if message['w']==txhash(bridged['n'])[:16]:
+                                    thename=bridged['n']
+                                    break
+                            if thename == '':
+                                traceback.print_exc()
+                            mysteps=int(self.Pegdatabase['netdata'][thename]['pegsteps'])+int(self.Pegdatabase['netdata'][thename]['microsteps'])
+                            result = BridgeDriver.execute_script("return verifymint("+str(json.dumps(message))+","+str(mysteps)+");")
+                            if result == True: #We construct the root TX that is used as the input and add it to the database
+                                if len(trans['ins']) > 1:
+                                    float('a')
+                                recipientScript = deserialize_script(trans['ins'][0]['script']) #The new tx will match the spending inputs sig script
+                                if message['a'][0] == 'b':
+                                    if scriptaddr(recipientScript[-1].decode('hex')) != message['a']:
+                                        float('a')
+                                if message['a'][0] == 'B':
+                                    try:
+                                        if pubtoaddr(recipientScript[1],25) != message['a']:
+                                            float('a')
+                                    except: #It's a public key
+                                        #You could in theory do a public key recover and narrow it down to a few possibilities and see if it matches the address
+                                        #However for this example it's best to say that any address that isn't P2SH or P2PKH should just pay itself
+                                        #IMPORTANT: During P2PK signature check you should verify that the users input signature matches the pubkey in output script
+                                        #QT and bitbayd will need that information automatically. This just shows how it's done for the demo.
+                                        #All address types that are supported by the interpreter should be checked to match the address that is minting
+                                        found=0
+                                        for testout in trans['outs']:
+                                            if testout['script'][:2] != "6a":
+                                                found=1
+                                                mypubkey = deserialize_script(testout['script'])[0]
+                                                if pubtoaddr(mypubkey,25) != message['a']:
+                                                    float('a')
+                                                else:
+                                                    if verify_tx_input(tx,0,testout['script'],deserialize_script(trans['ins'][0]['script'])[0],mypubkey,1):
+                                                        break
+                                                    else:
+                                                        float('a')
+                                        if found==0:
+                                            float('a')
+                                mynewtotal = 0
+                                vpos=0
+                                for val in message['r']:
+                                    message['r'][vpos]=int(val)
+                                    mynewtotal+=int(val)
+                                    vpos+=1
+                                if len(message['r']) != mysteps:
+                                    float('a')
+                                if mynewtotal > self.Pegdatabase['fundsout'][thename]:
+                                    float('a') #Too many funds incoming
+                                self.Pegdatabase['fundsout'][thename] -= mynewtotal
+                                mydeductions = DecompressFractions(message['r'],thename,message['s'],self.Pegdatabase['netdata'][thename]['pegsteps'],self.Pegdatabase['netdata'][thename]['microsteps'])
+                                if mydeductions == False:
+                                    float('a')
+                                xp=0
+                                for val in mydeductions:
+                                    if val > self.Pegdatabase['bridgepool'][thename][xp]:
+                                        float('a')
+                                    self.Pegdatabase['bridgepool'][thename][xp] -= val
+                                    xp+=1
+                                #The TXID generated from the message should be the TXID in the input that is spent. Also check for double spend.
+                                #Also to look up the generated TXID from getrawtransaction should point to the mint transaction ID
+                                thetxid = txhash(str([message['w'],int(message['n']),message['f'],message['a'],int(message['s']),message['r']]))
+                                if thetxid+":0" in self.Pegdatabase['mints']: #Already spent
+                                    float('a')
+                                if trans['ins'][0]['outpoint']['hash'] != thetxid or trans['ins'][0]['outpoint']['index'] != 0:
+                                    float('a')
+                                #During a lookup of the brand new TXID it is redirected to the minting transaction for reference
+                                self.Pegdatabase['mints'][thetxid+":0"]={'reserve':mydeductions,'network':thename,'total':mynewtotal,'txid':txhash(tx),'address':message['a']}
+                                self.Pegdatabase['mints'][txhash(tx)]={'txid':thetxid+":0"} #Cross reference for reorgs. Actual tx to find virtual txid
+                    except:
+                        traceback.print_exc()
+                        float('a')
                 pos=0
                 for inp in trans['ins']:
                     pool={}
                     txid=inp['outpoint']['hash']+':'+str(inp['outpoint']['index'])
-                    txin2=BLK.getrawtransaction(inp['outpoint']['hash'], 1)
-                    if txin2['confirmations']<1:
-                        self.valid="Can not spend zero confirmations"
-                        float('a')
-                    address=txin2['vout'][inp['outpoint']['index']]['scriptPubKey']['hex']
-                    try:
-                        address=script_to_address2(address,85)
-                    except:
-                        pass
+                    #CHECK TXIN2 MAY BE THE SELF REFERENCE ON A MINT!
+                    if inp['outpoint']['hash']+":0" in self.Pegdatabase['mints']:
+                        address=self.Pegdatabase['mints'][inp['outpoint']['hash']+":0"]['address']
+                        txin2={'blocktime':block['time']}
+                    else:
+                        txin2=BLK.getrawtransaction(inp['outpoint']['hash'], 1)
+                        if txin2['confirmations']<1:
+                            self.valid="Can not spend zero confirmations"
+                            float('a')
+                        address=txin2['vout'][inp['outpoint']['index']]['scriptPubKey']['hex']
+                        try:
+                            address=script_to_address2(address,85)
+                        except:
+                            pass
                     txin=self.readdatabase(txid, address)#could return single input or entire liquidity pool
                     if address in self.whitelist and tx not in skip:
                         whitelisted=1
@@ -2217,65 +2664,75 @@ class PegThread(QtCore.QThread):
                             whitelisted=1
                     liquidtotal=0
                     reservetotal=0
-                    if txin==False:#Didn't find it, either we should have had it or it's from before peg
+                    if txin==False:#Didn't find it, either we should have had it or it's from before peg or it's a mint
                         #txin=copy.deepcopy(txin2)
                         #if txin['blocktime']>self.Pegdatabase['startblocktime']:
                         #    self.DeleteDatabase()#Critical information was missing, sync again
                         #    return False
                         newstuff['txin'][txid]={}
-                        newstuff['txin'][txid]['amount']=int(txin2['vout'][inp['outpoint']['index']]['value']*Decimal(1e8))
-                        address=txin2['vout'][inp['outpoint']['index']]['scriptPubKey']['hex']
-                        try:
-                            address=script_to_address2(address,85)
-                        except:
-                            pass
-                        newstuff['txin'][txid]['address']=address
-                        stepindex=0
-                        newstuff['txin'][txid]['pool']={}
-                        print "TIME ELAPSED 0: ", str(txtime-time.time())
-                        #Original technique
-                        #Dif=float(1)
-                        #for s in self.steps:
-                        #    Dif2=(Dif-s)
-                        #    amount=int(newstuff['txin'][txid]['amount']*Dif2)
-                        #    if stepindex==len(self.steps)-1:
-                        #        amount+=int(newstuff['txin'][txid]['amount']*s)
-                        #    Dif=s
-                        #    if amount!=0:
-                        #        if stepindex<supply:
-                        #            reservetotal+=amount
-                        #        else:
-                        #            liquidtotal+=amount
-                        #        newstuff['txin'][txid]['pool'][str(stepindex)]=amount  
-                        #    stepindex+=1
-                        ##The remainder can be divided evenly until nothing is left
-                        #amount=newstuff['txin'][txid]['amount']
-                        #amount-=(liquidtotal+reservetotal)
-                        #remain=0
-                        #while remain < amount:
-                        #    if str(remain) in newstuff['txin'][txid]['pool']:
-                        #        newstuff['txin'][txid]['pool'][str(remain)]+=1
-                        #    else:
-                        #        newstuff['txin'][txid]['pool'][str(remain)]=1
-                        #    if remain<supply:
-                        #        reservetotal+=1
-                        #    else:
-                        #        liquidtotal+=1
-                        #    remain+=1
-                        txin_amount_left=newstuff['txin'][txid]['amount']
-                        for s in self.steps:
-                            if stepindex==len(self.steps)-1:
-                                amount=txin_amount_left
-                            else:
-                                amount=txin_amount_left/self.rate
-                            txin_amount_left-=amount
-                            if amount!=0:
-                                if stepindex<supply:
-                                    reservetotal+=amount
+                        if inp['outpoint']['hash']+":0" in self.Pegdatabase['mints']:
+                            address=self.Pegdatabase['mints'][inp['outpoint']['hash']+":0"]['address']
+                            newstuff['txin'][txid]['address']=address
+                            newstuff['txin'][txid]['amount']=self.Pegdatabase['mints'][inp['outpoint']['hash']+":0"]['total']
+                            newstuff['txin'][txid]['pool']={}
+                            xp = 0
+                            for val in self.Pegdatabase['mints'][inp['outpoint']['hash']+":0"]['reserve']:
+                                newstuff['txin'][txid]['pool'][str(xp)] = val
+                                xp+=1
+                        else:                        
+                            newstuff['txin'][txid]['amount']=int(txin2['vout'][inp['outpoint']['index']]['value']*Decimal(1e8))
+                            address=txin2['vout'][inp['outpoint']['index']]['scriptPubKey']['hex']
+                            try:
+                                address=script_to_address2(address,85)
+                            except:
+                                pass
+                            newstuff['txin'][txid]['address']=address
+                            stepindex=0
+                            newstuff['txin'][txid]['pool']={}
+                            print "TIME ELAPSED 0: ", str(txtime-time.time())
+                            #Original technique
+                            #Dif=float(1)
+                            #for s in self.steps:
+                            #    Dif2=(Dif-s)
+                            #    amount=int(newstuff['txin'][txid]['amount']*Dif2)
+                            #    if stepindex==len(self.steps)-1:
+                            #        amount+=int(newstuff['txin'][txid]['amount']*s)
+                            #    Dif=s
+                            #    if amount!=0:
+                            #        if stepindex<supply:
+                            #            reservetotal+=amount
+                            #        else:
+                            #            liquidtotal+=amount
+                            #        newstuff['txin'][txid]['pool'][str(stepindex)]=amount  
+                            #    stepindex+=1
+                            ##The remainder can be divided evenly until nothing is left
+                            #amount=newstuff['txin'][txid]['amount']
+                            #amount-=(liquidtotal+reservetotal)
+                            #remain=0
+                            #while remain < amount:
+                            #    if str(remain) in newstuff['txin'][txid]['pool']:
+                            #        newstuff['txin'][txid]['pool'][str(remain)]+=1
+                            #    else:
+                            #        newstuff['txin'][txid]['pool'][str(remain)]=1
+                            #    if remain<supply:
+                            #        reservetotal+=1
+                            #    else:
+                            #        liquidtotal+=1
+                            #    remain+=1
+                            txin_amount_left=newstuff['txin'][txid]['amount']
+                            for s in self.steps:
+                                if stepindex==len(self.steps)-1:
+                                    amount=txin_amount_left
                                 else:
-                                    liquidtotal+=amount
-                                newstuff['txin'][txid]['pool'][str(stepindex)]=amount
-                            stepindex+=1
+                                    amount=txin_amount_left/self.rate
+                                txin_amount_left-=amount
+                                if amount!=0:
+                                    if stepindex<supply:
+                                        reservetotal+=amount
+                                    else:
+                                        liquidtotal+=amount
+                                    newstuff['txin'][txid]['pool'][str(stepindex)]=amount
+                                stepindex+=1
                     else:
                         newstuff['txin'][txid]=txin
                         if 'amount' not in newstuff['txin'][txid]:
@@ -2284,19 +2741,51 @@ class PegThread(QtCore.QThread):
                             newstuff['txin'][txid]['address']=address
                     print "TIME ELAPSED 1: ", str(txtime-time.time())
                     if 'frozen' in newstuff['txin'][txid]:#Sending 1 month lock funds
+                        #check for whitelisted p2sh exchange key and if it's approved let it bypass the frozen timestamp
+                        foundvalidsig=0
+                        try:
+                            mysigs=deserialize_script(inp['script'])
+                            myscript=deserialize_script(mysigs[-1])
+                            for myval in myscript:
+                                if foundvalidsig==1:
+                                    break
+                                try:
+                                    get_pubkey_format(myval)
+                                    if myval in self.Pegdatabase['bridgedb']['exchanges']:#We found an exchange pubkey, however make sure it's involved in spending
+                                        for thesig in mysigs:
+                                            if foundvalidsig==1:
+                                                break
+                                            for sighash in sighashes:
+                                                try:
+                                                    if verify_tx_input(tx,pos,trans['ins'][0]['script'],thesig,myval,sighash):
+                                                        foundvalidsig=1
+                                                        newstuff['txin'][txid].pop('frozen')
+                                                        newstuff['txin'][txid].pop('ftype')
+                                                        break
+                                                        #Consider an exchange only has to sign off on a transaction it wants to bypass a freeze
+                                                        #Even if you were to check if the TX would have failed without it, an exchange could
+                                                        #Set up time locked accounts in order to assist users to bypass the rules. However this
+                                                        #is why exchange keys are voted on since it's only to be used for exchange operations.
+                                                except:
+                                                    pass
+                                except:
+                                    pass
+                        except:
+                            traceback.print_exc()
                         #Would a stake that spends a frozen of '1' maintain same number?! If we try to carry previous value
                         #However we want a fresh value if blocktime changes
-                        if 'stake' not in newstuff['txin'][txid]:
-                            if newstuff['txin'][txid]['ftype']=='F':
-                                newstuff['txin'][txid]['frozen']=txin2['blocktime']+2592000
-                            if newstuff['txin'][txid]['ftype']=='V':
-                                newstuff['txin'][txid]['frozen']=txin2['blocktime']+(2592000*4)
-                        if newstuff['txin'][txid]['frozen']>highestfrozen:
-                            if newstuff['txin'][txid]['ftype']=='F':
-                                liquiditypool['frozen']=newstuff['txin'][txid]['frozen']
-                            if newstuff['txin'][txid]['ftype']=='V':
-                                liquiditypool['frozen']=newstuff['txin'][txid]['frozen']
-                            highestfrozen=newstuff['txin'][txid]['frozen']
+                        if foundvalidsig==0:
+                            if 'stake' not in newstuff['txin'][txid]:
+                                if newstuff['txin'][txid]['ftype']=='F':
+                                    newstuff['txin'][txid]['frozen']=txin2['blocktime']+2592000
+                                if newstuff['txin'][txid]['ftype']=='V':
+                                    newstuff['txin'][txid]['frozen']=txin2['blocktime']+(2592000*4)
+                            if newstuff['txin'][txid]['frozen']>highestfrozen:
+                                if newstuff['txin'][txid]['ftype']=='F':
+                                    liquiditypool['frozen']=newstuff['txin'][txid]['frozen']
+                                if newstuff['txin'][txid]['ftype']=='V':
+                                    liquiditypool['frozen']=newstuff['txin'][txid]['frozen']
+                                highestfrozen=newstuff['txin'][txid]['frozen']
                     #NOTE4
                     if txid in usedinputs:
                         pool=newstuff['txin'][usedinputs[txid]]['pool'].copy()
@@ -2737,7 +3226,7 @@ class PegThread(QtCore.QThread):
             if self.valid=='1':
                 self.valid='Block not valid: ' + myexc
             print self.valid
-        return False
+        return False    
     def CalculateLiquid(self, amountin,myoutput,frozenpool,reservepool,liquiditypool,locktime, supply, stake=0):
         #frozenpool=json_deep_copy(frozenpool)
         #reservepool=json_deep_copy(reservepool)
@@ -2799,8 +3288,26 @@ class PegThread(QtCore.QThread):
                 else:
                     multipleout=0
                     if stake!=0:
-                        multipleout=1
-                    if myoutput['address'] in burnaddress or myoutput['address'][:2]=='6a':
+                        multipleout=1                    
+                    general6a=False
+                    if myoutput['address'][:2]=='6a':
+                        general6a=True
+                        meaning=translate_script(myoutput['address'])
+                        if meaning!={} and meaning['type']=="Notary/Burn":
+                            if meaning['message'][:5]=="**Z**":
+                                if self.Pegdatabase['bridgeactive']==False:
+                                    print "Bridge is not currently active"
+                                    float('a')
+                                foundthis=0
+                                for bridged in self.Pegdatabase['bridgedb']['bridges']:
+                                    if txhash(bridged['n'])[:16]==meaning['message'][5:][:16]:
+                                        foundthis=1
+                                        general6a=False
+                                        break
+                                if foundthis==0:
+                                    print "Bridge not found"
+                                    float('a')
+                    if myoutput['address'] in burnaddress or general6a:
                         #It's a burn so we can take from all pools
                         output={'total':0}
                         addresses=[]
@@ -3027,7 +3534,7 @@ class PegThread(QtCore.QThread):
         return False
     def writedatabase(self, newstuff, block2):
         #NOTE11
-        global CoinSelect
+        global CoinSelect, timestamp
         if os.name == 'nt':
             pegdir=application_path+"\\"+'pegdatabase'
             fd="\\"
@@ -3053,6 +3560,7 @@ class PegThread(QtCore.QThread):
         block['inputs']=[]
         block['height']=block2['height']
         block['hash']=block2['hash']
+        block['6a']=[]
         elements={}
         pruneblock=''
         accountprune=0
@@ -3117,6 +3625,17 @@ class PegThread(QtCore.QThread):
                 if txid[:3] not in elements:
                     elements[txid[:3]]={'txin':{},'txout':{},'prune':{'txin':{},'txout':{}}}
                 elements[txid[:3]]['txout'][txid]=newstuff['txout'][txid]
+            if newstuff['txout'][txid]['address'][:2]=="6a":                
+                meaning=translate_script(newstuff['txout'][txid]['address'])
+                if meaning!={} and meaning['type']=="Notary/Burn":
+                    if meaning['message'][:5]=="**Z**":
+                        for bridged in self.Pegdatabase['bridgedb']['bridges']:
+                            if txhash(bridged['n'])[:16]==meaning['message'][5:][:16]:
+                                mytx={'txid':txid,'network':bridged['n'],'to':meaning['message'][5:][16:],'pool':copy.deepcopy(newstuff['txout'][txid]['pool'])}
+                                self.Pegdatabase['txidreference'][txid]=self.Pegdatabase['merklenonceTX'] #For easy reference finding a TX
+                                self.Pegdatabase['merklelist'][str(self.Pegdatabase['merklenonceTX'])]['transactions'].append(mytx)
+                                block['6a'].append(txid)
+                                break
         for el in elements:
             txlist=[]
             for txid in elements[el]['txin']:
@@ -3388,8 +3907,10 @@ class PegThread(QtCore.QThread):
         self.Pegdatabase['startingblock']=startblock
         self.Pegdatabase['blockcount']=self.Pegdatabase['startingblock']
         self.Pegdatabase['votesblockcount']=self.Pegdatabase['startingblock']
+        self.Pegdatabase['votesblockcount2']=self.Pegdatabase['startingblock']
         self.Pegdatabase['supply']=0 #Measured in steps of 1% away from 100%
         self.Pegdatabase['votedata']={}#{'1684900':[0,0,0]}
+        self.Pegdatabase['votedata2']={}
         self.Pegdatabase['votecycle']=0
         self.Pegdatabase['prevhashes']=[]#Holds data about previous 400 hashes
         if os.name == 'nt':
@@ -3397,7 +3918,11 @@ class PegThread(QtCore.QThread):
         else:
             pegdir=application_path+"/"+'pegdatabase'        
         shutil.rmtree(pegdir)
-    def checktransaction(self,tx,pos=0, blockheight=0, checkcount=0, txid2=''):
+    def checktransaction(self,tx,pos=0, blockheight=0, checkcount=0, txid2='', returnliquid=0):
+        #This function is not fully updated with the newest changes of the fork. However, because it's just a simulation
+        #function, it doens't currently effect anything during runtime. Also during testnets it only effects mints and exchanges.
+        #It's worth mentioning that bitbayd also support the **C** notation which is the ability to skip a freeze under the
+        #condition that the next transaction sends back to the original sender. This is not simulated here in the python build.
         #NOTE14
         if os.name == 'nt':
             pegdir=application_path+"\\"+'pegdatabase'
@@ -3415,7 +3940,7 @@ class PegThread(QtCore.QThread):
         if checkcount==1:
             #For the Python implementation we give a small amount of space since the databases are separate
             #However in production both will sync together
-            if ThePeg.Pegdatabase['blockcount']<blockheight-1:
+            if self.Pegdatabase['blockcount']<blockheight-1:
                 self.valid='Peg database is not in sync.'
                 float('a')
         try:#Remove instances of block, staketx
@@ -3481,6 +4006,7 @@ class PegThread(QtCore.QThread):
                                         self.memaccountpools[address]['tx'].append(m1)
                                         self.memaccountpools[address]['locktime'].append(trans['locktime'])
             #accountpools[newstuff['txin'][txid]['address']]['locktime']
+            txorig=tx
             if ':' in tx:
                 checkliquidity=1
                 posx=int(tx.split(':')[1])
@@ -3490,9 +4016,11 @@ class PegThread(QtCore.QThread):
                 checkliquidity=1
                 trans=tx
                 posx=pos
-            else:                
+                tx=txhash(serialize(tx))
+            else:
                 txid2=txhash(tx)
-                trans=deserialize(tx)                
+                trans=deserialize(tx)
+                tx=txhash(tx)
             whitelisted=0
             highestfrozen=0
             totalin=0
@@ -3534,9 +4062,13 @@ class PegThread(QtCore.QThread):
                         address=script_to_address2(address,85)
                     except:
                         pass
-                    txin=self.readdatabase(txid, address)#could return single input or entire liquidity pool
+                    try:
+                        txin=self.readdatabase(txid, address)#could return single input or entire liquidity pool
+                    except:
+                        traceback.print_exc()
+                        txid=False
                 checkaddress=address
-                if address in self.whitelist:
+                if address in self.whitelist or returnliquid==1:
                     whitelisted=1
                 else:
                     if txin != False and self.whitelistoutputs == 1:
@@ -3567,19 +4099,25 @@ class PegThread(QtCore.QThread):
                     stepindex=0
                     newstuff['txin'][txid]['pool']={}                    
                     txin_amount_left=newstuff['txin'][txid]['amount']
-                    for s in self.steps:
-                        if stepindex==len(self.steps)-1:
-                            amount=txin_amount_left
-                        else:
-                            amount=txin_amount_left/self.rate
-                        txin_amount_left-=amount
-                        if amount!=0:
-                            if stepindex<supply:
-                                reservetotal+=amount
+                    if returnliquid==1:
+                        fractions=BLK.getfractions(txid)
+                        for f in fractions['values']:
+                            newstuff['txin'][txid]['pool'][str(stepindex)]=f
+                            stepindex+=1
+                    else:
+                        for s in self.steps:
+                            if stepindex==len(self.steps)-1:
+                                amount=txin_amount_left
                             else:
-                                liquidtotal+=amount
-                            newstuff['txin'][txid]['pool'][str(stepindex)]=amount
-                        stepindex+=1
+                                amount=txin_amount_left/self.rate
+                            txin_amount_left-=amount
+                            if amount!=0:
+                                if stepindex<supply:
+                                    reservetotal+=amount
+                                else:
+                                    liquidtotal+=amount
+                                newstuff['txin'][txid]['pool'][str(stepindex)]=amount
+                            stepindex+=1
                 else:
                     newstuff['txin'][txid]=txin
                     if 'amount' not in newstuff['txin'][txid]:
@@ -3621,7 +4159,7 @@ class PegThread(QtCore.QThread):
                             usedinputs[myinput]=txid
                     if checkliquidity==0:
                         if newstuff['txin'][txid]['address'] in self.memaccountpools:                        
-                            if txhash(tx) not in self.memaccountpools[newstuff['txin'][txid]['address']]['tx']:
+                            if tx not in self.memaccountpools[newstuff['txin'][txid]['address']]['tx']:
                                 if self.memaccountpools[newstuff['txin'][txid]['address']]['locktime']!=[]:
                                     if trans['locktime']<=self.memaccountpools[newstuff['txin'][txid]['address']]['locktime'][0]:
                                         self.valid='Trying to take from liquidity pool out of order.'
@@ -3976,6 +4514,8 @@ class PegThread(QtCore.QThread):
             #print "TIME ELAPSED 4: ", str(txtime-time.time())
             res=True
             #print "TIME ELAPSED 5: ", str(txtime-time.time())
+            if returnliquid==1:
+                return res, newstuff, txfees
             return res
         except:
             myexc=str(traceback.format_exc())
@@ -4218,11 +4758,11 @@ class PegThread(QtCore.QThread):
             spn['supply']=liq['supply']
         return spn
     def votealgorithm(self, algo=''):
-        #NOTE18
+        #NOTE18        
         try:
             #No change: bNyZrPeFFNP6GFJZCkE82DDN7JC4K5Vrkk, Deflate: bNyZrP2SbrV6v5HqeBoXZXZDE2e4fe6STo Inflate: bNyZrPLQAMPvYedrVLDcBSd8fbLdNgnRPz
             if self.votealgo!='':
-                exec(self.votealgo)
+                exec(validateCode(self.votealgo))
             else:
                 if algo=='':
                     text='pegnochange'
@@ -5864,6 +6404,7 @@ if os.path.exists(os.path.join(application_path,"whitelist.dat")):
             ThePeg.Pegdatabase['startingblock']=int(line)
             ThePeg.Pegdatabase['blockcount']=ThePeg.Pegdatabase['startingblock']
             ThePeg.Pegdatabase['votesblockcount']=ThePeg.Pegdatabase['startingblock']
+            ThePeg.Pegdatabase['votesblockcount2']=ThePeg.Pegdatabase['startingblock']
         else:
             ThePeg.whitelist[line.strip()]=''
 class PythonThread(QtCore.QThread):#Thread for any special Python contracts or API calls
@@ -5877,10 +6418,380 @@ class PythonThread(QtCore.QThread):#Thread for any special Python contracts or A
         while self.amrunning:
             time.sleep(.5)
             if self.codetorun!='':
-                exec(self.codetorun)
+                try:
+                    exec(validateCode(self.codetorun))
+                except:
+                    traceback.print_exc()
 RunPython = PythonThread("RunPython")
 #We should probably allow this thread to only be started by API or special contracts
 #RunPython.start()
+class BridgeThread(QtCore.QThread):#Safe File saving thread
+    def __init__(self, url):
+        QtCore.QThread.__init__(self)
+        self.amrunning=True
+        self.confirmedvotes={}
+        self.votemerkles={}
+        self.BridgeRefresh=0
+        self.waitingconf=0
+        self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
+    def stop(self):
+        self.amrunning=False
+    def run(self):
+        global BridgeAdmin, BridgeDriver, MySettingsInfo
+        loaded = 0
+        thecount = 0
+        time.sleep(10)
+        restart = False
+        result = []        
+        while self.amrunning:
+            time.sleep(1)
+            thecount +=1
+            if thecount == 100000:
+                thecount = 0
+            if restart == True and thecount % 120 != 0:
+                continue
+            else:
+                restart = False
+            try:
+                if BridgeAdmin:
+                    if not ThePeg.Pegdatabase['bridgeactive']:
+                        MySettingsInfo = "Bridge is currently not active"
+                        continue
+                    pubs=get_ordered_pubkeys(PrivKeyFilename1)
+                    if loaded == 0:
+                        try:
+                            options = Options()
+                            options.headless = True
+                            if 'debugBrowser' in AdvanceArray:
+                                options.headless = AdvanceArray['debugBrowser']
+                            if os.name == 'nt':
+                                myexe = "bridge/geckodriver.exe"
+                            else:
+                                myexe = "bridge/geckodriver"
+                            myhtml = "bridge/bridge.htm"
+                            BridgeDriver = webdriver.Firefox(executable_path = os.path.join(application_path, myexe), options=options)
+                            BridgeDriver.get("file:///" + os.path.join(application_path, myhtml))
+                            time.sleep(1)
+                            if ThePeg.testthis == 1:
+                                result = BridgeDriver.execute_script("return loadBridges("+str(ThePeg.Pegdatabase['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                            else:
+                                result = BridgeDriver.execute_script("return loadBridges("+str(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                            MySettingsInfo = str(result[1])
+                            if 'bridgeautomation' in AdvanceArray:
+                                if AdvanceArray['bridgeautomation']['votes'] != {} and self.confirmedvotes == {}:
+                                    self.waitingconf = 0
+                            loaded = 1
+                        except:
+                            traceback.print_exc()
+                            try:
+                                print "Restarting bridge driver"
+                                BridgeDriver.quit()
+                            except:
+                                pass
+                            restart = True
+                            loaded = 0
+                            MySettingsInfo = "Error loading bridge"
+                            continue
+                    else:                    
+                        if thecount % 120 == 0:
+                            try:
+                                if ThePeg.testthis == 1:
+                                    result = BridgeDriver.execute_script("return loadBridges("+str(ThePeg.Pegdatabase['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                                else:
+                                    result = BridgeDriver.execute_script("return loadBridges("+str(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                                try:
+                                    x = 0
+                                    for abridge in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                                        name=abridge['n']
+                                        ThePeg.Pegdatabase['netdata'][name] = {'pegsteps':result[0][x]['1'],'microsteps':result[0][x]['2']}
+                                        x+=1
+                                except:
+                                    traceback.print_exc()
+                                MySettingsInfo = str(result[1])
+                            except:
+                                traceback.print_exc()
+                                try:
+                                    print "Restarting bridge driver"
+                                    BridgeDriver.quit()
+                                except:
+                                    pass
+                                restart = True
+                                loaded = 0
+                                MySettingsInfo = "Error loading bridge"
+                                continue
+                        if "Bridge operations temporarily halted."  in MySettingsInfo or "This network is currently paused" in MySettingsInfo:
+                            continue
+                        thepriv = ""
+                        if IsUnlocked():                        
+                            text,check=DecryptPrivateKey(PrivKeyFilename1,PrivKeyFiledir1,"")
+                            if privtopub(text) == pubs[0]:
+                                thepriv = text
+                            else:
+                                text,check=DecryptPrivateKey(PrivKeyFilename2,PrivKeyFiledir2,"")
+                                if privtopub(text) == pubs[0]:
+                                    thepriv = text
+                        else:
+                            if "Please unlock your wallet for staking to maintain the bridge" not in MySettingsInfo:
+                                MySettingsInfo = "Please unlock your wallet for staking to maintain the bridge!<br>" + MySettingsInfo
+                        if thecount % 150 == 0:
+                            try:
+                                if thepriv != "":
+                                    result2 = BridgeDriver.execute_script("return updateSupply("+str(ThePeg.CurrentSupply(ThePeg.Pegdatabase['blockcount']))+",'"+thepriv+"',"+str(self.mypairs)+");")
+                            except:
+                                traceback.print_exc()
+                        if ThePeg.testthis == 1 and thecount % 180 == 0:
+                            if ThePeg.noncesync == {}: #For python testing this will sync slowly. In production merkle trees are saved in peg database
+                                for bridges in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                                    ThePeg.noncesync[bridges['n']] = 0;
+                            try:
+                                result2 = BridgeDriver.execute_script("return updateNonce("+str(ThePeg.noncesync)+");")
+                            except:
+                                traceback.print_exc()
+                            try:
+                                result2 = BridgeDriver.execute_script("return getRoots();")
+                                for bridges in result2:
+                                    mynonce = ThePeg.noncesync[bridges]
+                                    if result2[bridges][0] == mynonce:
+                                        if bridges not in ThePeg.Pegdatabase['merkles']:
+                                            ThePeg.Pegdatabase['merkles'][bridges]={}
+                                        if result2[bridges][1] in ThePeg.Pegdatabase['merkles'][bridges]:
+                                            ThePeg.noncesync[bridges] += 1
+                                        else:
+                                            if result2[bridges][1] == 0:
+                                                self.votemerkles[bridges] = 0
+                                            else:
+                                                self.votemerkles[bridges] = result2[bridges][1]
+                            except:
+                                traceback.print_exc()     
+                        if thecount % 180 == 0:
+                            if 'bridgeautomation' in AdvanceArray:
+                                if self.waitingconf == 0:
+                                    if AdvanceArray['bridgeautomation']['votes'] != {} and self.confirmedvotes == {}:
+                                        try:
+                                            if thepriv != "":
+                                                result2 = BridgeDriver.execute_script("return sendVotes("+str(AdvanceArray['bridgeautomation']['votes'])+",'"+thepriv+"');")
+                                                if result2 == True:
+                                                    self.waitingconf = 1
+                                        except:
+                                            traceback.print_exc()
+                                else:
+                                    try:
+                                        result2 = BridgeDriver.execute_script("return getVotes();")
+                                        if result2 == True:
+                                            self.confirmedvotes = copy.deepcopy(AdvanceArray['bridgeautomation']['votes'])
+                                            self.waitingconf = 0
+                                    except:
+                                        traceback.print_exc()
+                    if ThePeg.testthis == 1 and thecount % 180 == 0:
+                        nonce = str(ThePeg.Pegdatabase['merklenonce'])
+                        poolprev = copy.deepcopy(ThePeg.Pegdatabase['bridgepool'])
+                        fundsprev = ThePeg.Pegdatabase['fundsout']
+                        try:
+                            if nonce in ThePeg.Pegdatabase['merklelist']:
+                                if ThePeg.Pegdatabase['merklelist'][nonce]['timestamp'] + ((ThePeg.Pegdatabase['merkleTimelimit']) * 2) < timestamp:
+                                    ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'] = {}
+                                    for mytx in ThePeg.Pegdatabase['merklelist'][nonce]['transactions']:
+                                        x = 0                            
+                                        name = ''
+                                        #In production will want to ensure that variables can't be changed while processing.
+                                        while x < len(ThePeg.Pegdatabase['bridgedb']['bridges']):
+                                            if mytx['network'] == ThePeg.Pegdatabase['bridgedb']['bridges'][x]['n']:
+                                                name=mytx['network']
+                                                break
+                                            x+=1
+                                        try:
+                                            if name == '':
+                                                float('a')
+                                            ThePeg.Pegdatabase['netdata'][name] = {'pegsteps':result[0][x]['1'],'microsteps':result[0][x]['2']}
+                                            reserve = CompressFractions(mytx['pool'],ThePeg.Pegdatabase['merklelist'][nonce]['supply'],result[0][x]['1'],result[0][x]['2'])
+                                            mydata = [mytx['to'],reserve,mytx['txid']]
+                                            myval = str(int(result[0][x]['1']) + int(result[0][x]['2']))
+                                            myhash = BridgeDriver.execute_script("return getLeaf("+str(mydata)+","+myval+");")
+
+                                            pegsteps = int(result[0][x]['1'])
+                                            microsteps = int(result[0][x]['2'])
+                                            currentsupply = int(ThePeg.Pegdatabase['merklelist'][nonce]['supply'])
+                                            rate = 1200 / (pegsteps * microsteps)
+                                            supply = int(currentsupply / rate)
+                                            section = int(supply / pegsteps)
+
+                                            if name not in ThePeg.Pegdatabase['merklelist'][nonce]['finalTX']:
+                                                ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name] = {'leaves':[],'section':section}
+                                            ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name]['leaves'].append(myhash)
+                                            if name not in ThePeg.Pegdatabase['bridgepool']:
+                                                ThePeg.Pegdatabase['bridgepool'][name]=[0]*1200
+                                            if name not in ThePeg.Pegdatabase['fundsout']:
+                                                ThePeg.Pegdatabase['fundsout'][name]=0
+                                            tot=0
+                                            inx=0
+                                            for val in mytx['pool']:
+                                                tot+=val
+                                                ThePeg.Pegdatabase['bridgepool'][name][inx]+=val
+                                                inx+=1
+                                            ThePeg.Pegdatabase['fundsout'][name] += tot                                
+                                        except:
+                                            print "Error converting fractions"
+                                            #A single transaction may be discarded for an invalid address. However handle errors to make sure a valid TX is not discarded
+                                            #Still, we don't want all of the other transactions to be held up because of one that fails.
+                                            traceback.print_exc()
+                                    for name2 in ThePeg.Pegdatabase['merklelist'][nonce]['finalTX']:
+                                        ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name2]['leaves'].sort() #They should have been deterministic but will sort just in case
+                                        ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name2]['root']=BridgeDriver.execute_script("return createMerkle("+str(ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name2]['leaves']).replace(' u','').replace('[u','[')+");")
+                                        print "Processed Merkle Tree:" + str(ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name2]['root'])
+                                    ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'] = ast.literal_eval(json.dumps(ThePeg.Pegdatabase['merklelist'][nonce]['finalTX']))
+                                    if ThePeg.Pegdatabase['merklenonceTX'] <= nonce and ThePeg.Pegdatabase['merklelist'][nonce]['transactions'] == []:
+                                        pass
+                                    else:
+                                        ThePeg.Pegdatabase['merklelist'][nonce]['transactions'] = [] #This could in theory be recovered so it can be pruned
+                                        ThePeg.Pegdatabase['merklenonce'] += 1
+                        except:
+                            ThePeg.Pegdatabase['bridgepool'] = copy.deepcopy(poolprev)
+                            ThePeg.Pegdatabase['fundsout'] = fundsprev
+                            traceback.print_exc()
+            except:
+                MySettingsInfo = "Bridge thread crashed."
+                traceback.print_exc()
+TheBridgeThread = BridgeThread("TheBridgeThread")
+TheBridgeThread.start()
+def CompressFractions(pool, currentsupply, pegsteps, microsteps):
+    currentsupply = int(currentsupply)
+    pegsteps = int(pegsteps)
+    microsteps = int(microsteps)
+    rate = 1200 / (pegsteps * microsteps)
+    supply = int(currentsupply / rate)
+    section = int(supply / pegsteps)
+    newpool = [0] * (pegsteps + microsteps)
+    myinx = 0
+    while myinx < pegsteps:        
+        if myinx == section:
+            x=0
+            y=0
+            while x<microsteps:
+                z=0
+                while z<rate:
+                    newpool[pegsteps+x]+=pool[(myinx*(rate*microsteps))+y]
+                    y+=1
+                    z+=1
+                x+=1
+        else:
+            x=0
+            while x<(rate*microsteps):
+                newpool[myinx]+=pool[(myinx*(rate*microsteps))+x]
+                x+=1
+        myinx+=1
+    return copy.deepcopy(newpool)
+def DecompressFractions(pool, name, section, pegsteps, microsteps):
+    pegsteps = int(pegsteps)
+    microsteps = int(microsteps)
+    rate = 1200 / (pegsteps * microsteps)
+    newpool = [0] * (1200)
+    myinx = 0
+    bridgepool = copy.deepcopy(ThePeg.Pegdatabase['bridgepool'][name])
+    while myinx < pegsteps:
+        if myinx == section:
+            remainder=0
+            z=0
+            while z<microsteps:
+                if pool[pegsteps + z]>0:
+                    position=(myinx*(rate*microsteps))+(z*rate)
+                    thetotal=0
+                    x=0
+                    while x<(rate):
+                        thetotal+=bridgepool[position+x]
+                        x+=1                
+                    #Take what we can and later check the entire section for what remained
+                    if thetotal < pool[pegsteps + z]:
+                        remainder+=(pool[pegsteps + z]-thetotal)
+                        pool[pegsteps + z]-=thetotal
+                        x=0
+                        while x<(rate):
+                            newpool[position+x]+=bridgepool[position+x]
+                            bridgepool[position+x]=0
+                            x+=1
+                    else:
+                        tot=pool[pegsteps + z]
+                        x=0
+                        while x<(rate):
+                            val=int((bridgepool[position+x] * pool[pegsteps + z])/thetotal)
+                            bridgepool[position+x]-=val
+                            tot-=val
+                            newpool[position+x]+=val
+                            x+=1
+                        if tot>0:
+                            x=0
+                            while x<(rate):
+                                if bridgepool[position+x] > 1:
+                                    bridgepool[position+x]-=1
+                                    tot-=1
+                                    newpool[position+x]+=1
+                                x+=1
+                                if tot==0:
+                                    break
+                        if tot != 0:
+                            return False
+                        pool[pegsteps + z]=0
+                z+=1
+            if remainder > 0:
+                position=(myinx*(rate*microsteps))
+                thetotal=0
+                x=0
+                while x<(rate*microsteps):
+                    thetotal+=bridgepool[position+x]
+                    x+=1                
+                if thetotal < remainder:
+                    return False
+                tot=remainder
+                x=0
+                while x<(rate*microsteps):
+                    val=int((bridgepool[position+x] * remainder)/thetotal)
+                    bridgepool[position+x]-=val
+                    tot-=val
+                    newpool[position+x]+=val
+                    x+=1
+                if tot>0:
+                    x=0
+                    while x<(rate*microsteps):
+                        if bridgepool[position+x] > 1:
+                            bridgepool[position+x]-=1
+                            tot-=1
+                            newpool[position+x]+=1
+                        x+=1
+                        if tot==0:
+                            break
+                if tot != 0:
+                    return False                
+        else:
+            if pool[myinx]>0:
+                position=(myinx*(rate*microsteps))
+                thetotal=0
+                x=0
+                while x<(rate*microsteps):
+                    thetotal+=bridgepool[position+x]
+                    x+=1                
+                if thetotal < pool[myinx]:
+                    return False
+                tot=pool[myinx]
+                x=0
+                while x<(rate*microsteps):
+                    val=int((bridgepool[position+x] * pool[myinx])/thetotal)
+                    bridgepool[position+x]-=val
+                    tot-=val
+                    newpool[position+x]+=val
+                    x+=1
+                if tot>0:
+                    x=0
+                    while x<(rate*microsteps):
+                        if bridgepool[position+x] > 1:
+                            bridgepool[position+x]-=1
+                            tot-=1
+                            newpool[position+x]+=1                        
+                        x+=1
+                        if tot==0:
+                            break
+                if tot != 0:
+                    return False
+        myinx+=1
+    return copy.deepcopy(newpool)
 class FileThread(QtCore.QThread):#Safe File saving thread
     def __init__(self, url):
         QtCore.QThread.__init__(self)
@@ -6408,7 +7319,7 @@ class RPCThread(QtCore.QThread):#Api thread
             #sig=base64.b64encode(sig)
             #HaloRPC = xmlrpclib.ServerProxy('http://localhost:55779')
             #HaloRPC.API({'sig':sig,'exec':'print "Hello world"'})
-            if RPC.public!="":
+            if RPC.public!="" and os.path.exists(os.path.join(application_path, 'API.share')):
                 myhash=txhash(command['exec'])
                 if myhash not in RPC.APIhist:
                     RPC.APIhist[myhash]=''
@@ -6422,8 +7333,9 @@ class RPCThread(QtCore.QThread):#Api thread
                     except:
                         return str(traceback.format_exc())
                     return result
-                return False
-            return True
+                else:
+                    return "Signature failed"
+            return False
         def ColdStake(self, msg, multiscript, sigs2, stakeinput, mystakeouts, kerneltime, tx, blocktemplate, amt, val, chg):
             try:
                 global BLK, AdvanceArray, AddNewOrders, OnOrders, MasterOrders
@@ -6978,14 +7890,16 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
             fail=1
         while not conn:
             try:
-                if BlackHalo.poll() != None:
-                    fail=2
+                BLKurl = 'http://'+CoinSelect['rpcuser']+':'+CoinSelect['rpcpassword']+'@localhost:'+CoinSelect['rpcport']
+                if BlackHalo!=None:
+                    if BlackHalo.poll() != None:
+                        fail=2
                 if fail != 0:
                     count+=maxConnectAttempts
                     float("A")
-                BLKurl = 'http://'+CoinSelect['rpcuser']+':'+CoinSelect['rpcpassword']+'@localhost:'+CoinSelect['rpcport']
-                BLK = AuthServiceProxy(BLKurl)
-                BLK.getblockcount()
+                if BlackHalo!=None:                    
+                    BLK = AuthServiceProxy(BLKurl)
+                    BLK.getblockcount()
                 conn=True
                 print 'connection to network successful'
             except:
@@ -7037,7 +7951,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
             with open(os.path.join(application_path,"HaloTemp.tmp"),'a+') as f:
                 f.close()
         prvblock=0
-        checkinfo = time.time() + 540
+        checkinfo = time.time()
         prvtime=time.time()
         count = 0
         timethis=time.time()
@@ -7071,8 +7985,12 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                 cnct=1
                 try:
                     #When synchronizing the percentage is estimated based on time stamps
-                    connectioncount=str(BLK.getconnectioncount())
-                    count1 = BLK.getblockcount()
+                    if BlackHalo!=None:
+                        connectioncount=str(BLK.getconnectioncount())
+                        count1 = BLK.getblockcount()
+                    else:
+                        connectioncount="0"
+                        count1 = 0
                     myblockcount=count1
                     if 'pegging' in CoinSelect and CoinSelect['pegging']:
                         if TestnetPeg==False:
@@ -7084,9 +8002,16 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                             ThePeg.Pegdatabase['startingblock']=peginfo['startingblock']#1000000000 means it has not started yet
                             ThePeg.Pegdatabase['supply']=peginfo['peg']
                             ThePeg.Pegdatabase['blockcount']=myblockcount
-                    hsh= BLK.getbestblockhash()
-                    hsh= BLK.getblock(hsh)
-                    UniversalTimeStamp=hsh['time']                    
+                    if BlackHalo!=None:
+                        hsh= BLK.getbestblockhash()
+                        hsh= BLK.getblock(hsh)
+                    else:
+                        try:
+                            thenewtime=time.mktime(datetime.datetime.utcnow().timetuple())
+                        except:
+                            thenewtime=time.time()
+                        hsh={'time':thenewtime}
+                    UniversalTimeStamp=hsh['time']
                     try:
                         timestamp=time.mktime(datetime.datetime.utcnow().timetuple())
                     except:
@@ -7128,15 +8053,16 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                     globperc=t
                     globcount=count1
                 except Exception, e:
-                    BLK = ""
-                    BLK = AuthServiceProxy(BLKurl)
+                    if BlackHalo!=None:
+                        BLK = ""
+                        BLK = AuthServiceProxy(BLKurl)
                     traceback.print_exc()
                     pass
                 iswaiting=1
                 while lockdownload==1 or lockdownload2==1:
                     time.sleep(.001)
                 iswaiting=0
-                if BitHaloClient==False:
+                if BitHaloClient==False and BlackHalo!=None:
                     connection=0
                     rscn=0
                     while connection==0:
@@ -7205,13 +8131,27 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                         except:
                             traceback.print_exc()
                         isdownloading=0
-                    if BitHaloClient==False and RunHalo:
+                    if BitHaloClient==False and RunHalo and BlackHalo!=None:
                         isdownloading=1
                         multisig,multiscript=create_multisig_address(PrivKeyFilename1)
                         try:
-                            if time.time() - checkinfo > 600:
-                                checkinfo = time.time()
+                            if time.time() > checkinfo:
+                                checkinfo = time.time() + 540
                                 coininfo = BLK.getinfo()
+                                try:
+                                    if 'pegging' in CoinSelect and CoinSelect['pegging'] and globperc==100:
+                                        if ThePeg.testthis==0:
+                                            bdb=BLK.getbridgeinfo()
+                                            if bdb==False:
+                                                float('a')
+                                            ThePeg.Pegdatabase['bridgeactive']=bdb[0]
+                                            ThePeg.Pegdatabase['bridgedb']=copy.deepcopy(bdb[1])
+                                            if waitlock() == True:
+                                                AdvanceArray['bridgedb'] = ThePeg.Pegdatabase['bridgedb']
+
+                                except:
+                                    traceback.print_exc()
+                                    print "Bridge not loaded"
                         except:
                             print "Check coin info failed"                            
                         try:
@@ -7325,6 +8265,67 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                 u1=BLK.listfrozen()
                                 for u in u1:
                                     BlackUnspent2.append(u)
+                            if 'pegging' in CoinSelect and CoinSelect['pegging'] and ThePeg.testthis==1:
+                                if 'bridgecheck' in AdvanceArray:
+                                    for elem in AdvanceArray['bridgecheck']:                                        
+                                        if elem not in AdvanceArray['bridgetx']:
+                                            if waitlock() == True:
+                                                AdvanceArray['bridgetx'][elem]={'pool':[0]*1200}
+                                        try:
+                                            fractions=BLK.getfractions(elem)['values']
+                                            if waitlock() == True:
+                                                AdvanceArray['bridgetx'][elem]['pool']=copy.deepcopy(fractions)
+                                                AdvanceArray['bridgecheck'].remove(elem)
+                                                break
+                                        except:
+                                            traceback.print_exc()
+                                            try:
+                                                if 'timeout' not in AdvanceArray['bridgetx'][elem]:
+                                                    if waitlock() == True:
+                                                        AdvanceArray['bridgetx'][elem]['timeout']=timestamp
+                                                if AdvanceArray['bridgetx'][elem]['timeout']+2419200<timestamp:
+                                                    if waitlock() == True:
+                                                        AdvanceArray['bridgecheck'].remove(elem)
+                                                        break
+                                            except:
+                                                traceback.print_exc()
+                            if 'pegging' in CoinSelect and CoinSelect['pegging']:
+                                if 'bridgeautomation' not in AdvanceArray:
+                                    if waitlock() == True:
+                                        AdvanceArray['bridgeautomation'] = {'processnonce':0,'votes':{}}
+                                if BridgeAdmin:
+                                    nonce = str(AdvanceArray['bridgeautomation']['processnonce'])
+                                    if ThePeg.testthis==1:
+                                        if nonce in ThePeg.Pegdatabase['merklelist']:
+                                            if 'finalTX' in ThePeg.Pegdatabase['merklelist'][nonce] and AdvanceArray['bridgeautomation']['votes'] == {}:
+                                                for myname in ThePeg.Pegdatabase['merklelist'][nonce]['finalTX']:
+                                                    if myname not in AdvanceArray['bridgeautomation']['votes']:
+                                                        if waitlock() == True:
+                                                            AdvanceArray['bridgeautomation']['votes'][myname] = {'root':ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][myname]['root'],'section':ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][myname]['section']}
+                                    else:
+                                        try:
+                                            if AdvanceArray['bridgeautomation']['votes'] == {}:
+                                                while(BLK.getroot(int(nonce)+3) != False):
+                                                    if waitlock() == True:
+                                                        AdvanceArray['bridgeautomation']['processnonce'] += 1
+                                                    else:
+                                                        break
+                                                    nonce = str(AdvanceArray['bridgeautomation']['processnonce'])
+                                                myroots=BLK.getroot(int(nonce))
+                                                if myroots != False:
+                                                    if waitlock() == True:
+                                                        AdvanceArray['bridgeautomation']['votes'] = copy.deepcopy(myroots)
+                                        except:
+                                            traceback.print_exc()
+                                    completethis = 0
+                                    if AdvanceArray['bridgeautomation']['votes'] != {}:
+                                        if TheBridgeThread.confirmedvotes == AdvanceArray['bridgeautomation']['votes']:
+                                            completethis = 1
+                                    if completethis == 1:
+                                        if waitlock() == True:
+                                            TheBridgeThread.confirmedvotes = {}
+                                            AdvanceArray['bridgeautomation']['processnonce'] += 1
+                                            AdvanceArray['bridgeautomation']['votes'] = {}
                             try:
                                 BlackUnspent3=json.loads(json.dumps(BlackUnspent2,cls=DecimalEncoder))
                             except:
@@ -7674,6 +8675,21 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                         amt=BLK.getstakesubsidy(tx)
                                         val=stakeinput['value']+result['blocktemplatefees']+amt
                                         chg=val
+                                        thedif=0
+                                        if 'pegging' in CoinSelect and CoinSelect['pegging']:
+                                            thevotes={}
+                                            if ThePeg.testthis==0:
+                                                thevotes=BLK.getmerklevotes()
+                                            else:                                                
+                                                thevotes=copy.deepcopy(TheBridgeThread.votemerkles)
+                                            if thevotes != {}:
+                                                for thebridge in thevotes:
+                                                    if thevotes[thebridge] != 0:
+                                                        voteaddy=MakeCipherOutputs('**M**' + txhash(thebridge)[:16] + thevotes[thebridge], 1)
+                                                        voteaddy=str(voteaddy[0])
+                                                        mystake['outs'].append({'value':5554,'script':voteaddy})
+                                                        chg-=5554
+                                                        thedif+=5554
                                         if len(AdvanceArray['MySettings']['Voting'])>0 and len(AdvanceArray['MySettings']['Voting'])<21:
                                             donation=0
                                             lenvotes=len(AdvanceArray['MySettings']['Voting'])                                            
@@ -7706,7 +8722,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                             voteaddy=address_to_script(voteaddy)
                                                     mystake['outs'].append({'value':5554,'script':voteaddy})
                                         else:
-                                            val=stakeinput['value']+result['blocktemplatefees']+amt
+                                            val=stakeinput['value']+result['blocktemplatefees']+amt-thedif
                                             mystake['outs'].append({'value':val,'script':address_to_script(stakeinput['address'])})
                                         tx=serialize(mystake)
                                         res=False
@@ -8353,6 +9369,8 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                     CanStakeTime=False
                                 else:
                                     CanStakeTime=True
+                                if hd > 86400: #Make sure UTC site didn't get hacked, better safe than sorry.
+                                    float('a')
                             except:
                                 HaloTime = datetime.datetime(1970, 1, 1, 0, 0, 0, 0)#Ok it failed we now have a time that can't pass a current time
                         except:
@@ -8361,6 +9379,11 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                             UpdateMessage=requestURL("http://bithalo.github.io/bithalo/updates.htm")
                         except:
                             UpdateMessage=clientversion
+                        if 'pegging' in CoinSelect and CoinSelect['pegging']:
+                            try:
+                                TheBridgeThread.mypairs=json.loads(requestURL("https://github.com/bitbaymarket/Bitbay-Solidity/Html/bridgepairs.txt"))
+                            except:
+                                pass
                         try:
                             githubrates=json.loads(requestURL("https://raw.githubusercontent.com/bitbaymarket/ratedb/master/rates.json"))
                             tbtc=Decimal(int((Decimal(githubrates['BAY']['price'])/Decimal(githubrates['BTC']['price']))*Decimal(1e8)))/Decimal(1e8)
@@ -8374,28 +9397,31 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                             try:
                                 CoinMarketCap2=''
                                 if CoinSelect['name'] not in CoinMarketCap2:#Eventually we could iterate all coins in CoinSelect
-                                    try:
-                                        if CoinGecko == 1:
-                                            float('a')
+                                    if CoinSelect['name'] == "BitBay":
+                                        CoinMarketCap2+=' id="id-'+CoinSelect['name'].lower()+'price" data-usd="'+str(githubrates['BAY']['price'])+'"'+' data-btc="'+str(tbtc)+'"'+'id="id-'
+                                    else:
                                         try:
-                                            mycoin = requestURL('http://coinmarketcap.com/currencies/' + CoinSelect['name'])
-                                            tusd = mycoin.split('<span class="cmc-details-panel-price__price">$')[1].split('</span>')[0].replace(',', '')
-                                            tbtc = mycoin.split('<span class="cmc-details-panel-price__crypto-price">')[1].split(' BTC</span>')[0].replace(',', '')
-                                        except:
-                                            CoinGecko = 1
-                                            float('a')
-                                    except:
-                                        try:
-                                            mycoin = requestURL('https://www.coingecko.com/en/coins/' + CoinSelect['name'].lower())
-                                            tusd = mycoin.split('data-target="price.price">$')[1].split('</span>')[0].replace(',', '')
+                                            if CoinGecko == 1:
+                                                float('a')
                                             try:
-                                                tbtc = mycoin.split('class="text-muted text-normal">\n')[1].split(' BTC')[0].replace(',', '')
+                                                mycoin = requestURL('http://coinmarketcap.com/currencies/' + CoinSelect['name'])
+                                                tusd = mycoin.split('<span class="cmc-details-panel-price__price">$')[1].split('</span>')[0].replace(',', '')
+                                                tbtc = mycoin.split('<span class="cmc-details-panel-price__crypto-price">')[1].split(' BTC</span>')[0].replace(',', '')
                                             except:
-                                                tbtc = mycoin.split('data-price-btc="')[1].split('"')[0].replace(',', '')
+                                                CoinGecko = 1
+                                                float('a')
                                         except:
-                                            CoinGecko = 0
-                                            float('a')
-                                    CoinMarketCap2+=' id="id-'+CoinSelect['name'].lower()+'price" data-usd="'+tusd+'"'+' data-btc="'+tbtc+'"'+'id="id-'
+                                            try:
+                                                mycoin = requestURL('https://www.coingecko.com/en/coins/' + CoinSelect['name'].lower())
+                                                tusd = mycoin.split('data-target="price.price">$')[1].split('</span>')[0].replace(',', '')
+                                                try:
+                                                    tbtc = mycoin.split('class="text-muted text-normal">\n')[1].split(' BTC')[0].replace(',', '')
+                                                except:
+                                                    tbtc = mycoin.split('data-price-btc="')[1].split('"')[0].replace(',', '')
+                                            except:
+                                                CoinGecko = 0
+                                                float('a')
+                                        CoinMarketCap2+=' id="id-'+CoinSelect['name'].lower()+'price" data-usd="'+tusd+'"'+' data-btc="'+tbtc+'"'+'id="id-'
                                 usd,btc=GetMarketValue(CoinSelect['name'],CoinMarketCap2, 0)
                                 if usd=="":
                                     float('a')
@@ -8403,7 +9429,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                             except:
                                 if thecoins=='':
                                     float('a')
-                                print "Coinmarketcap exception: Using rate from github"
+                                #print "Coinmarketcap exception: Using rate from github"
                                 CoinMarketCap=thecoins
                             #Need to grab a price history for price tracking
                             if waitlock(1000) == True:
@@ -8429,38 +9455,38 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                 pass
                         try:
                             if ipserver==1:
-                                publicaddress = requestURL('http://ip.42.pl/raw')
+                                publicaddress = json.loads(requestURL('https://api64.ipify.org/?format=json'))['ip']                                
                             else:
-                                publicaddress = json.loads(requestURL('https://api6.ipify.org/?format=json'))['ip']
+                                publicaddress = requestURL('http://ip.42.pl/raw')
                         except:
                             if ipserver==1:
                                 ipserver=0
                             else:
                                 ipserver=1
                             try:
-                                publicaddress = json.loads(requestURL('https://api6.ipify.org/?format=json'))['ip']
+                                publicaddress = requestURL('http://ip.42.pl/raw')
                             except:
                                 pass
                         try:
                             startdate=datetime.datetime(2018, 6, 1, 0, 0, 0, 0)
                             if 'btchistory' not in AdvanceArray:
                                 AdvanceArray['btchistory']={'peak':'20000', 'date': (2018, 6, 1, 0, 0, 0, 0)}
-                            while startdate<HaloTime:
-                                mydate=ConvertDate(startdate,0)
-                                if str(mydate[0])+"-"+str(mydate[1])+"-"+str(mydate[2]) not in AdvanceArray['btchistory']:
-                                    btchist=requestURL('https://api.coindesk.com/v1/bpi/historical/close.json?start=2013-09-01')
-                                    btchist=json.loads(btchist)
-                                    for btchist2 in btchist['bpi']:
-                                        break
-                                    peak=str(int(btchist['bpi'][btchist2]))
-                                    AdvanceArray['btchistory'][str(mydate[0])+"-"+str(mydate[1])+"-"+str(mydate[2])]=peak
-                                    for peak in AdvanceArray['btchistory']:
-                                        if '-' in peak:
-                                            if int(AdvanceArray['btchistory']['peak'])<int(AdvanceArray['btchistory'][peak]):
-                                                AdvanceArray['btchistory']['peak']=AdvanceArray['btchistory'][peak]
+                            
+                            curtime = str(HaloTime)[:7]+'-01'
+                            if curtime not in AdvanceArray['btchistory']:
+                                btchist=json.loads(requestURL('https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-06-01' + '&end=' + curtime))['bpi']
+                                while startdate<HaloTime:
+                                    mydate=ConvertDate(startdate,0)
+                                    if str(startdate)[:10] in btchist: #Keep checking until it appears
+                                        peak=int(Decimal(str(btchist[str(startdate)[:10]])))
+                                        if str(startdate)[:10] not in AdvanceArray['btchistory']:
+                                            AdvanceArray['btchistory'][str(startdate)[:10]]=peak
+                                            if int(AdvanceArray['btchistory']['peak'])<int(peak):
+                                                AdvanceArray['btchistory']['peak']=AdvanceArray['btchistory'][str(startdate)[:10]]
                                                 AdvanceArray['btchistory']['date']=mydate
                                                 print "New peak price: ", AdvanceArray['btchistory']['peak'], str(mydate)
-                                startdate=addmonths(1,startdate)
+                                    startdate=addmonths(1,startdate)
+                            
                             if HaloTime-ConvertDate(AdvanceArray['btchistory']['date'],1)>datetime.timedelta(days=31):
                                 AdvanceArray['btchistory']['peak']=str(int(Decimal(AdvanceArray['btchistory']['peak'])*Decimal(1.01)))
                                 AdvanceArray['btchistory']['date']=ConvertDate(addmonths(1,ConvertDate(AdvanceArray['btchistory']['date'],1)),0)
@@ -8482,8 +9508,8 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                         try:
                             btcfeekb=0
                             if BitHaloClient:
-                                btcfee=str(requestURL('https://estimatefee.com/n/2'))                                
-                                btcfeekb=int(Decimal(btcfee)*Decimal(100000))
+                                btcfee=str(requestURL('https://bitcoinfees.earn.com/api/v1/fees/recommended'))
+                                btcfeekb=int(json.loads(btcfee)['fastestFee'])
                         except:
                             btcfeekb=0
                         checktime=0
@@ -9161,6 +10187,10 @@ def Update():
             except:
                 pass
     globperc2=globperc
+    if MySettingsInfo != "" and MySettingsInfo != "Loading bridge information...":
+        if int(time.time())-TheBridgeThread.BridgeRefresh>60:
+            TheBridgeThread.BridgeRefresh=int(time.time())
+            MySettings.BridgeInfo.setText(MySettingsInfo)
     if rescanning == 2:
         window.labelProgress.setText(Gtranslate("Rescanning... "))
         if CoinSelect['moderngui']==0:
@@ -10360,71 +11390,97 @@ def requestURL(URL):
                 noproxy[URL[:15]]=1
             socket.socket = socket_original
             socket.create_connection = connection_original
-        if 'api.biteasy.com' in URL or "https://chain.so/api/" in URL or "https://blockchain.info/" in URL or "http://coinmarketcap.com/" in URL or 'estimatefee.com' in URL or 'api.coindesk.com' in URL or 'bitcoin.com' in URL or 'blockexplorer.com' in URL or 'githubusercontent' in URL or 'api6.ipify.org' in URL or 'pastebin.com':#These sites prefer requests
+        if 'api.biteasy.com' in URL or "https://chain.so/api/" in URL or "https://blockchain.info/" in URL or "http://coinmarketcap.com/" in URL or 'estimatefee.com' in URL or 'api.coindesk.com' in URL or 'bitcoin.com' in URL or 'blockexplorer.com' in URL or 'githubusercontent' in URL or 'api64.ipify.org' in URL or 'pastebin.com':#These sites prefer requests
             return rget(URL)
         try:
             return str(urllib2.urlopen(URL, None, 60).read())
         except:
             return rget(URL)
+#def fpaste(content, expire_options=604800):
+#    global noproxy
+#    try:
+#        if AdvanceArray['MySettings']['Proxy']!='':
+#            if 'fpaste' in noproxy:
+#                socket.socket = socket_original
+#                socket.create_connection = connection_original
+#            else:
+#                url, port = AdvanceArray['MySettings']['Proxy'].split(":",1)
+#                socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, url, int(port))
+#                socket.socket = socks.socksocket
+#                socket.create_connection = create_connection
+#        try:
+#            mCookieJar = mechanize.CookieJar()
+#            mechbrowser=mechanize.Browser()
+#            #mechbrowser.set_all_readonly(False)    # allow everything to be written to
+#            mechbrowser.set_handle_robots(False)   # ignore robots
+#            mechbrowser.set_handle_refresh(False)  # can sometimes hang without this
+#            #mechbrowser.addheaders = [('User-agent', 'Firefox')]
+#            mechbrowser.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+#            mechbrowser.set_cookiejar(mCookieJar)
+#        except:
+#            traceback.print_exc()
+#            print 'Loading of Mechanize failed'
+#            float('a')
+#        url='https://pastebin.com/'
+#        response = mechbrowser.open(url)
+#        x=response.read()      # the text of the page
+#        for form in mechbrowser.forms():
+#            if "TextareaControl(PostForm" in str(form):
+#                mechbrowser.form = form
+#                break
+#        mechbrowser.form['PostForm[text]']=content
+#        response=mechbrowser.submit()
+#        x=response.read()
+#        if content not in x:
+#            print "Content not found in result"      
+#            clipboard = app.clipboard()
+#            clipboard.setText(x) 
+#            print response.geturl()
+#            float('a')
+#        return str({'paste_id_repr':response.geturl()})
+#    except:
+#        traceback.print_exc()
+#        if AdvanceArray['MySettings']['Proxy']!='' and 'fpaste' not in noproxy:
+#            noproxy['fpaste']=1
+#            socket.socket = socket_original
+#            socket.create_connection = connection_original
+#            return fpaste(content, expire_options)
+#    return False
 def fpaste(content, expire_options=604800):
-    global noproxy
+    global timestamp #The new fpaste wants a specific timestamp
+    URL = "https://dpaste.com/api/"
     try:
-        if AdvanceArray['MySettings']['Proxy']!='':
-            if 'fpaste' in noproxy:
-                socket.socket = socket_original
-                socket.create_connection = connection_original
-            else:
-                url, port = AdvanceArray['MySettings']['Proxy'].split(":",1)
-                socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, url, int(port))
-                socket.socket = socks.socksocket
-                socket.create_connection = create_connection
-        try:
-            mechbrowser=mechanize.Browser()
-            #mechbrowser.set_all_readonly(False)    # allow everything to be written to
-            mechbrowser.set_handle_robots(False)   # ignore robots
-            mechbrowser.set_handle_refresh(False)  # can sometimes hang without this
-            #mechbrowser.addheaders = [('User-agent', 'Firefox')]
-            mechbrowser.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-        except:
-            traceback.print_exc()
-            print 'Loading of Mechanize failed'
-            float('a')
-        url='https://pastebin.com/'
-        response = mechbrowser.open(url)
-        x=response.read()      # the text of the page
-        if "paste_code" not in x:
-            print "Pastebin not returning expected data"
-            float('a')
-        #for form in mechbrowser.forms():
-        #    print "Form name:", form.name
-        #    print form
-        mechbrowser.select_form(nr = 2)
-        mechbrowser['paste_code']=content
-        response=mechbrowser.submit()
-        x=response.read()
-        if content not in x:
-            print "Content not found in result"      
-            print response.geturl()
-            float('a')
-        return str({'paste_id_repr':response.geturl()})
+        query = {"content": content, "syntax": "python", "expiry_days": 365}
+        resp = rpost(URL, query, 1)
+        resptext = resp.text.replace("\n","")
+        print resptext
+        if "err_" in str(resptext) or "_failure" in str(resptext) or "Error" in str(resptext) or "http" not in str(resptext):
+           return False
+        return str({'paste_id_repr':resptext})
     except:
         traceback.print_exc()
-        if AdvanceArray['MySettings']['Proxy']!='' and 'fpaste' not in noproxy:
-            noproxy['fpaste']=1
-            socket.socket = socket_original
-            socket.create_connection = connection_original
-            return fpaste(content, expire_options)
-    return False
-def showpaste(ID):#Receive as a string
+        return False
+def showpaste(ID):#Receive as a string    
     try:
         ID=ast.literal_eval(ID)
-        resp=requestURL(ID['paste_id_repr'])
-        resp=resp.split('<ol class="text"><li class="li1"><div class="de1">')[1].split('</div></li>')[0]
+        resp=repr(requestURL(ID['paste_id_repr']+".txt"))
+        if resp[0]=="u" and resp[1]=="'":
+            resp=ast.literal_eval(resp)
         return str(resp)#response['result']['data']
     except Exception, e:
         traceback.print_exc()
         print "PASTEBIN FAILED: ", str(ID)
         return False
+#def showpaste(ID):#Receive as a string
+#    try:
+#        ID=ast.literal_eval(ID)
+#        resp=repr(requestURL(ID['paste_id_repr']))
+#        resp=resp.split('div id="raw-content" hidden>\\n')[1].split("\\n</div>")[0]
+#        return str(resp)#response['result']['data']
+#    except Exception, e:
+#        traceback.print_exc()
+#        print "PASTEBIN FAILED: ", str(ID)
+#        return False
 #Unfortunately fpaste wants an API key now. And too many services change their API so we resort to scraping now.
 #If the page we are using changes then we will add more redundant services
 #def fpaste(content, expire_options=604800):
@@ -10543,7 +11599,7 @@ def CheckNotary(txid):
         traceback.print_exc()
         return False
 
-def rpost(url,query):
+def rpost(url,query,data=0):
     global reqsession
     global noproxy
     try:
@@ -10555,7 +11611,10 @@ def rpost(url,query):
                 socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, url2, int(port))
                 socket.socket = socks.socksocket
                 socket.create_connection = create_connection
-                resp = requests.post(url,json=query)
+                if data==0:
+                    resp = requests.post(url,json=query)
+                else:
+                    resp = requests.post(url,data=query)
                 if 'captcha' in resp or "CAPTCHA" in resp or 'security' in resp:
                     float('a')
                 return resp
@@ -10569,9 +11628,15 @@ def rpost(url,query):
                 socket.socket = socket_original
                 socket.create_connection = connection_original
         if reqsession=="":
-            resp = requests.post(url,json=query)
+            if data==0:
+                resp = requests.post(url,json=query)
+            else:
+                resp = requests.post(url,data=query)
         else:
-            resp = reqsession.post(url,json=query)
+            if data==0:
+                resp = reqsession.post(url,json=query)
+            else:
+                resp = reqsession.post(url,data=query)
     except:
         exc=str(traceback.format_exc())
         print exc
@@ -10579,7 +11644,10 @@ def rpost(url,query):
             if reqsession=="":
                 reqsession = requests.Session()
                 reqsession.mount('https://', MyAdapter())
-            resp = reqsession.post(url,json=query)
+            if data==0:
+                resp = reqsession.post(url,json=query)
+            else:
+                resp = reqsession.post(url,data=query)
         else:
             float('a')    
     return resp
@@ -10609,7 +11677,7 @@ def rget(url):
             float('a')    
     return resp
 def GetMarketValue(thecoin, coins="", check=1):
-    global CoinMarketCap, thecoins, CoinGecko
+    global CoinMarketCap, thecoins, CoinGecko, githubrates
     coinsG=""
     usd=""
     btc=""
@@ -10618,28 +11686,35 @@ def GetMarketValue(thecoin, coins="", check=1):
     try:
         if coins=="" and check==1:
             if thecoin not in coins:#Eventually we could iterate all coins in CoinSelect
-                try:
-                    if CoinGecko == 1:
-                        float('a')
+                if thecoin=="BitBay":
+                    githubrates=json.loads(requestURL("https://raw.githubusercontent.com/bitbaymarket/ratedb/master/rates.json"))
+                    tbtc=Decimal(int((Decimal(githubrates['BAY']['price'])/Decimal(githubrates['BTC']['price']))*Decimal(1e8)))/Decimal(1e8)
+                    tbtc=dropzeros(remove_exponent(tbtc),1)
+                    coins=' id="id-'+'bitcoin'+'price" data-usd="'+str(githubrates['BTC']['price'])+'"'+' data-btc="'+'1'+'"'+'id="id-'
+                    coins+=' id="id-'+'bitbay'+'price" data-usd="'+str(githubrates['BAY']['price'])+'"'+' data-btc="'+str(tbtc)+'"'+'id="id-'
+                else:
                     try:
-                        mycoin = requestURL('http://coinmarketcap.com/currencies/' + thecoin)
-                        tusd = mycoin.split('<span class="cmc-details-panel-price__price">$')[1].split('</span>')[0].replace(',', '')
-                        tbtc = mycoin.split('<span class="cmc-details-panel-price__crypto-price">')[1].split(' BTC</span>')[0].replace(',', '')
-                    except:
-                        CoinGecko = 1
-                        float('a')
-                except:
-                    try:
-                        mycoin = requestURL('https://www.coingecko.com/en/coins/' + thecoin)
-                        tusd = mycoin.split('data-target="price.price">$')[1].split('</span>')[0].replace(',', '')
+                        if CoinGecko == 1:
+                            float('a')
                         try:
-                            tbtc = mycoin.split('class="text-muted text-normal">\n')[1].split(' BTC')[0].replace(',', '')
+                            mycoin = requestURL('http://coinmarketcap.com/currencies/' + thecoin)
+                            tusd = mycoin.split('<span class="cmc-details-panel-price__price">$')[1].split('</span>')[0].replace(',', '')
+                            tbtc = mycoin.split('<span class="cmc-details-panel-price__crypto-price">')[1].split(' BTC</span>')[0].replace(',', '')
                         except:
-                            tbtc = mycoin.split('data-price-btc="')[1].split('"')[0].replace(',', '')
+                            CoinGecko = 1
+                            float('a')
                     except:
-                        CoinGecko = 0
-                        float('a')
-                coins+=' id="id-'+thecoin.lower()+'price" data-usd="'+tusd+'"'+' data-btc="'+tbtc+'"'+'id="id-'
+                        try:
+                            mycoin = requestURL('https://www.coingecko.com/en/coins/' + thecoin)
+                            tusd = mycoin.split('data-target="price.price">$')[1].split('</span>')[0].replace(',', '')
+                            try:
+                                tbtc = mycoin.split('class="text-muted text-normal">\n')[1].split(' BTC')[0].replace(',', '')
+                            except:
+                                tbtc = mycoin.split('data-price-btc="')[1].split('"')[0].replace(',', '')
+                        except:
+                            CoinGecko = 0
+                            float('a')
+                    coins+=' id="id-'+thecoin.lower()+'price" data-usd="'+tusd+'"'+' data-btc="'+tbtc+'"'+'id="id-'
             coinsG=coins
         try:
             try:
@@ -11935,7 +13010,7 @@ def ScanMessages():
                                 body['MyBMAddress']=BitAddy
                                 if CurrentBlock != 0:
                                     body['currentblock']=CurrentBlock
-                                if body['Details']['pastebin']!="" and body['Details']['pastebin']=="":
+                                if body['Details']['pastebin']!="" and body['Details']['image']=="":
                                     if body['Details']['pastebin'] not in checkpastebin:
                                         checkpastebin[body['Details']['pastebin']]=""
                                         continue
@@ -13589,7 +14664,7 @@ def CheckEscrow():
                                             Notification(1, "Automated Payment Completed!")
                                             EscrowResults.pop(ps2)
                         if "Python" in contract['Market Data']['Template']:
-                            exec(contract['Market Data']['code2'])
+                            exec(validateCode(contract['Market Data']['code2']))
                     except:
                         traceback.print_exc()
                 if "Complete:" in contract['Process'] or 'checkcomplete' in MyContracts[pos]:#If they dont clear it we can check
@@ -16242,6 +17317,56 @@ def translate_script(myscript):
         print traceback.extract_stack()
         print "Exotic script cannot be translated"
     return meaning
+def SignCode(code):
+    priv,check=DecryptPrivateKey(PrivKeyFilename1, PrivKeyFiledir1,"0", "", "1")
+    if check=="3":
+        QuestionBox("Incorrect Password!", " OK ")
+        return
+    try:
+        db=[]
+        if os.path.exists(os.path.join(application_path, 'codeSignatures.dat')):
+            with open(os.path.join(application_path, 'codeSignatures.dat'),'r') as fi:
+                db=ast.literal_eval(fi.readline().strip())
+                fi.close()
+        for mycode in code: #Code should be sent in list format so multiple files can be signed
+            sig = sign(txhash(mycode), priv)
+            sig = binascii.hexlify(sig)
+            db.append([txhash(mycode),sig,privtopub(priv)])
+        with open(os.path.join(application_path, 'codeSignatures.dat'),'w') as fi:
+            fi.writelines(str(db))
+            fi.flush()
+            os.fsync(fi)
+            fi.close()
+    except:
+        QuestionBox("Signature Failed!"," OK ")
+        return False
+    QuestionBox("The code has been signed and saved!", " OK ")
+    return True
+def validateCode(code):
+    try:
+        if os.path.exists(os.path.join(application_path, 'codeSignatures.dat')):
+            with open(os.path.join(PrivKeyFiledir1, PrivKeyFilename1), 'r') as fi:
+                x=fi.readline().strip()
+                pub1=fi.readline().strip()
+                pub2=fi.readline().strip()
+                fi.close()
+            with open(os.path.join(application_path, 'codeSignatures.dat'),'r') as fi:
+                db=ast.literal_eval(fi.readline().strip())
+                fi.close()
+            for val in db:
+                if val[2]==pub1 or val[2]==pub2:
+                    if val[2]==pub1:
+                        mypub=val[2]
+                    if val[2]==pub2:
+                        mypub=val[2]
+                    if val[0]==txhash(code):
+                        cipher = verify(txhash(code), binascii.unhexlify(val[1]), mypub)
+                        if cipher:
+                            return code
+    except:
+        traceback.print_exc()
+    print "Code validation failed: " + str(txhash(code))
+    return False    
 #we assume: exactly two signatures are applied, which can be any
 #of buyer,seller and escrow. If the order in which they are provided is
 #different to that used to create the multisig address, swap is needed so
@@ -18434,6 +19559,64 @@ def get_ordered_pubkeys(uniqueid1, dir1="", sort=1, fline=0):
     else:
         return pubs, firstline
 
+#This is used for when a user needs to recover lost data on a bridge TX in the GUI
+def addBridgeTX(txid):
+    global CurrentBlock, timestamp, PrivKeyFilename1
+    multisig,mscript=create_multisig_address(PrivKeyFilename1)
+    txid2=txid.split(":")[0]
+    txid2out=int(txid.split(":")[1])
+    txdata=deserialize(BLK.getrawtransaction(txid2))
+    script=txdata['outs'][txid2out]['script']
+    bridgedata={'network':'','txid':txid,'to':''}
+    thisisgood=0
+    for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
+        try:
+            if translate_script(script)['message'][5:][:16]==txhash(bridged['n'])[:16]:
+                bridgedata['network']=bridged['n']
+                bridgedata['to']=translate_script(script)['message'][5:][16:]
+                thisisgood=1
+                break
+        except:
+            pass
+    if thisisgood!=1:
+        QuestionBox("The bridge network name was not valid!", " OK ")
+        return False
+    amount=txdata['outs'][txid2out]['value']
+    hist={}
+    details={}
+    details['type']="Bridge"    
+    details['ordernumber']=os.urandom(16).encode('hex')
+    details['total']=amount
+    details['change']=0
+    details['currentblock']=CurrentBlock
+    details['Confirmation TXID']=txid2
+    details['inputs']=[]
+    details['output']=[]
+    details['amount']=amount
+    details['fee']=0
+    details['address']=multisig
+    details['script']=script
+    details['bridge']=True
+    details['timestamp']=timestamp
+    details['version']=CoinSelect['HaloName'] + " " + clientversion
+    
+    hist['Details']=copy.deepcopy(details)
+    hist['Type']="Bridge"
+    hist['Amount']=details['amount']
+    hist['Details']['date']=ConvertDate(HaloTime,0)
+    hist['Details']['Pending']=False
+    hist['Label']=''
+    hist['script']=script
+    hist['bridgedata']=copy.deepcopy(bridgedata)
+    AddToHistory(txid, "", multisig, str(Decimal(amount)/Decimal(1e8)), hist['Type'], hist)
+#For testing bridge
+def simulateTX(toaddy="0x0", bridgedata=0):#network, to, pool, txid
+    if bridgedata==0:#Make some values for testing
+        mybridgedata={'network':'Goerli Testnet','pool':[1000000]*1200,'txid':txhash(os.urandom(1000)),'to':toaddy}
+    else:
+        mybridgedata=copy.deepcopy(bridgedata)
+    ThePeg.Pegdatabase['txidreference'][mybridgedata['txid']]=ThePeg.Pegdatabase['merklenonceTX'] #For easy reference finding a TX
+    ThePeg.Pegdatabase['merklelist'][str(ThePeg.Pegdatabase['merklenonceTX'])]['transactions'].append(copy.deepcopy(mybridgedata))
 #A critical function that shows how to get the inputs, outputs, transactions ids, raw transactions, and whatever data that is needed. It returns the unconfirmed and confirmed balance as well.
 #Everything is returned as a list of dictionaries. The unconfirmed balance and confirmed balance is sent seperately.
 def get_balance_lspnr(addr_to_test,txdetails,txs,args):
@@ -19299,6 +20482,7 @@ def TranslationEditor(init=0):
     langselect=QtGui.QDialog()    
     langselect.resize(500, 500)
     langselect.index=0
+    langselect.index2=0
     font = QtGui.QFont()
     font.setPixelSize(15)
     OriginalTransLabel = QtGui.QLabel(langselect)
@@ -19340,6 +20524,13 @@ def TranslationEditor(init=0):
     Search.setObjectName(_fromUtf8("Search"))
     Search.setText(langlist[mylang])
 
+    AutoTranslate = QtGui.QPushButton(langselect)
+    AutoTranslate.setGeometry(QtCore.QRect(10, 410, 150, 30))
+    AutoTranslate.setMaximumSize(QtCore.QSize(300, 16777215))
+    AutoTranslate.setFont(font)
+    AutoTranslate.setObjectName(_fromUtf8("Translate Online"))
+    AutoTranslate.setText(" Translate Online ")
+
     Save = QtGui.QPushButton(langselect)
     Save.setGeometry(QtCore.QRect(10, 450, 150, 30))
     Save.setMaximumSize(QtCore.QSize(300, 16777215))
@@ -19362,62 +20553,128 @@ def TranslationEditor(init=0):
     Prev.setText(" Back ")
 
     def ShowTrans():
-        OriginalTrans.setText(translations[mylang].keys()[langselect.index])
-        NewTrans.setText(strOUT(translations[mylang][translations[mylang].keys()[langselect.index]]))
+        if window.translist!=[]:
+            OriginalTrans.setText(window.translist[langselect.index2])
+            if window.translist[langselect.index2] in translations[mylang]:
+                NewTrans.setText(strOUT(translations[mylang][window.translist[langselect.index2]]))
+            else:
+                NewTrans.setText("")
+        if window.translist==[]:
+            OriginalTrans.setText(translations[mylang].keys()[langselect.index])
+            NewTrans.setText(strOUT(translations[mylang][translations[mylang].keys()[langselect.index]]))
 
     def SaveTrans():
-        translations[mylang][translations[mylang].keys()[langselect.index]]=strIN(NewTrans.toPlainText())
-        NextClick()
-        ShowTrans()
+        if window.translist!=[]:
+            translations[mylang][window.translist[langselect.index2]]=strIN(NewTrans.toPlainText())
+            window.translist.pop(langselect.index2)
+            if langselect.index2 == len(window.translist):
+                langselect.index2-=1
+            if len(window.translist) > 0:
+                ShowTrans()
+        if window.translist==[]:
+            translations[mylang][translations[mylang].keys()[langselect.index]]=strIN(NewTrans.toPlainText())
+            NextClick()
+            ShowTrans()
         return
 
     def NextClick():
-        if langselect.index+1!=len(translations[mylang].keys()):
-            langselect.index+=1
+        if window.translist!=[]:
+            if langselect.index2+1!=len(window.translist):
+                langselect.index2+=1        
+        if window.translist==[]:
+            if langselect.index+1!=len(translations[mylang].keys()):
+                langselect.index+=1
         ShowTrans()
     def PrevClick():
-        if langselect.index!=0:
-            langselect.index-=1
+        if window.translist!=[]:
+            if langselect.index2!=0:
+                langselect.index2-=1
+        if window.translist==[]:
+            if langselect.index!=0:
+                langselect.index-=1
         ShowTrans()
-    
+    def AutomaticTranslation():
+        try:
+            if window.translist!=[]:
+                text=window.translist[langselect.index2]
+            else:
+                text=translations[mylang].keys()[langselect.index]
+            NewTrans.setText(translateInParts(text, mylang))
+        except:
+            traceback.print_exc()
+
     ApplyCSS(langselect,0,0)
     ShowTrans()
     Save.clicked.connect(SaveTrans)
     Next.clicked.connect(NextClick)
     Prev.clicked.connect(PrevClick)
+    AutoTranslate.clicked.connect(AutomaticTranslation)
 
-    langselect.setWindowTitle("Translation Editor - Powered by Yandex Translate")
+    langselect.setWindowTitle("Translation Editor - Powered by Yandex and Google Translate")
     langselect.setWindowIcon(QtGui.QIcon(application_path+'/images/' + CoinSelect['HaloName'] + '.png'))
     langselect.exec_()
     SaveTranslations()
+def translateInParts(txt, lang):
+    global gcodes
+    global langlist
+    x=0
+    txt2=""
+    origtxt=txt
+    while x != 50:
+        res = gtranslate2.GoogleTrans().query(txt, lang_to=gcodes[langlist[lang]])
+        txt=txt.replace(res[0],'',1)
+        txt2+=res[2]
+        x+=1
+        test=txt.replace(' ','')
+        if len(test)==0:
+            txt=''
+        print "TEXT REMAINING: ", str(len(txt))
+        if len(txt)==0:
+            break
+        if x==50:
+            print "Iteration too long"
+            float('a')
+    print repr(txt2)
+    return txt2
 def Gtranslate(txt, lang="", init=0):
     global mylang
     global translations
+    if txt=="":
+        return txt
     if lang=="":
         lang=mylang
     if mylang=="DEFAULT" or mylang=="en":
         return txt
+    if len(txt)>50 and YandexAPI == "":
+        window.translist.append(txt)
+        print "text too long(translate this manually)"
+        print txt
+        return txt
     try:
         if lang in translations:
             if txt in translations[lang]:
-                exec("translateThis="+translations[lang][txt])
+                translateThis=ast.literal_eval(translations[lang][txt])
                 if translateThis!=txt:
                     return QtCore.QString.fromUtf8(translateThis)
         else:
             translations[lang]={}
-        resp = gstrans.translate(txt, lang)
-        resp = resp['text'][0]
+        if YandexAPI != "":            
+            resp = gstrans.translate(txt, lang) #Yandex
+            resp = resp['text'][0]
+        else:
+            resp = translateInParts(txt, lang) #Google translate in parts            
         langtext = QtGui.QLabel()
         langtext.setText(resp)
         x=langtext.text()
         st=repr(x)
         st=st.replace("PyQt4.QtCore.QString(","")[:-1]
-        exec("translateThis="+st)
+        translateThis=ast.literal_eval(st)
         translations[lang][txt]=st
         if init==0:#File thread not loaded yet
             SaveTranslations()
         return QtCore.QString.fromUtf8(translateThis)
     except:
+        print traceback.extract_stack()
         traceback.print_exc()
         return txt
 def strIN(st, rep=1):#For input from QStrings and files, dictionary objects we wrote to
@@ -19614,6 +20871,13 @@ from PyQt4 import QtGui, QtCore
 ContactSelected = {}
 ContractSelected = {}
 PendingSelected = {}
+
+#def getObject(qobj, name):
+#    return qobj.findChild((QtGui.QLabel,QtGui.QTextEdit,QtGui.QComboBox,QtGui.QLineEdit,QtGui.QPushButton,QtGui.QCheckBox),name)
+#The call below doesn't work because while iterating every object returned for whatever reason gets assigned the same function call as the most current object.
+#So eventually can exchange exec calls for template setups so be explicit or solve how to safely interact with return values. In the meantime, exec calls are an iterative way to handle hundreds of objects.
+#getObject(self.Window,"DepositSettings"+spos).connect(getObject(self.Window,"DepositSettings"+spos),QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.StandardDepositChange(spos))
+
 #protectOBF1
 class TemplateWindow(QtGui.QWidget):
     def setup_Ui(self, Dialog):
@@ -19678,24 +20942,24 @@ class TemplateWindow(QtGui.QWidget):
                 if spos=="1":
                     spos=""
                 if pos<2:
-                    exec("self.Window."+obj+spos+".connect(self.Window."+obj+spos+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.DepositChange('"+obj+spos+"'))\n")
+                    exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+spos)+".connect(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+spos)+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.DepositChange('"+re.sub(r"[^A-Za-z0-9_]+", '',obj+spos)+"'))\n")
                     if pos==1:
-                        exec("self.Window."+"DepositSettings"+spos+".connect(self.Window."+"DepositSettings"+spos+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.StandardDepositChange('"+spos+"'))\n")
+                        exec("self.Window."+"DepositSettings"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+".connect(self.Window."+"DepositSettings"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.StandardDepositChange('"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+"'))\n")
                         if spos=="":
                             spos="1"
                         if spos!="8":
-                            exec("self.Window."+"SaveContinue"+spos+".clicked.connect(lambda: Templates.SaveAndContinue('"+spos+"'))\n")
-                            exec("self.Window."+"ClearForm"+spos+".clicked.connect(lambda: Templates.ClearMyForm('"+spos+"'))\n")
+                            exec("self.Window."+"SaveContinue"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+".clicked.connect(lambda: Templates.SaveAndContinue('"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+"'))\n")
+                            exec("self.Window."+"ClearForm"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+".clicked.connect(lambda: Templates.ClearMyForm('"+re.sub(r"[^A-Za-z0-9_]+", '',spos)+"'))\n")
                 else:
-                    exec("self.Window."+obj+spos+".connect(self.Window."+obj+spos+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.DaysChange('"+obj+spos+"'))\n")
+                    exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+spos)+".connect(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+spos)+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.DaysChange('"+re.sub(r"[^A-Za-z0-9_]+", '',obj+spos)+"'))\n")
                 pos2+=1
             pos+=1
         pos=1
         while pos<9:
-            exec("self.Window.Save"+str(pos)+".clicked.connect(lambda: Templates.SaveProfile("+str(pos-1)+"))\n")
-            exec("self.Window.Create"+str(pos)+".clicked.connect(lambda: Templates.CreateProfile("+str(pos-1)+"))\n")
-            exec("self.Window.Update"+str(pos)+".clicked.connect(lambda: Templates.UpdateProfile("+str(pos-1)+"))\n")
-            exec("self.Window.Remove"+str(pos)+".clicked.connect(lambda: Templates.RemoveProfile("+str(pos-1)+"))\n")
+            exec("self.Window.Save"+re.sub(r"[^A-Za-z0-9_]+", '',str(pos))+".clicked.connect(lambda: Templates.SaveProfile("+str(pos-1)+"))\n")
+            exec("self.Window.Create"+re.sub(r"[^A-Za-z0-9_]+", '',str(pos))+".clicked.connect(lambda: Templates.CreateProfile("+str(pos-1)+"))\n")
+            exec("self.Window.Update"+re.sub(r"[^A-Za-z0-9_]+", '',str(pos))+".clicked.connect(lambda: Templates.UpdateProfile("+str(pos-1)+"))\n")
+            exec("self.Window.Remove"+re.sub(r"[^A-Za-z0-9_]+", '',str(pos))+".clicked.connect(lambda: Templates.RemoveProfile("+str(pos-1)+"))\n")
             pos+=1
         exec("self.Window.BankEdit.clicked.connect(lambda: Templates.EditConfirm(1))\n")
         exec("self.Window.WUEdit.clicked.connect(lambda: Templates.EditConfirm(2))\n")
@@ -19777,10 +21041,10 @@ class TemplateWindow(QtGui.QWidget):
 
         self.objlist=["WireSelect","WUSelect","MGSelect","DebitSelect","OtherFundSelect","CashMailSelect","MailingSelect","ContactSelect","ContactSelectConfirm","MailingSelectConfirm","BankSelectConfirm","WUSelectConfirm","MGSelectConfirm","DebitSelectConfirm","OtherSelectConfirm"]
         for obj in self.objlist:
-            exec("self.Window."+obj+".connect(self.Window."+obj+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.ChangeIndex('"+obj+"'))\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".connect(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.ChangeIndex('"+re.sub(r"[^A-Za-z0-9_]+", '',obj)+"'))\n")
         self.objcombos=["MaxIncreaseBuy", "MaxDecreaseBuy", "MinOrderBuy", "MaxOrderBuy", "MaxIncreaseSell", "MaxDecreaseSell", "MinOrderSell", "MaxOrderSell", "RateBox", "RateBox2", "AmountUSD2", "AmountUSD", "ServiceCharge", "JobUSD", "JobSelect1", "SellSelect", "BuyoutSellUSD", "BidSellUSD", "CountrySellSelect", "ShippingSellSelect", "ShipCountryBuy", "BuySelect", "BuyoutBuyUSD", "BidBuyUSD", "RequestAll", "AddShippingSelect", "EstValueUSD", "AddMaxSizeSelect", "SetMinSelect", "SetMaxSelect", "EstValueSelect", "DepositServiceSelect", "SentToSelect", "FindUSD"]
         for obj in self.objcombos:
-            exec("self.Window."+obj+".connect(self.Window."+obj+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.ShowAdvanced('"+obj+"'))\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".connect(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+",QtCore.SIGNAL('currentIndexChanged(int)'),lambda: Templates.ShowAdvanced('"+re.sub(r"[^A-Za-z0-9_]+", '',obj)+"'))\n")
 
     def __init__(self):
         QtGui.QWidget.__init__(self)
@@ -19884,6 +21148,10 @@ class TemplateWindow(QtGui.QWidget):
                     self.Window.PythonSelect.setCurrentIndex(0)
                     self.Window.PythonSelect.blockSignals(False)
                     return
+            else:
+                self.Window.CodeOfferFormBox.clear()
+                self.Window.CodeDuringEscrow.clear()
+                self.Window.CodeEscrowWindow.clear()
     def ShowItem(self, origin, item='', tracked=0):
         self.Window.DepositServiceBox.hide()
         self.Window.DepositServiceSelect.hide()
@@ -20818,7 +22086,7 @@ class TemplateWindow(QtGui.QWidget):
         hdlater=0
         hdlater2=0
         for obj1 in self.objcombos:
-            exec("self.Window."+obj1+".blockSignals(True)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(True)\n")
         if obj=="default": # or obj=="EstValueUSD" 
             if clear==0:
                 index=self.Window.EstValueUSD.currentIndex()
@@ -21168,7 +22436,7 @@ class TemplateWindow(QtGui.QWidget):
         """
         if obj!="default":
             for obj1 in self.objcombos:
-                exec("self.Window."+obj1+".blockSignals(False)\n")
+                exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(False)\n")
         if hdlater==1:
             pass
         if hdlater2==1:
@@ -21204,15 +22472,15 @@ class TemplateWindow(QtGui.QWidget):
             self.Window.TheirDepositSummary.setText("Their Deposit:  ")
             self.Window.TimeLimitSummary.setText("Time Limit:  ")
             for h in self.hideoninit:
-                exec("self.Window."+h+".hide()\n")
+                exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',h)+".hide()\n")
         for h in self.defaulthidden:
-            exec("self.Window."+h+".hide()\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',h)+".hide()\n")
         for h in self.defaultchecked:
-            exec("self.Window."+h+".setCheckState(2)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',h)+".setCheckState(2)\n")
         for obj1 in self.objlist:
-            exec("self.Window."+obj1+".blockSignals(True)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(True)\n")
         for obj1 in self.objcombos:
-            exec("self.Window."+obj1+".blockSignals(True)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(True)\n")
         if interneton==1:
             self.rate, btc=GetMarketValue(CoinSelect['name'],CoinMarketCap)
         else:
@@ -21282,29 +22550,29 @@ class TemplateWindow(QtGui.QWidget):
             self.pos=page
             for self.savevar in self.savedpages[page]['dropdowns']:
                 if clear==1:
-                    exec("self.Window."+self.savevar+".setCurrentIndex(0)\n")
+                    exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".setCurrentIndex(0)\n")
                 else:
-                    exec("self.Window."+self.savevar+".setCurrentIndex(self.savedpages[self.pos]['dropdowns']['"+self.savevar+"'])\n")
+                    exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".setCurrentIndex(self.savedpages[self.pos]['dropdowns']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"'])\n")
             for self.savevar in self.savedpages[page]['checkboxes']:
                 if clear==1:
-                    exec("self.Window."+self.savevar+".setCheckState(0)\n")
+                    exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".setCheckState(0)\n")
                 else:
-                    exec("self.Window."+self.savevar+".setCheckState(self.savedpages[self.pos]['checkboxes']['"+self.savevar+"'])\n")
+                    exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".setCheckState(self.savedpages[self.pos]['checkboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"'])\n")
             for self.savevar in self.savedpages[page]['numberboxes']:
                 try:
                     if clear==1:
-                        exec("self.Window."+self.savevar+".clear()\n")
+                        exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".clear()\n")
                     else:
-                        exec("self.Window."+self.savevar+".setText(self.savedpages[self.pos]['numberboxes']['"+self.savevar+"'])\n")
+                        exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".setText(self.savedpages[self.pos]['numberboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"'])\n")
                 except:
                     traceback.print_exc()
                     QuestionBox("Error loading previously saved form.","OK")
             for self.savevar in self.savedpages[page]['textboxes']:
                 try:
                     if clear==1:
-                        exec("self.Window."+self.savevar+".clear()\n")
+                        exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".clear()\n")
                     else:
-                        exec("self.Window."+self.savevar+".setText(self.savedpages[self.pos]['textboxes']['"+self.savevar+"'])\n")
+                        exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".setText(self.savedpages[self.pos]['textboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"'])\n")
                 except:
                     traceback.print_exc()
                     QuestionBox("Error loading previously saved form.","OK")
@@ -21318,7 +22586,7 @@ class TemplateWindow(QtGui.QWidget):
             pg+=1
             if pg==8:
                 pg+=1
-            exec("self.Window.SaveFuture"+str(pg)+".setCheckState(2)\n")
+            exec("self.Window.SaveFuture"+re.sub(r"[^A-Za-z0-9_]+", '',str(pg))+".setCheckState(2)\n")
             #Different defaults
             if clear==1:
                 self.barteritems={'supply':{},'demand':{}}
@@ -21337,7 +22605,7 @@ class TemplateWindow(QtGui.QWidget):
             pg+=1
             if pg==8:
                 pg+=1
-            exec("self.Window.SaveFuture"+str(pg)+".setCheckState(0)\n")
+            exec("self.Window.SaveFuture"+re.sub(r"[^A-Za-z0-9_]+", '',str(pg))+".setCheckState(0)\n")
         if self.rate=="":
             self.Window.RateBox.setCurrentIndex(1)
             self.Window.ExchangeRate.setText("Exchange Rate: Not loaded")
@@ -21346,9 +22614,9 @@ class TemplateWindow(QtGui.QWidget):
             self.Window.SendToAddress.show()
         self.ShowAdvanced("default", 1)
         for obj1 in self.objlist:
-            exec("self.Window."+obj1+".blockSignals(False)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(False)\n")
         for obj1 in self.objcombos:
-            exec("self.Window."+obj1+".blockSignals(False)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(False)\n")
         return True
     def ClearMyForm(self,pos,save=0):
         orgpos=pos
@@ -21358,18 +22626,18 @@ class TemplateWindow(QtGui.QWidget):
         pos-=1
         self.InitializeWindow(pos, 1)
         for h in self.defaulthidden:
-            exec("self.Window."+h+".hide()\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',h)+".hide()\n")
         for h in self.defaultchecked:
-            exec("self.Window."+h+".setCheckState(2)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',h)+".setCheckState(2)\n")
         if save==1:
-            exec("self.Window.SaveFuture"+orgpos+".setCheckState(0)\n")
+            exec("self.Window.SaveFuture"+re.sub(r"[^A-Za-z0-9_]+", '',str(orgpos))+".setCheckState(0)\n")
     def ChangeIndex(self, obj):
         global AdvanceArray
         multisig,mscript=create_multisig_address(PrivKeyFilename1)
         for obj1 in self.objlist:
-            exec("self.Window."+obj1+".blockSignals(True)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj1)+".blockSignals(True)\n")
         try:
-            exec("self.index=self.Window."+obj+".currentIndex()\n")
+            exec("self.index=self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".currentIndex()\n")
             if obj == "WireSelect" or obj == "BankSelectConfirm":
                 save=AdvanceArray[multisig]['Profiles']['Bank'][self.index]
                 AdvanceArray[multisig]['Profiles']['Bank'].pop(self.index)
@@ -21489,7 +22757,7 @@ class TemplateWindow(QtGui.QWidget):
             return
         self.LoadProfiles()
         for obj in self.objlist:
-            exec("self.Window."+obj+".blockSignals(True)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".blockSignals(True)\n")
         self.ClearProfiles()
         self.dontremoveonupdate=1
     def RemoveProfile(self, index=0, next1=0):
@@ -21528,7 +22796,7 @@ class TemplateWindow(QtGui.QWidget):
         if 'Profiles' not in AdvanceArray[multisig]:
             AdvanceArray[multisig]['Profiles']={'Bank':[],'WU':[],'MG':[],"Cash":[],"Other":[],"Card":[],"Mail":[], "Contact":[]}
         for obj in self.objlist:
-            exec("self.Window."+obj+".blockSignals(True)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".blockSignals(True)\n")
         self.ClearProfiles()
         for profile in AdvanceArray[multisig]['Profiles']:
             if AdvanceArray[multisig]['Profiles'][profile]!=[]:
@@ -21621,8 +22889,8 @@ class TemplateWindow(QtGui.QWidget):
                         self.Window.ContactSelect.addItem(i['string'].replace("\n", "  "))
                         self.Window.ContactSelectConfirm.addItem(i['string'].replace("\n", "  "))
         for obj in self.objlist:
-            exec("self.Window."+obj+".setCurrentIndex(0)\n")
-            exec("self.Window."+obj+".blockSignals(False)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".setCurrentIndex(0)\n")
+            exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".blockSignals(False)\n")
     def SaveProfile(self, index=0):
         global AdvanceArray
         multisig,mscript=create_multisig_address(PrivKeyFilename1)
@@ -21879,7 +23147,7 @@ class TemplateWindow(QtGui.QWidget):
         #variables are written to self so the obfuscator will protect them
         guarantornotice=0
         self.savevar=0
-        exec("if self.Window.SaveFuture"+pos+".checkState() == 2:self.savevar=1\n")
+        exec("if self.Window.SaveFuture"+re.sub(r"[^A-Za-z0-9_]+", '',str(pos))+".checkState() == 2:self.savevar=1\n")
         orgpos=pos
         pos=int(pos)
         if pos==9:
@@ -21888,13 +23156,13 @@ class TemplateWindow(QtGui.QWidget):
         multisig,mscript=create_multisig_address(PrivKeyFilename1)
         if self.savevar == 1 or cont==1:
             for self.savevar in self.savedpages[pos-1]['dropdowns']:
-                exec("self.savedpages[self.pos-1]['dropdowns']['"+self.savevar+"']=self.Window."+self.savevar+".currentIndex()\n")
+                exec("self.savedpages[self.pos-1]['dropdowns']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"']=self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".currentIndex()\n")
             for self.savevar in self.savedpages[pos-1]['checkboxes']:
-                exec("self.savedpages[self.pos-1]['checkboxes']['"+self.savevar+"']=self.Window."+self.savevar+".checkState()\n")
+                exec("self.savedpages[self.pos-1]['checkboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"']=self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".checkState()\n")
             for self.savevar in self.savedpages[pos-1]['numberboxes']:
                 try:
-                    exec("self.savedpages[self.pos-1]['numberboxes']['"+self.savevar+"']=str(self.Window."+self.savevar+".text())\n")
-                    exec("x=str(self.Window."+self.savevar+".text())\n")
+                    exec("self.savedpages[self.pos-1]['numberboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"']=str(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".text())\n")
+                    exec("x=str(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".text())\n")
                     exec("if x!='':x=Decimal(x)\n")
                 except:
                     traceback.print_exc()
@@ -21902,9 +23170,9 @@ class TemplateWindow(QtGui.QWidget):
                     return
             for self.savevar in self.savedpages[pos-1]['textboxes']:
                 try:
-                    exec("self.savedpages[self.pos-1]['textboxes']['"+self.savevar+"']=strOUT(strIN(self.Window."+self.savevar+".text()))\n")
+                    exec("self.savedpages[self.pos-1]['textboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"']=strOUT(strIN(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".text()))\n")
                 except:
-                    exec("self.savedpages[self.pos-1]['textboxes']['"+self.savevar+"']=strOUT(strIN(self.Window."+self.savevar+".toPlainText()))\n")
+                    exec("self.savedpages[self.pos-1]['textboxes']['"+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+"']=strOUT(strIN(self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',self.savevar)+".toPlainText()))\n")
             self.savedpages[pos-1]['saved']=1
             AdvanceArray[multisig]['savedpages'][pos-1]=self.savedpages[pos-1]
             if pos-1==6:
@@ -21921,8 +23189,8 @@ class TemplateWindow(QtGui.QWidget):
             self.LoadProfiles()
             self.dontremoveonupdate=0
             self.additional=0
-            exec("if self.Window.SupplyAdditional"+str(orgpos)+".isChecked():self.additional=1\n")
-            exec("self.Data['notes']=strOUT(strIN(self.Window.NotesBox"+str(orgpos)+".toPlainText()))\n")
+            exec("if self.Window.SupplyAdditional"+re.sub(r"[^A-Za-z0-9_]+", '',str(orgpos))+".isChecked():self.additional=1\n")
+            exec("self.Data['notes']=strOUT(strIN(self.Window.NotesBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(orgpos))+".toPlainText()))\n")
             self.Data['Profiles']={'Bank':[],'WU':[],'MG':[],"Cash":[],"Other":[],"Card":[],"Mail":[], "Contact":[]}
             self.Data['tracking']=0
             self.Data['rate']=""
@@ -22661,7 +23929,8 @@ class TemplateWindow(QtGui.QWidget):
                     res=QuestionBox("Please be aware of the risks of Python contracts. It is your responsibility to audit the code of each of these custom contracts especially ones that are not in the list of known contracts. However even known contracts should be audited by the users as there could be a variety of content creators and this code is open source and always subject to change.", " I understand ", " Do not show this message again. ")
                     if res==1:
                         AdvanceArray['pythontip']=1
-
+                QuestionBox("You will now be asked to sign all of the requested code so that your computer is authorized to run it.", " OK ")
+                SignCode([self.Data['code1'],self.Data['code2'],self.Data['code3']])
                 self.Window.AllowPriceTracking.show()
                 self.Window.AllowPriceTracking.setCheckState(2)
             if pos-1==6:
@@ -22753,12 +24022,12 @@ class TemplateWindow(QtGui.QWidget):
                 mpos=orgpos
                 if mpos=="1":
                     mpos=""
-                exec("if self.Window.MyDepositUSD"+mpos+".currentIndex()==0:self.Data['mydeposit']=str((Decimal(str(self.Window.MyDepositBox"+mpos+".text()))/Decimal(rate)).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
-                exec("if self.Window.MyDepositUSD"+mpos+".currentIndex()==1:self.Data['mydeposit']=str((Decimal(str(self.Window.MyDepositBox"+mpos+".text()))).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
-                exec("if self.Window.TheirDepositUSD"+mpos+".currentIndex()==0:self.Data['theirdeposit']=str((Decimal(str(self.Window.TheirDepositBox"+mpos+".text()))/Decimal(rate)).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
-                exec("if self.Window.TheirDepositUSD"+mpos+".currentIndex()==1:self.Data['theirdeposit']=str((Decimal(str(self.Window.TheirDepositBox"+mpos+".text()))).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
-                exec("if self.Window.TimeLimitDays"+mpos+".currentIndex()==0:self.Data['timelimit']=str(int(Decimal(str(self.Window.TimeLimitBox"+mpos+".text()))*Decimal(24)))\n")
-                exec("if self.Window.TimeLimitDays"+mpos+".currentIndex()==1:self.Data['timelimit']=str(int(Decimal(str(self.Window.TimeLimitBox"+mpos+".text()))))\n")
+                exec("if self.Window.MyDepositUSD"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".currentIndex()==0:self.Data['mydeposit']=str((Decimal(str(self.Window.MyDepositBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".text()))/Decimal(rate)).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
+                exec("if self.Window.MyDepositUSD"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".currentIndex()==1:self.Data['mydeposit']=str((Decimal(str(self.Window.MyDepositBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".text()))).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
+                exec("if self.Window.TheirDepositUSD"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".currentIndex()==0:self.Data['theirdeposit']=str((Decimal(str(self.Window.TheirDepositBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".text()))/Decimal(rate)).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
+                exec("if self.Window.TheirDepositUSD"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".currentIndex()==1:self.Data['theirdeposit']=str((Decimal(str(self.Window.TheirDepositBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".text()))).quantize(Decimal('.00000001'), rounding=ROUND_HALF_UP))\n")
+                exec("if self.Window.TimeLimitDays"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".currentIndex()==0:self.Data['timelimit']=str(int(Decimal(str(self.Window.TimeLimitBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".text()))*Decimal(24)))\n")
+                exec("if self.Window.TimeLimitDays"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".currentIndex()==1:self.Data['timelimit']=str(int(Decimal(str(self.Window.TimeLimitBox"+re.sub(r"[^A-Za-z0-9_]+", '',str(mpos))+".text()))))\n")
                 self.Data['mydeposit']=str(dropzeros(self.Data['mydeposit'],1))
                 self.Data['theirdeposit']=str(dropzeros(self.Data['theirdeposit'],1))
                 if Decimal(self.Data['mydeposit'])<Decimal(0.00005500) or Decimal(self.Data['theirdeposit'])<Decimal(0.00005500):
@@ -22771,9 +24040,11 @@ class TemplateWindow(QtGui.QWidget):
             if 'code1' in self.Data and "Python" in self.Data['Template']:
                 firstform=0
                 try:
-                    exec(self.Data['code1'])
+                    exec(validateCode(self.Data['code1']))
                 except:
+                    QuestionBox("Code execution failed", " OK ")
                     traceback.print_exc()
+                    return
             if self.additional==1:
                 self.Window.ContactSelectConfirm.show()
                 self.Window.ContactEdit.show()
@@ -22906,34 +24177,34 @@ class TemplateWindow(QtGui.QWidget):
         window.SendMyContract()
         window.ClearPage()
     def StandardDepositChange(self,pos):
-        exec("self.index=self.Window.DepositSettings"+pos+".currentIndex()\n")
+        exec("self.index=self.Window.DepositSettings"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".currentIndex()\n")
         for obj in self.dropdowns:
             if self.index!=1:
-                exec("self.Window."+obj+pos+".hide()\n")
+                exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+pos)+".hide()\n")
             else:
-                exec("self.Window."+obj+pos+".show()\n")
+                exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+pos)+".show()\n")
         for obj in self.boxes:
             if self.index!=1:
-                exec("self.Window."+obj+pos+".hide()\n")
+                exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+pos)+".hide()\n")
             else:
-                exec("self.Window."+obj+pos+".show()\n")
+                exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj+pos)+".show()\n")
         if self.index!=1:
-            exec("self.Window."+"MyDepositText"+pos+".hide()\n")
-            exec("self.Window."+"TheirDepositText"+pos+".hide()\n")
-            exec("self.Window."+"TimeLimitText"+pos+".hide()\n")
+            exec("self.Window."+"MyDepositText"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".hide()\n")
+            exec("self.Window."+"TheirDepositText"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".hide()\n")
+            exec("self.Window."+"TimeLimitText"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".hide()\n")
         else:
-            exec("self.Window."+"MyDepositText"+pos+".show()\n")
-            exec("self.Window."+"TheirDepositText"+pos+".show()\n")
-            exec("self.Window."+"TimeLimitText"+pos+".show()\n")
+            exec("self.Window."+"MyDepositText"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".show()\n")
+            exec("self.Window."+"TheirDepositText"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".show()\n")
+            exec("self.Window."+"TimeLimitText"+re.sub(r"[^A-Za-z0-9_]+", '',pos)+".show()\n")
     def DaysChange(self, obj):
         pass
     def DepositChange(self, obj):
-        exec("index=self.Window."+obj+".currentIndex()\n")
+        exec("index=self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".currentIndex()\n")
         if "Their" in obj:
             obj=obj.replace("Their","My")
         else:
             obj=obj.replace("My","Their")
-        exec("self.Window."+obj+".setCurrentIndex(index)\n")
+        exec("self.Window."+re.sub(r"[^A-Za-z0-9_]+", '',obj)+".setCurrentIndex(index)\n")
     def Delete(self):
         #Ok they want to clear it... lets find the order in spendable and remove it
         res=QuestionBox("Are you sure you want to delete this offer?", "Yes", "No")
@@ -23169,8 +24440,9 @@ class TemplateWindow(QtGui.QWidget):
             if self.order['Market Data']['Template']=="Python":
                 acceptform=1
                 try:
-                    exec(self.order['Market Data']['code1'])
+                    exec(validateCode(self.order['Market Data']['code1']))
                 except:
+                    QuestionBox("Code execution failed", " OK ")
                     traceback.print_exc()
                     return
             if "Barter" in self.order['Market Data']['Template']:
@@ -24378,11 +25650,15 @@ class TemplateWindow(QtGui.QWidget):
                         QuestionBox('You must type "yes" in the box if you wish to continue and see this contract.', ' OK ')
                         self.Window.hide()
                         return
+                    QuestionBox('You will now be asked to sign the code so that it can be officially recognized by the software.', ' OK ')                    
+                    if not SignCode([order['Market Data']['code1'],order['Market Data']['code2'],order['Market Data']['code3']]):
+                        return False
                     ApprovedContracts[thehash]={}
                 try:
                     showform=1
-                    exec(order['Market Data']['code1'])
+                    exec(validateCode(order['Market Data']['code1']))
                 except:
+                    QuestionBox("Code execution failed", " OK ")
                     traceback.print_exc()
                     return
         if "Barter" in order['Market Data']['Template']:
@@ -25192,6 +26468,25 @@ class Settings(QtGui.QWidget):
         self.PeggingVote.addItem(_fromUtf8(""))
         self.SettingsTabs.addTab(self.tab_2, _fromUtf8(""))
 
+        if 'pegging' in CoinSelect and CoinSelect['pegging']:
+            self.tab_3 = QtGui.QWidget()
+            self.tab_3.setObjectName(_fromUtf8("tab_3"))
+            font = QtGui.QFont()
+            font.setFamily(_fromUtf8("Courier"))
+            font.setPixelSize(13)
+            self.EnableBridge = QtGui.QCheckBox(self.tab_3)
+            self.EnableBridge.setGeometry(QtCore.QRect(10, 10, 641, 31))
+            self.EnableBridge.setFont(font)
+            self.EnableBridge.setObjectName(_fromUtf8("EnableBridge"))
+            self.BridgeInfo = QtGui.QTextEdit(self.tab_3)
+            self.BridgeInfo.setAlignment(QtCore.Qt.AlignLeft)
+            self.BridgeInfo.setGeometry(QtCore.QRect(10, 50, 641, 500))
+            self.BridgeInfo.setMaximumSize(QtCore.QSize(641, 16777215))
+            self.BridgeInfo.setReadOnly(True)
+            self.BridgeInfo.setFont(font)
+            self.BridgeInfo.setObjectName(_fromUtf8("BridgeInfo"))
+            self.SettingsTabs.addTab(self.tab_3, _fromUtf8(""))
+            self.EnableBridge.toggled.connect(self.BridgeThis)
         ApplyCSS(self,1,1)
 
         self.retranslateUi(Form)
@@ -25239,13 +26534,17 @@ class Settings(QtGui.QWidget):
         self.PeggingVote.setItemText(3, Gtranslate("Vote To Maintain Supply"))
         self.PeggingVote.setItemText(4, Gtranslate("Do Not Vote On Supply"))
         self.SettingsTabs.setTabText(self.SettingsTabs.indexOf(self.tab_2), Gtranslate("Mining/Staking and Voting"))
+        if 'pegging' in CoinSelect and CoinSelect['pegging']:
+            self.BridgeInfo.setText(Gtranslate("Information will display once administration is enabled"))
+            self.EnableBridge.setText(Gtranslate("Enable Automatic Bridge Administration"))
+            self.SettingsTabs.setTabText(self.SettingsTabs.indexOf(self.tab_3), Gtranslate("Bridge Administration"))
         self.setWindowIcon(QtGui.QIcon(application_path+'/images/' + CoinSelect['HaloName'] + '.png'))
         self.setWindowTitle(CoinSelect['HaloName'])
     def __init__(self):
         QtGui.QWidget.__init__(self)
         self.setupUi(self)
     def Load(self):
-        global AdvanceArray, isdownloading, connectioncount
+        global AdvanceArray, isdownloading, connectioncount, BridgeAdmin
         self.PopulateVotes()
         if 'pegging' in CoinSelect:
             self.PeggingVote.show()
@@ -25261,6 +26560,15 @@ class Settings(QtGui.QWidget):
             pass
         if 'MySettings' not in AdvanceArray:
             AdvanceArray['MySettings']={'Proxy':'', 'AntiLogger':False, 'ManualLogin':False, 'ClearLocation':False, 'FilterOther':False, 'CreateDebug':False, 'Staking':True, 'ColdStake':'', 'PeggingVote':0, 'Voting':[]}
+        if 'EnableBridge' not in AdvanceArray['MySettings']:
+            AdvanceArray['MySettings']['EnableBridge'] = False
+        if 'pegging' in CoinSelect:
+            if AdvanceArray['MySettings']['EnableBridge']:
+                self.EnableBridge.setCheckState(2)
+                BridgeAdmin = True
+            else:
+                self.EnableBridge.setCheckState(0)
+                BridgeAdmin = False
         if AdvanceArray['MySettings']['CreateDebug']:
             UpdateCfg('#Debug#',"1")
             self.DebugOnExit.setCheckState(2)
@@ -25309,7 +26617,18 @@ class Settings(QtGui.QWidget):
         if AdvanceArray['MySettings']['Staking']:
             self.EnableStaking.setCheckState(2)
         else:
-            self.EnableStaking.setCheckState(0)            
+            self.EnableStaking.setCheckState(0)
+    def BridgeThis(self):
+        global BridgeAdmin, MySettingsInfo
+        if self.EnableBridge.isChecked():
+            BridgeAdmin = True
+            AdvanceArray['MySettings']['EnableBridge'] = True
+            self.BridgeInfo.setText(Gtranslate("Loading bridge information..."))
+            MySettingsInfo = "Loading bridge information..."
+        else:
+            BridgeAdmin = False
+            AdvanceArray['MySettings']['EnableBridge'] = False
+            self.BridgeInfo.setText(Gtranslate("Information will display once administration is enabled"))
     def changetab(self):
         pass
     def closeEvent(self, event):
@@ -27021,11 +28340,15 @@ class AdvancedSettings(QtGui.QWidget):
             self.comboBox.addItem(_fromUtf8(""))
             self.comboBox.addItem(_fromUtf8(""))
             self.comboBox.addItem(_fromUtf8(""))
+            self.comboBox.addItem(_fromUtf8(""))
+            self.comboBox.addItem(_fromUtf8(""))
             self.comboBox.setItemText(0, _translate("Form", "Move Reserve Funds(1 month freeze)", None))
             self.comboBox.setItemText(1, _translate("Form", "Voluntary Liquid Freeze(4 month freeze)", None))
             self.comboBox.setItemText(2, _translate("Form", "Freeze", None))
             self.comboBox.setItemText(3, _translate("Form", "Advanced Time Lock", None))
             self.comboBox.setItemText(4, _translate("Form", "Notarize/Burn Message", None))
+            self.comboBox.setItemText(5, _translate("Form", "Bridge to another chain", None))
+            self.comboBox.setItemText(6, _translate("Form", "Mint from another chain", None))
         self.comboBox.setCurrentIndex(0)
         self.comboBox.blockSignals(False)
         if CoinSelect['HaloName']!="BitBay":
@@ -27153,7 +28476,23 @@ class AdvancedSettings(QtGui.QWidget):
             self.AddBefore.show()
             self.OwnerAfter.setText("")            
             self.OwnAfterTitle.setText(_translate("Form", "Notary/Burn Message:", None))
-            self.OwnBeforeTitle.setText(_translate("Form", "    Notify Address:", None))            
+            self.OwnBeforeTitle.setText(_translate("Form", "    Notify Address:", None))
+        if self.comboBox.currentIndex() == 3+offset:
+            self.AddBefore.show()
+            self.OwnerAfter.setText("")
+            self.OwnBeforeTitle.setText(_translate("Form", "Network to burn coins:", None))
+            self.OwnAfterTitle.setText(_translate("Form", "   Recipient address:", None))
+            res=QuestionBox("Would you like to send liquid coins or reserve coins?", " Send liquid coins  ", " Send reserve coins ")
+            if res==0:
+                self.OwnerBefore.setText("Send liquid: ")
+            else:
+                self.OwnerBefore.setText("Send reserve: ")
+        if self.comboBox.currentIndex() == 4+offset:
+            self.AddBefore.show()
+            self.OwnerBefore.setText("")
+            self.OwnerAfter.setText("")
+            self.OwnBeforeTitle.setText(_translate("Form", "Receipt for minting coins:", None))
+            self.OwnAfterTitle.setText(_translate("Form", "       Recipient address:", None))
     def AddThisBefore(self):
         offset=0
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
@@ -27191,8 +28530,121 @@ class AdvancedSettings(QtGui.QWidget):
             res=QuestionBox("Please choose what you want to add.", "Add an address", "Cancel")
             if res==0:
                 text, ok = QtGui.QInputDialog.getText(self, "Halo", Gtranslate('Please enter the address of the recipient:'))
-                text=str(text)                
+                text=str(text)
                 self.OwnerBefore.setText(str(text))
+        global thisMsgBox
+        if self.comboBox.currentIndex() == 3+offset:            
+            thisMsgBox = QtGui.QDialog()
+            thisMsgBox.setWindowTitle(CoinSelect['HaloName'])
+            thisMsgBox.setWindowIcon(QtGui.QIcon(application_path+'/images/' + CoinSelect['HaloName'] + '.png'))
+            thisMsgBox.resize(300,150)
+            comboBox = QtGui.QComboBox(thisMsgBox)
+            comboBox.setGeometry(QtCore.QRect(15, 50, 270, 31))
+            comboBox.setObjectName(_fromUtf8("comboBox"))
+            for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                comboBox.addItem(_fromUtf8(""))
+                comboBox.setItemText(0, bridged['n'])
+            mylabel = QtGui.QLabel(thisMsgBox)
+            mylabel.setGeometry(QtCore.QRect(15, 10, 270, 31))
+            font = QtGui.QFont()
+            font.setFamily(_fromUtf8("Arial"))
+            font.setPixelSize(14)
+            font.setWeight(75)
+            mylabel.setFont(font)
+            mylabel.setText(_translate("thisMsgBox", "Please select the network to send to", None))
+
+            OkayButton = QtGui.QPushButton(thisMsgBox)
+            OkayButton.setGeometry(QtCore.QRect(15, 90, 80, 30))
+            OkayButton.setFont(font)
+            OkayButton.setObjectName(_fromUtf8("OkayButton"))
+            OkayButton.setText(" OK ")
+
+            CancelButton = QtGui.QPushButton(thisMsgBox)
+            CancelButton.setGeometry(QtCore.QRect(125, 90, 80, 30))
+            CancelButton.setFont(font)
+            CancelButton.setObjectName(_fromUtf8("CancelButton"))
+            CancelButton.setText(" Cancel ")
+            ApplyCSS(thisMsgBox)
+
+            CancelButton.clicked.connect(lambda: thisMsgBox.reject())
+            OkayButton.clicked.connect(lambda: thisMsgBox.accept())
+
+            res=thisMsgBox.exec_()
+            if res==1:
+                text=comboBox.currentText()
+                beforetext=str(self.OwnerBefore.text())
+                if beforetext!="Send reserve: " or beforetext!="Send liquid: ":                    
+                    beforetext=beforetext[:13]
+                    if ": " not in beforetext:
+                        beforetext+=" "
+                self.OwnerBefore.setText(beforetext+str(text))
+        if self.comboBox.currentIndex() == 4+offset:
+            thisMsgBox = QtGui.QDialog()
+            thisMsgBox.setWindowTitle(CoinSelect['HaloName'])
+            thisMsgBox.setWindowIcon(QtGui.QIcon(application_path+'/images/' + CoinSelect['HaloName'] + '.png'))
+            thisMsgBox.resize(300,150)
+            comboBox = QtGui.QComboBox(thisMsgBox)
+            comboBox.setGeometry(QtCore.QRect(15, 50, 270, 31))
+            comboBox.setObjectName(_fromUtf8("comboBox"))
+            for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                comboBox.addItem(_fromUtf8(""))
+                comboBox.setItemText(0, bridged['n'])
+            mylabel = QtGui.QLabel(thisMsgBox)
+            mylabel.setGeometry(QtCore.QRect(15, 10, 270, 31))
+            font = QtGui.QFont()
+            font.setFamily(_fromUtf8("Arial"))
+            font.setPixelSize(14)
+            font.setWeight(75)
+            mylabel.setFont(font)
+            mylabel.setText(_translate("thisMsgBox", "Please select the network the coins were sent from", None))
+
+            OkayButton = QtGui.QPushButton(thisMsgBox)
+            OkayButton.setGeometry(QtCore.QRect(15, 90, 80, 30))
+            OkayButton.setFont(font)
+            OkayButton.setObjectName(_fromUtf8("OkayButton"))
+            OkayButton.setText(" OK ")
+
+            CancelButton = QtGui.QPushButton(thisMsgBox)
+            CancelButton.setGeometry(QtCore.QRect(125, 90, 80, 30))
+            CancelButton.setFont(font)
+            CancelButton.setObjectName(_fromUtf8("CancelButton"))
+            CancelButton.setText(" Cancel ")
+            ApplyCSS(thisMsgBox)
+
+            CancelButton.clicked.connect(lambda: thisMsgBox.reject())
+            OkayButton.clicked.connect(lambda: thisMsgBox.accept())
+
+            res=thisMsgBox.exec_()
+            if res==1:
+                text=comboBox.currentText()
+                text2, ok = QtGui.QInputDialog.getText(self, "Halo", Gtranslate('Please enter the receipt with the merkle proof:'))
+                try:
+                    text2=ast.literal_eval(str(text2))
+                    newdata={}
+                    newdata['w'] = txhash(str(text))[:16]
+                    newdata['n'] = text2['nonce']
+                    newdata['f'] = text2['from']
+                    newdata['a'] = text2['address']
+                    newdata['s'] = text2['section']
+                    newdata['r'] = copy.deepcopy(text2['reserve'])
+                    newdata['t'] = text2['root']
+                    newdata['p'] = text2['proof']
+                except:
+                    res=QuestionBox("Receipt was not valid", " OK ")
+                    return
+                tot = 0
+                try:
+                    fee = str(window.BitFee.text())
+                    fee = int(abs(Decimal(fee)*Decimal(1e8)))              
+                    for val in newdata['r']:
+                        tot+=int(val)
+                    tot -= fee
+                except:
+                    res=QuestionBox("Transaction fee or receipt data was not valid", " OK ")
+                    return
+                tot=str(Decimal(tot)/Decimal(1e8))
+                self.OwnerBefore.setText("Mint:"+str(newdata))
+                window.BitAmount.setText(tot)        
     def AddMultisigScript(self):
         text, ok = QtGui.QInputDialog.getText(self, "Halo", Gtranslate('Please enter the redeem script of the recipient:'))
         if len(str(text))<40:
@@ -27307,7 +28759,15 @@ class AdvancedSettings(QtGui.QWidget):
                 hexleng=""
             text=hexlify(text)
             hexleng+=num_to_var_int((len(text)/2)).encode('hex')
-            self.OwnerAfter.setText(str("6a"+hexleng+text))            
+            self.OwnerAfter.setText(str("6a"+hexleng+text))
+        if self.comboBox.currentIndex() == 3+offset:
+            mbox1=QtGui.QInputDialog()
+            ApplyCSS(mbox1)
+            text, ok = mbox1.getText(mbox1, "BitBay", Gtranslate("Please enter the recipient address."))
+            self.OwnerAfter.setText(text)
+        if self.comboBox.currentIndex() == 4+offset:
+            msigaddr,mscript = create_multisig_address(PrivKeyFilename1,PrivKeyFiledir1)            
+            self.OwnerAfter.setText(msigaddr)
     def ApplyExotic(self):
         global AdvanceArray
         if 'exoticwarn' not in AdvanceArray and self.comboBox.currentIndex() != 2:
@@ -27361,7 +28821,26 @@ class AdvancedSettings(QtGui.QWidget):
             window.BitPayTo.setText("Script:"+str(self.OwnerAfter.text())+notify)
             window.BitAmount.setText("0.0001")
             self.hide()
-
+        if self.comboBox.currentIndex() == 3+offset:
+            if 'bridgewarn' not in AdvanceArray:
+                res=QuestionBox("Please be aware that bridging a transaction to another network burns your funds on BitBay. Therefore BitBay is not responsible for the security of the corresponding network. Stakers will attempt to mint funds on the network you selected after at least a day of confirmations. Also, because every network has a different address format, please make completely sure the recipient address is correct and is properly typed before proceeding. Only proceed if you understand the risk of using a decentralized bridge.", " OK  ", " Do not show this message again. ")
+                if res==1:
+                    AdvanceArray['bridgewarn']=1
+            beforetext=str(self.OwnerBefore.text())
+            if "Send reserve: " in beforetext:
+                beforetext=beforetext.replace("Send reserve: ","")
+                beforetext=beforetext.replace("Send liquid: ","")
+                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:16]+str(self.OwnerAfter.text()),1)[0]
+                window.BitPayTo.setText("Move Reserve:"+text)
+            else:
+                beforetext=beforetext.replace("Send liquid: ","")
+                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:16]+str(self.OwnerAfter.text()),1)[0]
+                window.BitPayTo.setText(text)
+            self.hide()
+        if self.comboBox.currentIndex() == 4+offset:
+            beforetext=str(self.OwnerBefore.text())
+            window.BitPayTo.setText(beforetext)
+            self.hide()
 class Wizard(QtGui.QWidget):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
@@ -28190,8 +29669,9 @@ class WContracts(QtGui.QWidget):
                 self.comboBox.setItemData(1,QtCore.QVariant(1))
         if "Python" in contract['Market Data']['Template']:
             try:
-                exec(contract['Market Data']['code3'])
+                exec(validateCode(contract['Market Data']['code3']))
             except:
+                QuestionBox("Code execution failed", " OK ")
                 traceback.print_exc()
                 return
         if "Barter" in contract['Market Data']['Template']:
@@ -29800,12 +31280,16 @@ class Handshake(QtGui.QWidget):
 class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its possible to change interfaces later
     def __init__(self):
         global OnOrders, MyContracts, Markets, translations
-        global CoinSelect
+        global CoinSelect, YandexAPI        
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.ApplicationPath = application_path.replace("\\","/")
         self.language=mylang
         self.translations=translations
+        if YandexAPI != "":
+            self.yandexAPI = YandexAPI
+        else:
+            self.yandexAPI = ""
         if CoinSelect['moderngui']==1:
             self.setBitBayStyle()
         self.setupUi(self)
@@ -29985,20 +31469,20 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         ChangeLanguage()
         UpdateMarketList()
     def ActivateAPI(self):
-        QuestionBox("Please open the public key which you want to use to verify all the API commands. Halo requires that all API commands be signed by a private key so that you may interact with the Python interpreter.", " OK ")
-        path = QtGui.QFileDialog.getOpenFileName(window,Gtranslate("Please open the public key for verification."),MacDir()+"","Share Key (*.share)")
-        path = strOUT(strIN(path))
-        if path=="":
-            return
-        try:
-            with open(path,'r') as f:
-                public=f.readline().strip()
-                public=f.readline().strip()
-                f.close()
-            RPC.public=str(public)
-            QuestionBox("Success!", " OK ")
-        except:
-            QuestionBox("Invalid public key file", " OK ")
+        #Newest protocol is to require specific filenames so that there is protection against memory attacks. In this way, a physical file is also required to exist.
+        if os.path.exists(os.path.join(application_path, 'API.share')):
+            try:
+                with open(path,'r') as f:
+                    public=f.readline().strip()
+                    public=f.readline().strip()
+                    f.close()
+                RPC.public=str(public)
+                QuestionBox("RPC API public key loaded!", " OK ")
+            except:
+                QuestionBox("Invalid public key file", " OK ")
+        else:
+            QuestionBox("If you wish to activate RPC API code execution then please place the public key which you want to use to verify all the remote API commands in the BitBay directory and name it API.share. Halo requires that all API commands be signed by a private key so that you may interact with the Python interpreter.", " OK ")
+        QuestionBox("If you wish to activate any passive code execution and custom vote algorithms you can sign the code using the debug console by calling the SignCode function.", " OK ")
     def TabChange(self):
         global AdvanceArray, CoinMarketCap
         if CoinSelect['moderngui']==1:
@@ -30814,6 +32298,17 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         mbox = QuestionBox("Are you sure you want to clear the history?", " Yes ", " No ")
         if mbox == 1:
             return
+        x=0
+        for el in HistoryDetail[multisig]:
+            try:
+                if HistoryDetail[multisig][x]['Type']=="Bridge":
+                    mbox = QuestionBox("There is a bridge transaction listed in your history which shows how to redeem itself. Clearing the history will clear this receipt. Are you sure you want to proceed?", " Yes ", " No ")
+                    if mbox == 1:
+                        return
+                    break
+            except:
+                traceback.print_exc()
+            x+=1
         multisig,multiscript=create_multisig_address(PrivKeyFilename1)
         HistoryDetail[multisig]=[]
         PopulateHistory()
@@ -30830,7 +32325,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             csvwriter.writerow(row['Details'])
         test_file.close()
     def FullHistoryClick(self, x, y):
-        global HistoryDetail
+        global HistoryDetail, AdvanceArray
         HideWindows()
         data=""
         multisig,multiscript=create_multisig_address(PrivKeyFilename1)
@@ -31062,6 +32557,110 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     data+="Script: " + HistoryDetail[multisig][x]['script'] +"<br />"
                 except:
                     pass
+            if HistoryDetail[multisig][x]['Type']=="Bridge":
+                txid=HistoryDetail[multisig][x]['bridgedata']['txid']
+                res=QuestionBox("Would you like to see how to redeem this transaction on the competing network?", " Yes ", " No ")
+                #MIGHT WANT TO DO THIS IN BOTH SCENARIOS TO GENERATE PROOF HASH THEN MERKLE SEPARATE
+                #OR PERHAPS BECAUSE IT HAS TO BE PROCESSED THEN OFFLOAD ELSEWHERE SINCE YOU NEED SHARDS ANYWAYS?
+                try:
+                    message=""
+                    meaning=translate_script(HistoryDetail[multisig][x]['script'])
+                    message=meaning['message']
+                except:
+                    pass
+                mymerkle = False
+                if res==0:
+                    name = ''
+                    z = 0
+                    while z < len(ThePeg.Pegdatabase['bridgedb']['bridges']):
+                        if message[5:][:16] == txhash(ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n'])[:16]:
+                            name=ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n']
+                            break
+                        z+=1
+                    if ThePeg.testthis==1:
+                        #This shows how all the data can be found through the TXID
+                        if 'bridgetx' not in AdvanceArray:
+                            AdvanceArray['bridgetx']={}
+                        if txid not in AdvanceArray['bridgetx']:
+                            AdvanceArray['bridgetx'][txid]={'pool':[0]*1200}
+                        loaded=1
+                        if AdvanceArray['bridgetx'][txid]['pool']==[0]*1200:
+                            loaded=0
+                            try:
+                                busy=NetSplash(1, checkwait=1)
+                                fractions=BLK.getfractions(txid)['values']
+                                AdvanceArray['bridgetx'][txid]['pool']=copy.deepcopy(fractions)
+                                if 'bridgecheck' in AdvanceArray:
+                                    try:
+                                        if txid in AdvanceArray['bridgecheck']:
+                                            AdvanceArray['bridgecheck'].remove(txid)
+                                    except:
+                                        traceback.print_exc()
+                                NetSplash(0)
+                                loaded==1
+                            except:
+                                NetSplash(0)
+                                traceback.print_exc()
+                                QuestionBox("Pool data failed to load please wait a moment or try again.", " OK ")
+                        nonce = str(ThePeg.Pegdatabase['txidreference'][txid])
+                        if 'finalTX' in ThePeg.Pegdatabase['merklelist'][nonce] and loaded == 1:
+                            try:
+                                myroot = ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name]['root']
+                                thissupply = ThePeg.Pegdatabase['merklelist'][nonce]['supply']
+                                if len(AdvanceArray['bridgetx'][txid]['pool']) == 1200:
+                                    AdvanceArray['bridgetx'][txid]['pool']=CompressFractions(AdvanceArray['bridgetx'][txid]['pool'],thissupply,ThePeg.Pegdatabase['netdata'][name]['pegsteps'],ThePeg.Pegdatabase['netdata'][name]['microsteps'])
+                                thisaddy = message[5:][16:]
+                                mydata = [thisaddy,AdvanceArray['bridgetx'][txid]['pool'],txid]                                
+                                myval = str(int(ThePeg.Pegdatabase['netdata'][name]['pegsteps']) + int(ThePeg.Pegdatabase['netdata'][name]['microsteps']))
+                                leaf = BridgeDriver.execute_script("return getLeaf("+str(mydata)+","+myval+");")
+                                proof = BridgeDriver.execute_script("return showProof('"+myroot+"','"+leaf+"');")
+                                proof = ast.literal_eval(json.dumps(proof))
+                                mymerkle = {'root':myroot,'proof':proof,'address':thisaddy,'txid':txid,'reserve':AdvanceArray['bridgetx'][txid]['pool']}
+                            except:
+                                QuestionBox("There was an error processing the merkle tree.", " OK ")
+                                traceback.print_exc()
+                        else:
+                            if loaded == 1:
+                                QuestionBox("This merkle has not been processed yet. Please check back later.", " OK ")
+                    else:
+                        try:
+                            busy=NetSplash(1, checkwait=1)
+                            mymerkle=BLK.getmerkle(txid)
+                            if mymerkle==False:
+                                QuestionBox("This merkle has not been processed yet. Please check back later.", " OK ")
+                            NetSplash(0)
+                        except:
+                            NetSplash(0)
+                            QuestionBox("Pool data failed to load please wait a moment or try again.", " OK ")
+                    if mymerkle != False:
+                        QuestionBox("Network to redeem the funds:\n" + name + "\n\nReceipt:\n" + str(mymerkle), " Copy to Clipboard ", 1)
+                        clipboard = app.clipboard()
+                        clipboard.setText(str(mymerkle))
+                        QuestionBox("The receipt has been copied to the clipboard. Please redeem the coins at the official bridge website after the merkle proof confirms(usually within 48 hours).", " OK ")
+                data+=HistoryDetail[multisig][x]['Type']+": <br />"
+                data+="Message: " + message +"<br /><br />"
+                #type, timestamp, spendable, description, script
+                if 'date' in HistoryDetail[multisig][x]['Details']:
+                    t=ConvertDate(HistoryDetail[multisig][x]['Details']['date'],1)
+                    t=t.strftime('%m/%d/%Y')
+                    data+="Date: " + str(t) + "<br />"+"<br />"
+                data+="Label: " + HistoryDetail[multisig][x]['Label'] +"<br />"
+
+                data+="Amount: " + str(HistoryDetail[multisig][x]['Amount']) +"<br />"
+                data+="From: " + str(HistoryDetail[multisig][x]['Details']['FROM']) +"<br />"
+                data+="TXID: " + str(HistoryDetail[multisig][x]['Details']['txid']) + "<br />"
+                try:
+                    if HistoryDetail[multisig][x]['notify']!="":
+                        data+="Notification Address: " + HistoryDetail[multisig][x]['notify'] +"<br />"
+                except:
+                    pass
+                try:
+                    data+="Script: " + HistoryDetail[multisig][x]['script'] +"<br />"
+                except:
+                    pass
+                if mymerkle != False:
+                    data+="<br />Network to redeem the funds: " + str(name)
+                    data+="<br />Merkle Proof Receipt:<br />" + str(mymerkle)
             MyDetails.textBrowser.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
@@ -31195,12 +32794,31 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         else:
             UpdateCfg("#EnableEmail#","N")
     def SwitchMe(self):
-        global CoinSelect, PrivKeyFilename1, PrivKeyFilename2, PrivKeyFiledir1, PrivKeyFiledir2, keysconnected, NewUser, updatesomething, accounttype
+        global CoinSelect, PrivKeyFilename1, PrivKeyFilename2, PrivKeyFiledir1, PrivKeyFiledir2, keysconnected, NewUser, updatesomething, accounttype, mycfg
         if NewUser!=[]:
             QuestionBox("Please wait for the account to finish loading.", "OK")
             return
         PleaseWait=copy.deepcopy(CoinSelect)
         if CoinSelect['name']=="Bitcoin":
+            notifybuild=0
+            with open(os.path.join(application_path,"Halo.cfg"),'r') as f:
+                line=f.readline().strip()
+                if "#Approved#" not in line:
+                    notifybuild = line
+                f.close()
+            if notifybuild!=0:
+                res=QuestionBox(CoinSelect['daemon'] + " was not built by the Halo dev. Instead, it was taken from the official project release page. For the best security you can build the software yourself. Would you like to launch " + CoinSelect['daemon'] + "?" + " If you cancel, you can compile your own build and restart the software.","Proceed","Cancel")
+                if res==0:
+                    mycfg+="#Approved#"
+                    with open(os.path.join(application_path,"Halo.cfg"), 'a+') as f:
+                        f.write("#Approved#")
+                        f.flush()
+                        os.fsync(f)
+                        f.close()
+                    if BlackHalo == None:
+                        Reconnect()
+                else:
+                    return
             CoinSelect=copy.deepcopy(Coins[0])
             SelectTHIS=copy.deepcopy(Coins[0])
             self.progressBar.show()
@@ -31210,7 +32828,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 self.progressBar2.show()
                 self.Rescan2.show()
                 self.labelProgress2.show()
-            UpdateCfg('#CoinSelect#',str(CoinSelect['Symbol']))
+            UpdateCfg('#CoinSelect#',str(CoinSelect['Symbol']))            
         else:
             CoinSelect=copy.deepcopy(Coins[2])
             SelectTHIS=copy.deepcopy(Coins[2])
@@ -32865,7 +34483,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         mybytes=int(round(mybytes,-3))
         mybytes=mybytes*10#Convert from kb to satoshi
         if BitHaloClient == True:#Bitcoin is extremely slow for large transactions, we need to really raise the fee
-            mybytes=mybytes*3
+            mybytes=mybytes*2
         if mybytes>(int(fee)) and mydeposit!=0:
             res=QuestionBox(Gtranslate("The fee is not high enough to cover the inputs. The fee will be raised to the recommended level.\n\nRecommended Fee:")+"\n" + str(Decimal(mybytes+5000)/Decimal(1e8)), Gtranslate("OK"), Gtranslate("Cancel"),1)
             if res==1:
@@ -32942,7 +34560,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         mybytes=int(round(mybytes,-3))
         mybytes=mybytes*10#Convert from kb to satoshi
         if BitHaloClient == True:#Bitcoin is extremely slow for large transactions, we need to really raise the fee
-            mybytes=mybytes*3
+            mybytes=mybytes*2
         if mybytes>(int(fee)+difference) and mydeposit!=0:
             res=QuestionBox(Gtranslate("The fee is not high enough to cover the inputs. It's possible you have many small inputs. Please break for change or increase the fee and try again."), Gtranslate("OK"), Gtranslate("Cancel"),1)
             return False
@@ -33589,7 +35207,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         mybytes=int(round(mybytes,-3))
         mybytes=mybytes*10#Convert from kb to satoshi
         if BitHaloClient == True:#Bitcoin is extremely slow for large transactions, we need to really raise the fee
-            mybytes=mybytes*3
+            mybytes=mybytes*2
         if BitHaloClient ==  False:
             if mybytes>(int(fee)):
                 QuestionBox(Gtranslate("The fee is not high enough to cover the inputs. Please consider sending coins to yourself to consolidate change or raise the fee to the recommended level.\n\nRecommended Fee:\n") + str(Decimal(mybytes)/Decimal(1e8)), Gtranslate("OK"),1)
@@ -33972,7 +35590,8 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
 
     def SendNormal(self, apicontract="", mode=1):
         global mycfg, PrivKeyFilename1, PrivKeyFilename2, PrivKeyFiledir1, PrivKeyFiledir2, keysconnected, updatesomething, timestamp, MyEmail, WatchListQueue, CoinMarketCap, SALT, btcfeekb, myblockcount
-        global SilenceUI, exoticnotify
+        global SilenceUI, exoticnotify, AdvanceArray
+        multisig,multiscript=create_multisig_address(PrivKeyFilename1)
         if apicontract=="":
             apicontract={}
         Password=""
@@ -34017,7 +35636,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         amount=amount.replace(" ","")
         adarray, amtarray=ParseMultipay(address,amount)
         if amtarray != []:
-            if "Script:" in address:
+            if "Script:" in address or "6a" in address[:2] or "Mint:" in address or "Freeze:" in address:
                 QuestionBox("Can not pay multiple addresses and scripts simultaneously.", "OK")
                 return False, "Can not pay multiple addresses and scripts simultaneously."
             if 'Move Reserve:' in address or 'Voluntary Freeze:' in address:
@@ -34043,6 +35662,34 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             valid=1
         SCRIPT=0
         NotifyTHIS=[]
+        bridgetx=0
+        bridgedata={'network':'','pool':[0]*1200,'txid':'','to':''}
+        if testaddr[:2]=="6a" or testaddr[:14]=="MoveReserve:6a":
+            valid=1
+            SCRIPT=1
+            testthis=testaddr.replace("MoveReserve:","")
+            thisisgood=0
+            for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                if translate_script(testthis)['message'][5:][:16]==txhash(bridged['n'])[:16]:
+                    bridgedata['network']=bridged['n']
+                    bridgedata['to']=translate_script(testthis)['message'][5:][16:]
+                    if "0x" not in bridgedata['to'] or " " in bridgedata['to']:
+                        QuestionBox("The address does not appear to be valid!", " OK ")
+                        return False, "The address does not appear to be valid!"
+                    try:
+                        test=int(bridgedata['to'], 16)
+                    except:
+                        QuestionBox("The address does not appear to be valid!", " OK ")
+                        return False, "The address does not appear to be valid!"
+                    thisisgood=1
+                    bridgetx=1
+                    break
+            if thisisgood!=1:
+                QuestionBox("The bridge network name was not valid!", " OK ")
+                return False, "The bridge network name was not valid!"
+            if ThePeg.Pegdatabase['bridgeactive']==False:
+                QuestionBox("The bridge is currently deactivated, please try again later.", " OK ")
+                return False, "The bridge is currently deactivated, please try again later."
         if "Script:" in testaddr:
             valid=1
             SCRIPT=1
@@ -34075,6 +35722,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 QuestionBox("Script is not valid!", "OK")
                 return False, "Script is not valid!"
         special=0
+        mintthis=0
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
             if "MoveReserve:" in testaddr:
                 valid=1
@@ -34084,8 +35732,23 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 valid=1
                 address=address.replace("VoluntaryFreeze:", "")
                 special=2
+            if "Mint:" in testaddr:
+                valid=1
+                address=address.replace("Mint:", "")                
+                mintthis=ast.literal_eval(address)
+                address=mintthis['a']
+                tot=0
+                for val in mintthis['r']:
+                    tot += int(val)
+                tot -= int(abs(Decimal(fee)*Decimal(1e8)))
+                if tot != amount:
+                    QuestionBox("Amount is incorrect", "OK")
+                    return False, "Amount is incorrect"
+                if address != multisig:
+                    QuestionBox("The address is incorrect. You are not the recipient of this mint.", "OK")
+                    return False, "Amount is incorrect"
         if valid==1:
-            if "Script:" not in testaddr and "@" not in address and amtarray == []:
+            if "Script:" not in testaddr and "@" not in address and amtarray == [] and bridgetx == 0:
                 try:
                     b58check_to_hex(address)
                 except:
@@ -34129,19 +35792,18 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 feenotify=1               
         #Checking available balance after unconfirmed contracts/orders
         global Spendable
-        if len(Spendable)<1:
+        if len(Spendable)<1 and mintthis == 0:
             QuestionBox("The history is not up to date or there are no inputs available. Please wait or refresh the internet connection.", "OK")
             if apicontract=={}:
                 self.Tabs.setCurrentIndex(3)
             return False, "The history is not up to date or there are no inputs available. Please wait or refresh the internet connection."
-        balance2=0
-        multisig,multiscript=create_multisig_address(PrivKeyFilename1)
+        balance2=0        
         #This can be seen in every spending function. It simply filters out open orders from what is truly available
         exoticfilter=0
         if special==0:
             SpendThis=list(FilterSpendable(OnOrders,Spendable))
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
-            if special!=0:
+            if special!=0 or bridgetx==1:
                 exoticfilter=1
                 SpendThis=list(FilterSpendable(OnOrders,Spendable,1))#Let us not worry about time locks which may get declined later
                 TestSpend=list(FilterSpendable(OnOrders,Spendable))
@@ -34174,32 +35836,68 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         sfee=0
         rating=''
         try:
-            inputs,outputs,Total = MakeChange (SpendThis, amount+fee, multisig, maxinputs, 0, special)
-            if 'pegging' in CoinSelect and CoinSelect['pegging']:
-                if special==0:
-                    rating=self.RateLiquid(inputs)
-                    askme=1
-                    if TestnetPeg and multisig not in ThePeg.whitelist:
-                        askme=0
-                    if rating < ThePeg.subpremiumrating and askedaboutpremium==0 and askme==1:
-                        askedaboutpremium=1
-                        res=QuestionBox(Gtranslate('Please note, you are sending subpremium coins. That means the coins are set to freeze soon and are not fully liquid. Although you may proceed, if you are sending these coins as a payment it is recommended to send coins that are more liquid. Do you still wish to continue?\n\nLiquidity Rating: ')+str(Decimal(rating)), Gtranslate(' OK '), Gtranslate(' Cancel '),1)
-                        if res==1:
-                            return False, "Funds not liquid enough."
-                else:
-                    if len(Spendable)==1 and apicontract=={} and askedaboutpremium==0:
-                        askedaboutpremium=1
-                        mbox = QuestionBox("You only have one input. We recommend breaking for change, dividing your balance into smaller pieces. This will also increase the chances of a consecutive stake reward. For more information on how coins work like cash, please read the documentation. Would you like to break for change now?", " Yes ", " No ")
-                        if mbox != 1:
-                            self.Tabs.setCurrentIndex(1)
-                            window.BitPayTo.setText(str(multisig))
-                            window.BitAmount.setText(str("0.0001"))
-                            QuestionBox("Please review the information to confirm the address is your own. To break for change, you simply make a payment to yourself. When ready, simply click 'Send'.", "OK")
-                            return False, "The user has chosen to break for change."
+            if mintthis == 0:
+                inputs,outputs,Total = MakeChange (SpendThis, amount+fee, multisig, maxinputs, 0, special)
+                if 'pegging' in CoinSelect and CoinSelect['pegging']:
+                    if special==0:
+                        rating=self.RateLiquid(inputs)
+                        askme=1
+                        if TestnetPeg and multisig not in ThePeg.whitelist:
+                            askme=0
+                        if rating < ThePeg.subpremiumrating and askedaboutpremium==0 and askme==1:
+                            askedaboutpremium=1
+                            res=QuestionBox(Gtranslate('Please note, you are sending subpremium coins. That means the coins are set to freeze soon and are not fully liquid. Although you may proceed, if you are sending these coins as a payment it is recommended to send coins that are more liquid. Do you still wish to continue?\n\nLiquidity Rating: ')+str(Decimal(rating)), Gtranslate(' OK '), Gtranslate(' Cancel '),1)
+                            if res==1:
+                                return False, "Funds not liquid enough."
+                    else:
+                        if len(Spendable)==1 and apicontract=={} and askedaboutpremium==0:
+                            askedaboutpremium=1
+                            mbox = QuestionBox("You only have one input. We recommend breaking for change, dividing your balance into smaller pieces. This will also increase the chances of a consecutive stake reward. For more information on how coins work like cash, please read the documentation. Would you like to break for change now?", " Yes ", " No ")
+                            if mbox != 1:
+                                self.Tabs.setCurrentIndex(1)
+                                window.BitPayTo.setText(str(multisig))
+                                window.BitAmount.setText(str("0.0001"))
+                                QuestionBox("Please review the information to confirm the address is your own. To break for change, you simply make a payment to yourself. When ready, simply click 'Send'.", "OK")
+                                return False, "The user has chosen to break for change."
         except:
             traceback.print_exc()
             QuestionBox("Not enough available funds!", "OK")
             return False, "Not enough available funds!"
+        try:
+            if mintthis != 0:
+                feenotify=1
+                balance2=amount+fee
+                Total=amount+fee
+                amt2 = amount
+                mintdata="**Y**"+str(mintthis)
+                outputs=[]
+                while(len(mintdata)>0):
+                    outputs.append({'value':5777,'script':MakeCipherOutputs(mintdata[:244], 1)[0]})
+                    mintdata=mintdata.replace(mintdata[:244],'')
+                    amt2 -= 5777
+                    amount += 5777
+                    fee -= 5777
+                if amt2 < 5000 or fee < 5000:
+                    float('a')
+                outputs.insert(0,{'value':amt2,'address':address})
+                found=0
+                for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                    if mintthis['w']==txhash(bridged['n'])[:16]:
+                        found=1
+                        break
+                if found == 0:
+                    traceback.print_exc()
+                vpos=0
+                for val in mintthis['r']:
+                    mintthis['r'][vpos]=int(mintthis['r'][vpos])
+                    vpos+=1
+                thetxid = txhash(str([mintthis['w'],int(mintthis['n']),mintthis['f'],mintthis['a'],int(mintthis['s']),mintthis['r']]))+":0"
+                inputs=[{'output':thetxid,'value':balance2,'address':address}]
+                #print str(inputs) + "\n\n" + str(outputs) + "\n"
+        except:
+            traceback.print_exc()
+            QuestionBox("Minting receipt was not valid", "OK")
+            return False, "Minting receipt was not valid"
         if apicontract!={} and fee==0:#If we are using the API we can ask for automatic adjustment of the fee by setting it to zero
             count=0
             mybytes=1500 # A buffer for the fee
@@ -34235,7 +35933,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             mybytes=int(round(mybytes,-3))
             mybytes=mybytes*10#Convert from kb to satoshi
             if BitHaloClient == True:#Bitcoin is extremely slow for large transactions, we need to really raise the fee
-                mybytes=mybytes*3
+                mybytes=mybytes*2
                 #Even though Bitcoin traffic can stall transactions, we do not adjust the fee based on the information
                 #from the web because that would not be secure. Any adjustment should be manual.
             else:
@@ -34304,7 +36002,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         if rating!='':
             rating="\nLiquidity Rating: "+str(int(rating))
         else:
-            if 'pegging' in CoinSelect and CoinSelect['pegging']:
+            if 'pegging' in CoinSelect and CoinSelect['pegging'] and mintthis == 0:
                 try:
                     rating=self.RateLiquid(inputs)
                     rating="\nLiquidity Rating: "+str(int(rating))
@@ -34349,6 +36047,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             if apicontract=={}:
                 self.TwoStepSendpt1()
             return False, "Only one key connected."
+        outindex=0
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
             for i in outputs:
                 if i['value']==5590:
@@ -34365,20 +36064,25 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 sfee+=nfee
                 sfee+=apifee
                 batch=0
-                for i in inputs:
-                    if i['value']<theamt:
-                        #Batch the amounts since consecutive stakes are more common over 50k coins
-                        #Also for users who receive donations or small payments it's important to avoid accidental bloat of the chain
-                        batch+=i['value']
-                        if batch>4999900000000:
-                            outs1.append({'value':batch, 'address':address})
+                if bridgetx==1:
+                    outs1.append({'value':theamt, 'script':address})
+                    theamt=0
+                    outindex=1
+                else:
+                    for i in inputs:
+                        if i['value']<theamt:
+                            #Batch the amounts since consecutive stakes are more common over 50k coins
+                            #Also for users who receive donations or small payments it's important to avoid accidental bloat of the chain
+                            batch+=i['value']
+                            if batch>4999900000000:
+                                outs1.append({'value':batch, 'address':address})
+                                batch=0
+                            theamt-=i['value']
+                        else:
+                            outs1.append({'value':theamt+batch, 'address':address})
                             batch=0
-                        theamt-=i['value']
-                    else:
-                        outs1.append({'value':theamt+batch, 'address':address})
-                        batch=0
-                        theamt=0
-                        break
+                            theamt=0
+                            break
                 if batch > 0 or theamt > 0:
                     print str(SpendThis)
                     QuestionBox("Not enough funds!","OK")
@@ -34429,7 +36133,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         mybytes=mybytes*10#Convert from kb to satoshi
         mybytes+=sfee
         if BitHaloClient == True:#Bitcoin is extremely slow for large transactions, we need to really raise the fee
-            mybytes=mybytes*3
+            mybytes=mybytes*2
         if BitHaloClient ==  False:
             if mybytes>(int(fee)):
                 print str(fee)
@@ -34444,7 +36148,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 res=QuestionBox(Gtranslate("The fee is not high enough for a fast confirmation in the Bitcoin network. It's possible you have many small inputs or that the network is experiencing high traffic. Please raise the fee to the recommended amount of satoshis per kilobyte.\n\nCurrent Satoshis/KB:\n")+str(int(fee)/int(mybytes2))+Gtranslate("\n\nRecommended Satoshis/KB:\n")+str(btcfeekb)+Gtranslate("\n\nRecommended minimum fee:\n")+recommended, Gtranslate("OK"),1)
                 return False, "The fee is not high enough for a fast confirmation in the Bitcoin network." + "\nRecommended minimum fee:\n" + recommended
         condaddr=address
-        if SCRIPT==1:
+        if SCRIPT==1 and bridgetx==0:
             if meaning['type']!="Notary/Burn":
                 if BitHaloClient==False:
                     condaddr = scriptaddr(address.decode('hex'))
@@ -34520,15 +36224,20 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 content+="<a href='"+CoinSelect['website']+"'>"+CoinSelect['website']+"</a ><br \><br \>"
                 ordernumber=os.urandom(16).encode('hex')
             else:
-                if SCRIPT==1:
+                if SCRIPT==1 and bridgetx==0:
                     if meaning['type']!="Notary/Burn":
                         out={'value':amount-xfee-apifee-nfee,'address':condaddr}
                     else:
                         out={'value':amount-xfee-apifee-nfee,'script':address}                  
                 else:
-                    out={'value':amount-apifee-nfee,'address':address}
+                    if bridgetx==0:
+                        out={'value':amount-apifee-nfee,'address':address}
+                    else:
+                        out={'value':amount-apifee-nfee,'script':address}
                 if special==0:
-                    outputs.append(out)
+                    outindex=len(outputs)
+                    if mintthis == 0:
+                        outputs.append(out)
                 if NotifyTHIS!=[]:
                     if meaning['type']!="Notary/Burn":
                         outputs.append({'value':5577,'address':NotifyTHIS[0]})
@@ -34562,7 +36271,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         AmFirst=AmIFirst(PrivKeyFiledir1,PrivKeyFilename1)
         #{"asm" : "OP_RETURN 636861726c6579206c6f766573206865696469","hex" : "6a13636861726c6579206c6f766573206865696469","type" : "nulldata"}
         mtmp=""
-        if SCRIPT==1 or apicontract!={} or special!=0:
+        if SCRIPT==1 or apicontract!={} or special!=0 or bridgetx==1 or mintthis != 0:
             mtmp=mktx_script(timest,inputs,outputs)
         splashy=1
         lockit=lockforspending
@@ -34607,6 +36316,44 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         else:
             print "Network busy, try again later"
             result="TX rejected: Network busy, try again later."
+        if bridgetx==1:
+            bridgedata['txid']=txhash(tx)+":"+str(outindex)
+            if ThePeg.testthis==1:
+                if 'bridgetx' not in AdvanceArray:
+                    AdvanceArray['bridgetx']={}
+                if 'bridgecheck' not in AdvanceArray:
+                    AdvanceArray['bridgecheck']=[]
+                try:
+                    AdvanceArray['bridgecheck'].append(bridgedata['txid'])
+                    AdvanceArray['bridgetx'][bridgedata['txid']]={'pool':[0]*1200} #calculate this later
+                except:
+                    traceback.print_exc()
+            #if ThePeg.testthis==1:
+            #    try:
+            #        #NOTE: In practice don't perform these actions here. This is only for testing purposes
+            #        busy=NetSplash(1)
+            #        res2,stuff,somefees=ThePeg.checktransaction(tx, returnliquid=1)
+            #        NetSplash(0)
+            #        xpos=0
+            #        while xpos < 1200:
+            #            bridgedata['pool'][xpos]=stuff['txout'][bridgedata['txid']]['pool'][str(xpos)]
+            #            xpos+=1
+            #        if bridgedata['txid'] not in ThePeg.Pegdatabase['txidreference']:
+            #            ThePeg.Pegdatabase['txidreference'][bridgedata['txid']]=ThePeg.Pegdatabase['merklenonceTX'] #For easy reference finding a TX
+            #            ThePeg.Pegdatabase['merklelist'][str(ThePeg.Pegdatabase['merklenonceTX'])]['transactions'].append(copy.deepcopy(bridgedata))
+            #        AdvanceArray['bridgetx'][bridgedata['txid']]={'pool':copy.deepcopy(bridgedata['pool'])}
+            #    except:
+            #        traceback.print_exc()
+            #        try:
+            #            if bridgedata['txid'] not in ThePeg.Pegdatabase['txidreference']:
+            #                ThePeg.Pegdatabase['txidreference'][bridgedata['txid']]=ThePeg.Pegdatabase['merklenonceTX'] #For easy reference finding a TX
+            #                ThePeg.Pegdatabase['merklelist'][str(ThePeg.Pegdatabase['merklenonceTX'])]['transactions'].append(copy.deepcopy(bridgedata))
+            #            AdvanceArray['bridgecheck'].append(bridgedata['txid'])
+            #            AdvanceArray['bridgetx'][bridgedata['txid']]={'pool':[0]*1200}
+            #        except:
+            #            traceback.print_exc()
+            #        print "Pool data not saved"
+
         #if splashy==1:
         #    NetSplash(0)
         if "TX rejected" in str(result):
@@ -34630,6 +36377,10 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             NewOrder['address']=condaddr
             if SCRIPT==1:
                 NewOrder['script']=address
+            if bridgetx==1:
+                NewOrder['script']=address.replace("MoveReserve:","")
+                NewOrder['script']=address.replace("VoluntaryFreeze:","")
+                NewOrder['bridge']=True
             NewOrder['timestamp']=timest
             NewOrder['version']=CoinSelect['HaloName'] + " " + clientversion
             OnOrders.append(NewOrder)
@@ -34707,16 +36458,26 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             else:
                 HistoryDetail[multisig].insert(0,hist)
             if SCRIPT==1:
-                if meaning['type']=="Notary/Burn":
+                if bridgetx==0:
+                    if meaning['type']=="Notary/Burn":
+                        hist2=copy.deepcopy(hist)
+                        hist2['Type']="Notary/Burn"
+                        hist2['script']=address
+                        hist2['notify']=notify
+                        AddToHistory(txhash(tx), "", multisig, str(Decimal(amount)/Decimal(1e8)), hist2['Type'], hist2)
+                else:
                     hist2=copy.deepcopy(hist)
-                    hist2['Type']="Notary/Burn"
-                    hist2['script']=address
-                    hist2['notify']=notify
-                    AddToHistory(txhash(tx), "", multisig, str(Decimal(amount)/Decimal(1e8)), hist2['Type'], hist2)                                  
+                    hist2['Type']="Bridge"
+                    hist2['script']=address.replace("MoveReserve:","")
+                    hist2['bridgedata']=copy.deepcopy(bridgedata)
+                    hist2['bridgedata'].pop('pool')
+                    AddToHistory(txhash(tx), "", multisig, str(Decimal(amount)/Decimal(1e8)), hist2['Type'], hist2)
             PopulateHistory()
             myorder="Spent coins! Waiting for confirmations(click here if the order never confirms):      Order number:  " + NewOrder['ordernumber'] + "   Confirmation TXID: " + NewOrder['Confirmation TXID']
             window.HistorylistWidget.addItem(str(myorder))
             QuestionBox(str(txhash(tx))+Gtranslate("\nSuccess! It may take a moment to reflect in your balance."), Gtranslate("OK"),1)
+            if bridgetx==1:
+                QuestionBox("You have sent a bridged transaction to another network. This is a two step process and it may take up to a day for this transaction to confirm. After a day you should attempt to redeem the transaction by clicking on it where it says 'Bridge' in the history panel and following the instructions."," OK ")
             updatesomething = 1
             return tx, "Success!"
 
@@ -34727,14 +36488,14 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         timest=timestamp
         if keysconnected == "0":
             QuestionBox("No keys connected!", "OK")
-            return
+            return False
         balance=GetfromCfg("#prevbalance#")
         balance = int(Decimal(balance)*Decimal(1e8)) #We use Decimal to be extra sure there are no slip ups between conversions
         address = str(self.BitPayTo.text())
         amount = str(self.BitAmount.text())
         fee = str(self.BitFee.text())
         if "@" in address and "," in address:
-            return
+            return False
         orgamount=amount
         valid=0
         address=address.replace(" ","")
@@ -34745,14 +36506,17 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 usd,btc=GetMarketValue(CoinSelect['name'])
             if usd=="":
                 QuestionBox("Exchange rate not loaded yet. Please wait or convert the rate manually.", "OK")
-                return
+                return False
             else:
                 QuestionBox(Gtranslate("Please confirm the exchange rate online:\n")+"USD:"+usd+"->"+CoinSelect['name']+"\nBTC:"+btc+"->"+CoinSelect['name']+"\n\n\n"+Gtranslate("Halo calculates the exchange rate for you online. However, rates can change and certain sites may not always be accurate or reliable. Make sure you independently confirm this. Otherwise, you may simply send the coins normally."), Gtranslate("OK"),1)
         adarray, amtarray=ParseMultipay(address,amount)
         if amtarray != []:
             if 'Move Reserve:' in address or 'Voluntary Freeze:' in address:
                 QuestionBox("Can not pay multiple addresses on this type of transaction.", "OK")
-                return False, "Can not pay multiple addresses on this type of transaction."
+                return False
+            if "Script:" in address or "6a" in address[:2] or "Mint:" in address or "Freeze:" in address:
+                QuestionBox("Can not pay scripts on this type of transaction.", "OK")
+                return False
             amount=0
             myps=0
             for amt in amtarray:
@@ -34761,6 +36525,9 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     amtarray[myps]=amt
                 amount += int(abs(Decimal(amt)*Decimal(1e8)))
                 myps+=1
+        if "Mint:" in address:
+            QuestionBox("Currently this feature is only supported with both keys loaded.", "OK")
+            return False
         if amtarray == []:
             if "$" in amount:
                 amount=str((Decimal(amount.replace("$",""))/Decimal(usd)).quantize(Decimal('.00000001')))
@@ -34774,7 +36541,17 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         testaddr=testaddr.replace(".","")
         if "@" in testaddr:
             QuestionBox("You need both keys loaded to use Pay To Email!", "OK")
-            return
+            return False
+        if testaddr[:2]=="6a" or testaddr[:14]=="MoveReserve:6a":
+            testthis=testaddr.replace("MoveReserve:","")
+            try:
+                for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                    if translate_script(testthis)['message'][5:][:16]==txhash(bridged['n'])[:16]:
+                        QuestionBox("You need both keys loaded to use the bridge!", " OK ")
+                        return False
+            except:
+                QuestionBox("Address is incorrect or contains spaces!", "OK")
+                return False
         special=0
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
             if "MoveReserve:" in testaddr:
@@ -34787,7 +36564,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 testaddr=address
         if "Script:" in testaddr:
             QuestionBox("You need both keys loaded to use Exotic Spending or Notary!", "OK")
-            return            
+            return False
         if re.match("^[A-Za-z0-9,]*$", testaddr):
             valid=1
         if valid==1:
@@ -34796,27 +36573,27 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     b58check_to_hex(address)
                 except:
                     QuestionBox("Address is incorrect or contains spaces!", "OK")
-                    return
+                    return False
         else:
             QuestionBox("Address is incorrect or contains spaces!", "OK")
-            return
+            return False
         try:
             float(amount)
         except ValueError:
             pass #print "Not a number!"
-            return
+            return False
         try:
             float(fee)
         except ValueError:
             pass #print "Not a number!"
-            return
+            return False
         fee = int(abs(Decimal(fee)*Decimal(1e8)))
         #Checking available balance after unconfirmed contracts/orders
         global Spendable
         if len(Spendable)<1:
             QuestionBox("The history is not up to date or there are no inputs available. Please wait or refresh the internet connection.", "OK")
             self.Tabs.setCurrentIndex(3)
-            return
+            return False
         balance2=0
         multisig,multiscript=create_multisig_address(PrivKeyFilename1)
         exoticfilter=0
@@ -34844,7 +36621,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                         window.BitPayTo.setText(str(multisig))
                         window.BitAmount.setText(str("0.0001"))
                         QuestionBox("Please review the information to confirm the address is your own. To break for change, you simply make a payment to yourself. When ready, simply click 'Send'.", "OK")
-                        return False, "User is going to make change."
+                        return False
                     if mbox==2:
                         exoticnotify=True
         #Spendable and OnOrders
@@ -34865,7 +36642,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                         askedaboutpremium=1
                         res=QuestionBox(Gtranslate('Please note, you are sending subpremium coins. That means the coins are set to freeze soon and are not fully liquid. Although you may proceed, if you are sending these coins as a payment it is recommended to send coins that are more liquid. Do you still wish to continue?\n\nLiquidity Rating: ')+str(Decimal(rating)), Gtranslate(' OK '), Gtranslate(' Cancel '),1)
                         if res==1:
-                            return False, "Funds not liquid enough."
+                            return False
                 else:
                     if len(Spendable)==1 and apicontract=={} and askedaboutpremium==0:
                         askedaboutpremium=1
@@ -34875,11 +36652,11 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                             window.BitPayTo.setText(str(multisig))
                             window.BitAmount.setText(str("0.0001"))
                             QuestionBox("Please review the information to confirm the address is your own. To break for change, you simply make a payment to yourself. When ready, simply click 'Send'.", "OK")
-                            return False, "The user has chosen to break for change."
+                            return False
         except:
             traceback.print_exc()
             QuestionBox("Not enough available funds!", "OK")
-            return            
+            return False
         #Check to see if we need to add notifications.
         nfee=0
         feenotify=0
@@ -34915,12 +36692,12 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                             askedaboutpremium=1
                             res=QuestionBox(Gtranslate('Please note, you are sending subpremium coins. That means the coins are set to freeze soon and are not fully liquid. Although you may proceed, if you are sending these coins as a payment it is recommended to send coins that are more liquid. Do you still wish to continue?\n\nLiquidity Rating: ')+str(Decimal(rating)), Gtranslate(' OK '), Gtranslate(' Cancel '),1)
                             if res==1:
-                                return False, "Funds not liquid enough."
+                                return False
             except:
                 traceback.print_exc()
                 QuestionBox(Gtranslate("The amount has been adjusted to add a few notifications on the blockchain.\nNew Total: "+str(Decimal(amount)/Decimal(1e8))), "OK")        
                 QuestionBox("Not enough available funds!", "OK")
-                return            
+                return False            
             for o in addthese:
                 outputs.append(o)
         if rating!='':
@@ -34942,10 +36719,10 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             passthis=1
         if amount+fee > balance and passthis==0:
             QuestionBox("Not enough funds!", "OK")
-            return False, "Not enough funds!"
+            return False
         if amount+fee > balance2:
             QuestionBox("The inputs on the outgoing orders will exceed the balance. Please check your available balance and complete/cancel your unconfirmed orders.", "OK")
-            return False, "The inputs on the outgoing orders will exceed the balance. Please check your available balance and complete/cancel your unconfirmed orders."
+            return False
         checkdust=0
         if amount+fee!=balance and passthis==0:
             if amount+fee > balance - 5500:
@@ -34955,7 +36732,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 checkdust=1
         if checkdust==1:
             QuestionBox("The change on available inputs would be lower than the anti-dust minimum of 5500 satoshis. Try adding funds, increasing fees or free up some inputs.", "OK")
-            return False, "The change on available inputs would be lower than the anti-dust minimum of 5500 satoshis. Try adding funds, increase fees or free up some inputs."
+            return False
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
             if special!=0:
                 outs1=[]
@@ -34984,7 +36761,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 if batch > 0 or theamt > 0:
                     print str(SpendThis)
                     QuestionBox("Not enough funds!","OK")
-                    return False, "Not enough funds!"
+                    return False
                 inx=len(outs1)
                 for i in outs1:
                     sfee+=5590
@@ -34996,7 +36773,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     inx+=1
                 for i in outs1:
                     outputs.insert(inx, i)
-                    inx+=1        
+                    inx+=1   
         count=0
         mybytes=1500 # A buffer for the fee
         if 'pegging' in CoinSelect and CoinSelect['pegging']:
@@ -35020,11 +36797,11 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         mybytes=mybytes*10#Convert from kb to satoshi
         mybytes+=sfee
         if BitHaloClient == True:#Bitcoin is extremely slow for large transactions, we need to really raise the fee
-            mybytes=mybytes*3
+            mybytes=mybytes*2
         if BitHaloClient ==  False:
             if mybytes>(int(fee)):
                 QuestionBox(Gtranslate("The fee is not high enough to cover the inputs.\n\nRecommended Fee:\n") + str(Decimal(mybytes)/Decimal(1e8)), Gtranslate("OK"),1)
-                return
+                return False
         else:
             if mybytes>(int(fee)):
                 QuestionBox(Gtranslate("The fee may not be high enough to cover the inputs. You may proceed, however consider raising the fee.\n\nRecommended Fee:\n") + str(Decimal(mybytes)/Decimal(1e8)), Gtranslate("OK"),1)
@@ -35061,7 +36838,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 pos+=1
             except:
                 QuestionBox("One of the addresses or amounts you entered was invalid.", "OK")
-                return
+                return False
         Order['outputs']=outputs
 
         QuestionBox("During 2 step sends you want to make sure it does not interfere with contract negotiations. If multiple computers are involved, make sure they share the same contracts file or try to perform all your contracts from the same location.", "OK")
@@ -35070,14 +36847,14 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         else:
             mbox = QuestionBox(Gtranslate("2-Step Send") + "\n"+Gtranslate("Address: ") + address + "\n"+Gtranslate("Amount: ") + str(orgamount) + "\n"+Gtranslate("Fee: ") + str(Decimal(fee)/Decimal(1e8)) + rating + "\n"+Gtranslate("Total: ") + str(Decimal(amount)/Decimal(1e8)+Decimal(fee)/Decimal(1e8)) + "\n\n"+Gtranslate("Change Address: ") + str(multisig) + "\n"+Gtranslate("Change: ") + str(Decimal(Total)/Decimal(1e8)-Decimal(amount)/Decimal(1e8)-Decimal(fee)/Decimal(1e8)) + Gtranslate("\n\nPlease confirm the details.\n\nNote:\nCoins works just like cash. For more information\non how Halo manages change please read the\ndocumentation from the help menu."), Gtranslate(" OK "), Gtranslate(" Cancel "),1)
         if mbox == 1:
-            return
+            return False
         mtmp=""
         if special!=0:
             mtmp=mktx_script(timest,inputs,outputs)
         sigs,result=create_sig_for_redemption(inputs,outputs, PrivKeyFilename1, PrivKeyFiledir1, timest, tmptx=mtmp, splashme=1, unlockthis=lockforspending)
         if result == False:
             QuestionBox("Incorrect password.", "OK")
-            return
+            return False
         ForwardEmail=""
         manual=0
         if multisig in AdvanceArray:
@@ -35098,7 +36875,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         if manual==1:
             privpath1 = QtGui.QFileDialog.getSaveFileName(window,Gtranslate("Choose a location to save your signature file."),MacDir()+"signature1.sig","Signature File (*.sig)")
             if str(privpath1)=="":
-                return
+                return False
             with open(str(privpath1),'a+') as f:
                 f.close()
                 pass
@@ -35126,12 +36903,12 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             if "@" in ForwardEmail:
                 if MyEmail=="" or MyEmail==" ":
                     QuestionBox("No email loaded! Please try reloading your email.", "OK")
-                    return
+                    return False
                 Reply['MyBMAddress']=MyEmail
             else:
                 if "BM-" not in BitAddr:
                     QuestionBox("Incorrect Address!", "OK")
-                    return
+                    return False
                 Reply['MyBMAddress']=BitAddr
             Reply['TheirBMAddress']=str(ForwardEmail)
             Reply['BitHaloClient']=BitHaloClient
@@ -35161,6 +36938,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         myorder="Unconfirmed order(click for options): " + str(Order['ordernumber'])
         window.HistorylistWidget.addItem(str(myorder))
         updatesomething = 1
+        return True
 
     def TwoStepSendpt2(self, MyOrder=None):
         global Spendable, OnOrders, updatesomething
@@ -35454,7 +37232,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         BackupWallet()
     def ExitHalo(self):
         #We do a clean exit with a global.
-        global downloadThread, bitmessThread, blackcoindThread, RunPython, ThePeg, FileSave, RPC, DontExit, rescanning, BitMHalo, debug, MacWine, Exiting, BitMRPC, BlackUnspent
+        global downloadThread, bitmessThread, blackcoindThread, RunPython, ThePeg, FileSave, RPC, DontExit, rescanning, BitMHalo, debug, MacWine, Exiting, BitMRPC, BlackUnspent, BridgeDriver, TheBridgeThread
         #We need to clear the clipboard because if it has lots of data it can crash on exit
         Exiting=1
         clipboard = app.clipboard()
@@ -35507,6 +37285,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         RPC.stop()
         FileSave.stop()
         RunPython.stop()
+        TheBridgeThread.stop()
         if ThePeg.exchangerunning:
             print "Shutting down exchange..."
             ThePeg.stopexchange=1
@@ -35517,7 +37296,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 if tick==120:
                     print "The Peg Thread is taking too long to quit, will force exit."
                     break
-            print "OK!"
+            print "Success!"
         ThePeg.stop()
         downloadThread.exit()
         bitmessThread.exit()
@@ -35525,7 +37304,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         RPC.exit()
         FileSave.exit()
         RunPython.exit()
-        print "Sys1"
+        TheBridgeThread.exit()
         try:
             if debug != 0:
                 sys.stdout = sys.__stdout__
@@ -35538,12 +37317,22 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     f.close()
         except:
             traceback.print_exc()
-        print "Sys2"
+        try:            
+            if BridgeDriver != "":
+                BridgeDriver.quit()
+        except:
+            print "Exception closing bridge subprocess"
         try:
             BitMRPC = xmlrpclib.ServerProxy('http://localhost:8878')
-            #socket.setdefaulttimeout(10) 
+            try:
+                socket.setdefaulttimeout(10)
+            except:
+                print "Socket timeout not set"
             BitMRPC.ExitBitmessage("password")
-            #socket.setdefaulttimeout(None) 
+            try:
+                socket.setdefaulttimeout(None) 
+            except:
+                pass
             print "Success!"
         except:
             print "Could not connect to Bitmessage for clean exit. "        
@@ -35793,6 +37582,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
 ##Eventually consider more confirmations near peg supply change
 ##Peg exchange should have a function to trade all users liquidity during interval change. This should be coupled with
 ##a credit database in case it crashes. The trade goes from all users to the pool back to users for smooth trading experience and liquidity share.
+##GUI freezes if exec a window after many days of staking. Consider a timed window that refreshes and self destructs
 
 ##Separate GUI from program logic, bring code to API level, make things more object oriented, potentially move bitmessage to main thread
 ##Even if bitmessage is in main thread without conflict, user messages must still be stored until successfully sent in the case of IMAP
@@ -35859,6 +37649,7 @@ Also we would like to take the moment to give credit to the pybitcointools devs 
 ##Allow disabling of bomb and checklocktimeverify in case one party disappears
 ##Perhaps make it so users can select conversion currency instead of USD
 ##Sidechains are a good way to scale a blockchain and do contracts. Contracts can also be Sandboxed referred to by hashes with a payload in the output.
+##It's worth posting BitHalo to standard wikis for smart contracts since it was the worlds first contracting platform.
 
 ##If we get too much IP abuse force IP confirmation at server
 ##IP addresses for known nodes can be burnt later as can all of the above data for permanent storage but not required. Zmap also interesting.
@@ -35880,7 +37671,7 @@ if __name__ == "__main__":
     mylang=GetfromCfg("#language#")
     if mylang=="0":
         ChangeLanguage(1)
-    window = MyApp()
+    window = MyApp()    
     CustomForm = CustomTemplate()
     MarketWindow = WMarket()
     OutboxWindow = WOutbox()

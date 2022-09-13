@@ -112,6 +112,11 @@ class Ui_MainWindow(object):
             if self.language=="en" or self.language=="DEFAULT":
                 self.translist=[]
                 return False
+            if self.yandexAPI == "": #For now google translate is too slow without API access although this can be expanded upon
+                print "Yandex API key not available"
+                return False
+            else:
+                ytrans = YandexTranslate(self.yandexAPI)
             #The Yandex site has a 10K text size limit, so we do multiple requests
             xpos=0
             numby=0
@@ -135,8 +140,8 @@ class Ui_MainWindow(object):
                 resp1=resp1['text']
                 for respy in resp1:
                     resp.append(respy)
-            #resp = ytrans.translate(ast.literal_eval(str(self.translist)), self.language)
-            #resp = resp['text']
+            resp = ytrans.translate(ast.literal_eval(str(self.translist)), self.language)
+            resp = resp['text']
             pos=0
             for trans in resp:
                 langtext = QtGui.QLabel()
@@ -150,7 +155,6 @@ class Ui_MainWindow(object):
             self.translist=[]
             return True
         except:
-            print self.translist
             traceback.print_exc()
             return False
     def setupUi(self, MainWindow):

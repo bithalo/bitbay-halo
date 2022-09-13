@@ -26,6 +26,8 @@ sudo pip install numpy
 sudo pip install ujson==1.35
 sudo pip install pysocks
 sudo pip install mechanize
+sudo pip install PyExecJS
+sudo pip install selenium
 
 #Halo Distro if desired
 #sudo pyinstaller BitMHalo.py --onefile

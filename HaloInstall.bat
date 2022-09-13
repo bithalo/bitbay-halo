@@ -28,6 +28,8 @@ pip install ujson
 pip install pysocks
 pip install win_inet_pton
 pip install mechanize
+pip install PyExecJS
+pip install selenium
 
 #Halo Distro if desired
 #pyinstaller BitMHalo.py -wF --icon=BitMHalo.ico --uac-admin
