@@ -510,9 +510,9 @@ Coins=[]#Soon will need more variables like the minimum fee and magic byte
 NewCoin={}
 NewCoin1={}
 NewCoin2={}
-NewCoin['daemon']="blackcoind"
+NewCoin['daemon']="blackmored"
 NewCoin['datadir']="data"
-NewCoin['config']="blackcoin"
+NewCoin['config']="blackmore"
 NewCoin['rpcuser']="blackcoinrpc"
 NewCoin['rpcpassword']="32w54er56t7y89j8h34w5e6t7y8u9ik34sAs4"
 NewCoin['rpcport']="15715"
@@ -525,7 +525,7 @@ NewCoin['stakeconfirmations']=500
 NewCoin['logo']="/images/BlackHalo.png"
 NewCoin['name']="Blackcoin"
 NewCoin['moderngui']=0
-NewCoin['website']="http://www.BlackHalo.info/"
+NewCoin['website']="https://BlackHalo.info/"
 NewCoin['updatewindows']="https://bithalo.github.io/bithalo/downloads/BlackHaloUpdateWin.html"
 NewCoin['TabText']="rgb(255, 255, 255)"
 NewCoin['splash']="LoadingBlackHalo.png"
@@ -566,7 +566,7 @@ NewCoin1['stakeconfirmations']=120
 NewCoin1['logo']="/images/BitBay.png"
 NewCoin1['name']="BitBay"
 NewCoin1['moderngui']=1
-NewCoin1['website']="http://bitbay.market/"#"http://www.thebitbay.org/"  and bitbaymarket.net is also under Bitbays control
+NewCoin1['website']="https://bitbay.market/"
 NewCoin1['videolibrary']="https://www.youtube.com/watch?v=CIU4s2G8jU8&list=PL4MGGKJn4DizGw7oBXwzETMVLNCZ6G2_t"
 NewCoin1['updatewindows']="https://bithalo.github.io/bithalo/downloads/BitBayUpdateWin.html"
 NewCoin1['TabText']="rgb(255, 255, 255)"
@@ -586,7 +586,7 @@ NewCoin1['ProgressBarColor']="#a5d1e4"#545d6d
 NewCoin1['TabGradient']="qlineargradient(x1:1, y1:1, x2:1, y2:0, stop:0 #009ee3, stop: 0.4 rgba(0, 90, 177, 250), stop:1 rgb(0, 50, 100, 250))"
 NewCoin1['NavBarIcon']="/images/navbar_arrow_bay.png"
 NewCoin1['default market']="BitBay"
-NewCoin1['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#BitBay" #http://webchat.freenode.net?channels=BitHalo,#BitBay&amp;uio=OT10cnVlJjExPTIzNg6b"
+NewCoin1['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#BitBay" #https://webchat.freenode.net?channels=BitHalo,#BitBay&amp;uio=OT10cnVlJjExPTIzNg6b"
 NewCoin1['nodes']=["195.181.242.206","151.236.221.10","108.61.163.182", "45.79.94.206","139.162.226.144","172.104.25.65","172.104.248.46","172.105.241.170","172.104.185.75","104.236.208.150","188.166.39.223","128.199.118.67","104.255.33.162","194.135.84.161","23.227.190.163","45.56.109.7","104.172.24.79","106.187.50.153","158.69.27.82","24.37.11.106","40.112.149.192","69.254.222.98","85.25.146.74","195.181.242.206","108.61.99.30","109.200.226.214","142.44.212.178","213.231.38.119","37.120.48.130","37.139.5.225","47.97.184.125","72.199.168.135","74.222.195.230","80.7.81.121","88.180.217.67","88.90.82.209","92.110.86.245","94.193.173.249","95.216.45.141","98.214.246.87","104.237.4.26","108.46.55.204","109.86.81.235","109.88.194.34","116.240.94.131","157.52.132.37","212.200.52.123","217.121.36.200","68.198.145.62","69.250.107.102","76.201.148.44","77.0.188.237","77.8.93.125","86.130.87.94","92.14.229.173","108.46.151.50","108.61.163.182","110.140.74.185","116.203.21.198","139.162.226.144","172.104.185.75","172.105.241.170","45.79.94.206","5.189.144.187","51.254.49.230","67.44.176.225","80.4.51.126","91.121.217.70","91.207.172.123","212.24.97.214","108.249.214.97","151.64.22.175","173.239.93.120","173.77.163.177","183.106.37.96","185.183.107.172","185.183.107.174","185.244.212.20","192.30.89.67","193.37.253.101","194.59.251.111","195.206.183.167","213.154.231.39","213.213.219.80","213.231.7.146","216.46.43.58","217.146.82.134","27.187.73.203","37.235.55.13","46.9.176.176","5.62.49.34","70.93.174.250","73.149.189.82","79.198.237.182","80.107.189.226","82.12.99.226","82.17.115.47","82.207.237.17","82.28.11.95","84.151.167.24","86.126.2.173","88.212.55.252","92.14.27.81","93.201.111.175","94.197.120.101"]
 #NewCoin1['nodes']=["104.172.24.79","104.200.154.17","106.187.50.153","149.12.14.174","158.69.27.82","188.123.16.129","198.74.56.141","217.25.213.221","217.25.213.224","217.25.213.238","23.105.132.100","24.37.11.106","37.110.214.70","40.112.149.192","45.56.109.7","5.71.234.101","50.41.194.116","50.41.197.104","50.41.197.146","50.41.197.167","50.41.197.171","50.41.198.128","50.41.198.32","50.41.198.58","50.41.198.60","50.41.201.69","51.255.64.57","69.254.222.98","78.98.122.3","80.39.197.10","83.128.183.212","85.25.146.74","94.137.30.246","95.153.32.38","98.113.150.90","104.237.2.192","108.61.10.90","213.226.252.45","91.158.109.188","159.203.184.167","162.216.46.117","104.236.208.150", "195.181.242.206", "188.166.39.223","128.199.118.67", "104.255.33.162", "194.135.84.161", "23.227.190.163", "201.166.110.218", "100.15.228.230", "104.237.4.33", "104.238.169.110", "104.238.169.120", "104.245.111.33", "104.6.159.189", "107.132.230.195", "107.15.192.58", "107.218.48.181", "108.200.103.205", "108.213.70.198", "108.214.8.13", "108.241.58.211", "108.248.114.128", "109.173.159.100", "110.140.43.184", "113.59.202.53", "116.15.203.21", "120.147.146.11", "120.55.51.151", "121.221.56.199", "123.231.125.91", "124.178.155.6", "132.198.204.255", "135.23.125.66", "144.217.215.134", "146.255.175.131", "147.30.87.116", "151.80.186.24", "169.0.109.203", "173.170.105.150", "173.239.236.61", "173.239.236.94", "173.239.240.39", "173.54.212.190", "174.26.159.221", "174.79.110.140", "176.11.27.206", "176.11.93.220", "176.228.218.17", "178.63.60.137", "179.57.114.240", "184.64.97.156", "185.11.108.170", "185.156.173.238", "185.156.173.248", "185.9.19.122", "188.113.203.196", "188.113.215.180", "188.113.217.172", "188.163.104.86", "188.165.203.89", "188.192.142.76", "188.230.151.241", "190.192.28.46", "190.72.246.166", "193.1.218.163", "193.80.38.164", "195.181.242.206", "201.166.110.183", "201.247.142.137", "208.157.168.106", "209.146.252.226", "209.6.92.112", "213.152.161.117", "216.67.74.89", "216.67.81.213", "217.21.201.135", "217.238.19.76", "217.39.127.111", "217.64.127.165", "24.21.46.228", "24.45.24.83", "24.57.212.150", "31.204.150.109", "31.204.152.200", "31.204.152.221", "31.204.153.46", "37.201.224.214", "37.228.224.103", "40.112.149.192", "46.39.243.165", "46.46.205.96", "5.189.156.99", "5.56.189.65", "5.62.41.4", "5.63.151.76", "50.240.204.70", "50.27.176.50", "50.27.236.224", "50.41.205.218", "51.254.45.117", "51.7.236.38", "51.7.254.211", "52.232.33.38", "58.96.240.42", "60.242.23.7", "62.178.40.4", "67.173.120.250", "67.230.49.214", "67.240.19.66", "68.100.192.184", "68.149.125.18", "68.46.238.155", "70.64.11.206", "71.245.121.203", "71.84.137.92", "72.169.81.141", "72.207.104.55", "72.22.148.78", "72.22.150.82", "72.238.5.0", "72.239.0.57", "72.48.127.219", "73.143.247.58", "73.162.63.60", "73.172.109.27", "73.202.23.41", "73.203.20.134", "73.241.114.206", "73.241.24.24", "73.25.146.40", "73.254.226.126", "73.76.129.232", "75.83.248.12", "76.125.29.166", "76.169.57.92", "76.29.66.137", "77.255.88.179", "77.255.92.80", "77.68.215.200", "79.69.139.140", "79.74.70.117", "79.75.39.24", "79.75.61.162", "80.101.212.164", "80.180.42.224", "80.229.17.69", "81.184.121.12", "82.101.198.115", "82.129.122.26", "82.217.167.158", "82.240.188.161", "82.41.55.9", "83.8.64.20", "84.240.71.197", "84.250.171.240", "85.170.176.192", "85.241.113.249", "85.25.146.74", "86.150.38.55", "86.167.182.70", "86.176.147.48", "88.114.185.201", "90.191.207.180", "92.1.234.190", "92.237.123.47", "93.194.192.28", "93.242.44.146", "94.212.36.91", "94.46.175.222", "95.34.149.205", "96.246.242.21", "98.145.4.235", "98.242.37.243", "99.238.244.2", "99.66.221.203", "1.129.109.58","100.2.93.10","104.223.25.122","108.190.240.82","110.140.93.40","113.59.203.138","121.7.251.133","124.29.237.241","14.200.165.55","144.217.72.204","145.130.170.169","146.198.52.2","154.57.227.227","162.72.254.164","172.111.155.214","172.56.12.106","172.56.12.184","172.56.12.212","172.56.12.221","172.56.13.152","172.56.13.189","172.56.13.31","172.56.6.52","172.56.7.127","173.22.3.50","173.239.236.85","174.69.221.184","176.24.209.169","176.27.192.166","184.14.108.222","184.55.176.66","184.6.74.147","184.98.164.92","185.161.201.13","188.113.197.220","188.113.197.236","188.113.213.212","188.113.215.236","188.241.58.126","188.6.131.67","190.20.105.78","190.20.140.160","194.72.180.68","195.113.111.18","196.11.63.162","196.53.32.11","203.57.210.108","204.228.139.246","208.54.80.130","208.54.80.131","212.197.143.196","212.3.195.175","24.10.135.27","24.176.251.84","24.225.204.112","24.234.86.102","24.242.103.47","31.52.213.184","36.232.141.220","37.136.11.61","39.109.134.176","45.28.140.116","46.208.58.217","46.233.215.30","46.235.32.6","46.4.37.190","5.198.101.104","50.41.223.118","51.7.254.198","62.57.193.29","65.95.224.6","67.165.94.226","67.183.29.189","68.197.208.77","69.197.188.186","69.203.109.7","69.55.254.61","70.119.124.134","70.122.32.5","70.71.157.109","71.197.52.238","72.199.168.135","72.22.151.109","72.70.60.136","73.212.89.38","73.222.225.197","73.54.180.205","73.66.212.224","73.76.16.176","75.100.38.214","76.23.184.131","76.69.65.236","77.172.214.202","78.124.25.100","78.132.17.232","78.132.69.249","78.20.105.124","79.169.12.17","79.31.132.209","79.75.35.83","80.122.24.98","80.215.210.252","81.99.72.84","82.1.131.229","82.20.109.111","82.25.54.171","82.33.136.156","82.33.203.110","85.164.9.224","85.214.140.15","85.229.153.141","86.152.216.229","86.22.249.27","88.106.105.181","88.165.92.58","88.169.109.52","89.162.20.164","89.247.193.105","89.64.11.38","89.64.13.222","92.15.203.251","93.193.46.60","95.211.199.131","95.211.95.246","96.232.82.36","98.16.141.39","98.194.66.113","99.20.141.243","94.102.52.66","80.82.64.64","107.218.48.181","108.61.163.182","108.61.99.30","110.140.136.223","115.189.87.188","124.148.154.249","13.88.29.127","139.162.226.144","151.229.82.253","152.0.255.216","171.112.186.7","172.104.185.75","172.105.241.170","173.239.222.132","173.239.226.8","173.249.21.191","174.50.118.218","174.65.17.23","178.78.92.212","184.64.223.125","185.163.111.252","195.181.242.206","210.84.54.238","213.122.117.130","24.214.124.183","24.96.192.15","45.79.94.206","46.4.37.190","5.189.164.59","5.79.102.19","50.203.99.102","50.37.21.201","51.254.49.230","68.46.238.155","70.119.124.134","71.105.34.144","72.227.170.97","73.8.31.127","74.101.0.66","77.56.58.236","79.230.56.27","79.66.224.67","79.67.93.131","80.4.51.126","85.229.154.208","85.25.146.74","94.130.64.143","107.218.48.181","108.61.163.182","108.61.99.30","110.140.136.223","115.189.87.188","124.148.154.249","13.88.29.127","139.162.226.144","151.229.82.253","152.0.255.216","171.112.186.7","172.104.185.75","172.105.241.170","173.239.222.132","173.239.226.8","173.249.21.191","174.50.118.218","174.65.17.23","178.78.92.212","184.64.223.125","185.163.111.252","195.181.242.206","210.84.54.238","213.122.117.130","24.96.192.15","45.79.94.206","46.4.37.190","5.189.164.59","5.79.102.19","50.203.99.102","50.37.21.201","51.254.49.230","68.46.238.155","70.119.124.134","71.105.34.144","72.227.170.97","73.8.31.127","74.101.0.66","77.56.58.236","79.230.56.27","79.66.224.67","79.67.93.131","80.4.51.126","85.229.154.208","85.25.146.74","94.130.64.143"]#The last 6 up until 201.166.110.218 are original/expired seed nodes and home node appended afterwards is chainz nodes, the ones prior are also from chainz ##Reliable nodes are "40.112.149.192", "195.181.242.206"
 NewCoin1['links']=("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -594,10 +594,8 @@ NewCoin1['links']=("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Arial\'; font-size:16px; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:15px; font-weight:600;\">Links/Misc</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://bitbay.market/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">http://bitbay.market/</span></a><span style=\" font-size:15px;\">  The official BitBay website</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://bitbaymarket.net/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">http://bitbaymarket.net/</span></a><span style=\" font-size:15px;\">  BitBay mirror websites</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.reddit.com/r/bitbay/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">http://www.reddit.com/r/bitbay/</span></a><span style=\" font-size:15px;\">  BitBay community subreddit</span></p>\n"
-#"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.davtonia.com/blackhalo/bitbaybootstrap.zip\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">bitbaybootstrap.zip</span></a><span style=\" font-size:15px;\">  Download BitBay bootstrap.zip.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://bitbay.market/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">https://bitbay.market/</span></a><span style=\" font-size:15px;\">  The official BitBay website</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://www.reddit.com/r/bitbay/\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">https://www.reddit.com/r/bitbay/</span></a><span style=\" font-size:15px;\">  BitBay community subreddit</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"www.Blackhalo.info\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">www.Blackhalo.info</span></a><span style=\" font-size:15px;\">  BlackHalo, the worlds first contracting software</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"www.BitHalo.org\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">www.BitHalo.org</span></a><span style=\" font-size:15px;\">  The original BitHalo Website</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"www.NightTrader.org\"><span style=\" font-size:15px; text-decoration: underline; color:#0000ff;\">www.NightTrader.org</span></a><span style=\" font-size:15px;\">  NightTrader decentralized exchange</span></p>\n"
@@ -620,9 +618,9 @@ Coins.append(NewCoin1)
 #NewCoin2['rpcpassword']="32w54er56t7y89j8h34w5e6t7y8u9ik34sAs4"
 #NewCoin2['rpcport']="8332"
 #NewCoin2['port']="8333"
-NewCoin2['daemon']="blackcoind"#Just in case Blackcoin disconnects during a BitHalo session we will use their data since we arent running Bitcoind
+NewCoin2['daemon']="blackmored"#Just in case Blackcoin disconnects during a BitHalo session we will use their data since we arent running Bitcoind
 NewCoin2['datadir']="data"
-NewCoin2['config']="blackcoin"
+NewCoin2['config']="blackmore"
 NewCoin2['rpcuser']="blackcoinrpc"
 NewCoin2['rpcpassword']="32w54er56t7y89j8h34w5e6t7y8u9ik34sAs4"
 NewCoin2['rpcport']="15715"#Was 15717
@@ -634,7 +632,7 @@ NewCoin2['checksequenceverify']=False
 NewCoin2['logo']="/images/BitHalo.png"
 NewCoin2['name']="Bitcoin"
 NewCoin2['moderngui']=0
-NewCoin2['website']="http://www.BitHalo.org/"
+NewCoin2['website']="https://BitHalo.org/"
 NewCoin2['updatewindows']="https://bithalo.github.io/bithalo/downloads/BitHaloUpdateWin.html"
 NewCoin2['TabText']="rgb(255, 255, 255)"
 NewCoin2['splash']="LoadingBitHalo.png"
@@ -653,7 +651,7 @@ NewCoin2['ProgressBarColor']="#545d6d"
 NewCoin2['TabGradient']="qlineargradient(x1:1, y1:1, x2:1, y2:0, stop:0 #009ee3, stop: 0.4 rgba(0, 90, 177, 250), stop:1 rgb(0, 50, 100, 250))"
 NewCoin2['NavBarIcon']="/images/navbar_arrow.png"
 NewCoin2['default market']="Halo Market"
-NewCoin2['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#Blackcoin"#http://webchat.freenode.net?channels=BitHalo,#Blackcoin&amp;uio=OT10cnVlJjExPTIzNg6b"
+NewCoin2['IRC']="https://webchat.oftc.net/?channels=%23BitHalo,%23BitBay&uio=d4"#"https://kiwiirc.com/client/irc.kiwiirc.com/#BitHalo,#Blackcoin"#https://webchat.freenode.net?channels=BitHalo,#Blackcoin&amp;uio=OT10cnVlJjExPTIzNg6b"
 NewCoin2['nodes']=["104.6.159.189","107.195.147.153","112.113.96.138","113.108.186.130","113.234.214.8","117.157.64.230","117.172.25.189","118.212.114.93","118.42.39.231","124.238.85.96","139.130.157.220","163.172.184.165","163.172.223.239","173.239.230.36","173.239.236.43","173.239.236.5","173.244.48.182","173.33.214.129","176.25.84.234","178.137.89.197","183.14.252.56","184.4.178.115","185.173.206.30","188.137.32.82","192.40.95.25","195.122.202.2","195.20.153.254","195.252.67.115","200.120.151.178","209.197.159.209","211.142.221.137","211.142.221.158","212.180.229.134","213.231.101.1","217.108.209.165","217.182.192.7","23.127.82.251","24.10.184.3","24.166.255.203","24.86.78.11","39.128.196.9","41.190.30.206","46.5.2.80","47.180.44.129","5.172.236.41","59.53.16.209","59.53.26.24","61.56.213.25","62.2.214.45","65.128.88.11","67.174.248.255","72.241.235.204","73.109.27.226","73.216.144.216","73.25.146.40","76.84.68.134","77.144.221.131","79.114.236.118","80.148.28.210","82.23.136.107","83.170.70.50","83.215.142.159","83.9.244.60","84.55.104.197","85.24.180.24","86.147.66.127","86.63.70.12","87.245.126.33","88.196.136.31","91.59.127.135","91.59.98.229","92.73.213.106","93.217.127.230","94.212.239.213","96.36.231.150","96.90.184.145"]
 NewCoin2['links']=""
 NewCoin2['Moderator']=0
@@ -932,17 +930,29 @@ def messagebox(text, text2, text3):
     response = msgBox.exec_()
     return response
 res=0
+pendingInstall = 0
 if notifybuild!=0 and CoinSelect['name'] != "BitBay":
     if CoinSelect['name'] == "Bitcoin":
         res=1
     else:
-        res=messagebox(CoinSelect['daemon'] + " was not built by the Halo dev. Instead, it was taken from the official project release page. For the best security you can build the software yourself. Would you like to launch " + CoinSelect['name'] + "?" + " If you cancel, you can compile your own build and restart the software.","Proceed","Cancel")
-        if res==0:
-            with open(os.path.join(application_path,"Halo.cfg"), 'a+') as f:
-                f.write("#Approved#")
-                f.flush()
-                os.fsync(f)
-                f.close()
+        if CoinSelect['name'] == "Blackcoin":
+            if not os.path.isfile(os.path.join(application_path,CoinSelect['daemon']+'.exe')):
+                if not os.path.isfile(os.path.join(application_path,CoinSelect['daemon'])):
+                    res=messagebox(CoinSelect['daemon'] + " was not included with Halo so it must be downloaded manually. Please visit https://github.com/CoinBlack/blackcoin-more/releases to get the most recent build and place it in the same directory as your Halo install. Then please restart the software.","Copy to clipboard and visit link","Exit Halo")
+                    if res == 1:
+                        sys.exit(-1)
+                    pendingInstall=1
+                    webbrowser.open("https://github.com/CoinBlack/blackcoin-more/releases")
+                    clipboard = app.clipboard()
+                    clipboard.setText("https://github.com/CoinBlack/blackcoin-more/releases") 
+        if pendingInstall == 0:
+            res=messagebox(CoinSelect['daemon'] + " was not built by the Halo dev. Instead, it was taken from the official project release page. For the best security you can build the software yourself. Would you like to launch " + CoinSelect['name'] + "?" + " If you cancel, you can compile your own build and restart the software.","Proceed","Cancel")
+            if res==0:
+                with open(os.path.join(application_path,"Halo.cfg"), 'a+') as f:
+                    f.write("#Approved#")
+                    f.flush()
+                    os.fsync(f)
+                    f.close()
 #Windows
 if os.name == 'nt':
     startupinfo = subprocess.STARTUPINFO()
@@ -1135,7 +1145,7 @@ class IdenticonRendererBase(object):
 class DonRenderer(IdenticonRendererBase):
     """
     Don Park's implementation of identicon
-    see : http://www.docuverse.com/blog/donpark/2007/01/19/identicon-updated-and-source-released
+    see : https://www.docuverse.com/blog/donpark/2007/01/19/identicon-updated-and-source-released
     """
     
     PATH_SET = [
@@ -1956,7 +1966,7 @@ class PegThread(QtCore.QThread):
         #Bridge and voting system:
         #To add a bridge the address will refer to the BitBay data contract
         self.testthis=1
-        self.Pegdatabase['bridgedb'] = {'TrustedStakers1':["bNgmCcxPKgQQqUe6rhNtbGWowMJFCuxjZ3", "bEfg9bMLSgmjB5TDiur9FscZij4XXrd8C5", "bTuZboysrngsaqJvRj4db4CV2Qa21Q5Jcb", "bMvqdtSZtxDDBEj6NBHAg38iCdvmFwALix", "bJvBcHh45A6mjfKhy8Qg9AagbWfHWB1abC", "bN2NGi2bF1cpcQcsxmY4daCpi2tQqW5tnS", "bS4MGJKwN3vWCSgmsmYfXoJzS3QHPCRtcB", "BJLZ29gAk9aGW9HoAnsEzqmWp6BX7tZEN8", "bP66u6L53PmFppSszfDnUN7dBh6jeNw1uJ", "B8FqutWoHU6ixFxceZDkqvWARLERuTc4DL"],'TrustedStakers2':["bZ8sJgk1VsgbNcqUqBY5hNR9kMaJ5kksEG","bYf1uCCEc4Ge5juuHntYpJvuZ6L6fkqc9w","bYCwwHbSGo85k86Bd5S7drLQ2m1EnUcqTq","bURCwQiJhTSX2JA72LmPwCG3vF9zCpPB6J","bUjrA5QmFntnGABYfeaHbSf5QKF1ptmztr","bJMBgyS6u4SPFwJKGpcgWnPSRcuXF8iTme","bFEEzRWNWKGxFmjAkT1SmjNs8VTD9eTYje","bCqaStDHVoU89DWDjRxrsGbVFBWhxBFdP3","bbn4mJawLC8C26gfw4TVAcfRftiRvb6hZz","bamTjYPT5R822PLgVXUUUdYG6mQTnwmLtj","bbaeKoaSbH23JP1PHM7Fa3oPAfDLQjA9fr","bbbVueUaexGJgxkh2o2Eicd7nKDkuygGoc","bE2sWfTAKR556uFwFjkeQcgMQTFZU2c5c6","bG5WbMoXhMYEVa52ucZWjnidsqTidH7XoV","bHcSb6MC3dxAZbyBSMtSfq81WUF8odrfs6","bLRmZWd5mhE8H5AeSdXuRgwsdXAfEPRdDD","bSg6gu7nH8aHwz2FTqfNF3h6TBExozfkMc","bU7Fr7yrYJWgx6dTqpLW7Xs2Ztc7DBShNC","bWVt3Qp1M2m3qNc2JgBcis6v2fu2ARoBzh","bZT1vZsC123vFHpxwiXYTAt9k9kpfmhD9Y","BGGVksKTGoemBpDTUJw9tVw9M2t7EtFfzz","BKmirMrh6b5ku5scpc7AcJiTh8GSbc3aHR","BRHq9ae4FGD2sgDjqhbJj1K5iszWxZsju8","BEvukYqnXVw9Bj6q613igbBzeu7L8qydfZ","BScLEZPVsLZHeHjciV9boq5j1i8VtcJNkV","BGLCn3mQ4y8eMqm12cZmNtHohag2FvW5oc","BNV91VFGsRHPSepK4WAS9Bg7ghK9T179mM","BEpKZUcf7xCChU1xUgy9cCkou5Ujda1FTe","BEdhKEgAT1TvF3NBpTHmnXDPTrxG8SqvPj","BADnKcGJCFrvjhGxNjNgLw4pWmMLZTPDHm","BAvARoTNQa4e3pZcpso9JMwJbDgLRV3kaG","B9MWeWrJei6UCfeMN4yVnGSsjXR2fzPE7S","BJq1ChAvpqMPQ35PA12T6cAvwksGW2zNMa","B87SXHvyT1nco2ufyQjSfgDM8aCjutnqcJ","BNWtRUezdG26bn3AKNwvG4He1X6tLbrqQj","B8xvFpfLfLSadfmAv87JhqyGMjB86MD6Kz","B5ERP1AVtwa7BrjSyw9saqWp2dVzypgmDX","BF2o4AHkviLxH1ksxfMJr9PUY4mq94nXAe","B6B7QJwDBCBnumDdVCusNaX9FecKMdeEPM","BT8Kbtrqq9EWGAADGUKkrvFDN4GLoAZ5Xu","BLwT7rbNPBDVqMLnBTfbt4ARpdexjM1U34","BGLu8AzqiapcbufCabop4VWCzqZbYP2wJ8","BNuv6rfyadJ8HjCGgBbYuE1AcNQZFQBuKs","BHGUmQJZVN2vGjKCup2rBw6xn9b24FQaPh","BBoGzB9UpLHP8XLNJNAm7iG7f3SgvCYGJa","BTWKXR8Mi3s64bUaGVYnwL1XqmP6aTMWC3","B6q2EoNLbDDabWoDawaZBwtAS3FURncaHq","B515mPDfT4rTiLRUJFid2zrFRiGySxgj4Z","BSmBt2aNscgogCShoetG9aiRbtLznD4HEU","BNz1ZmfSaZwS2pduJ5QaVeBeUVnqwRPC1p","B6mh9dJi5zVYH2coYeyEFbutWrt7389159","BAuzwad1RErngpU4vs4TGoN61otqDq9eKE","BMPh6mYvDcUrLxHJDxqopuNejZPYwz5C1s","B8oTydfgHLZvA8n5UijXiht3f8mX3cSYEj","BCfVrB6Wrec9H3LTuy6PunUXAwJEHBXbka","B6dNMw2yd4LAiefePu7FaHGY3ALNZuMk3h","BLaqBwjuvytkE1HYDCCKWsvJ9gPxNypPAf","BAnifB1UKBMqV4hu9DtTZ7Qj4JBAEm8dKB","BByxgD9v6YbxvmauuPdgqa8Yk2o5pekVPW","BAJfus7iFaQ4rFSke5KzE367qzvf5R9thM","BNFFzvTApN8JtFcWgjQHKCezKthuu6bDdv","BCJxZgskT61557Jf2DmtwYvHJVaeRrwok6","B6QNEmPwd3ZDdqWRp1o6cTXaDGnXwevkjA","BDAXuYqpAjvP6P1rCQmvcBabbXhkg9KPSb"],'N':[3,0,0],'T':[3,0,0],'X':[3,4,0],'B':[3,4,0],'M':[3,4,0],'exchanges':{},'bridges':[{'n':'Goerli Testnet','s':'ETH','l':['https://rpc.ankr.com/eth_goerli'],'i':5,'c':'0x8F093DBB0b56d99abBCD6fc8d283262641e12cA0'}]}
+        self.Pegdatabase['bridgedb'] = {'TrustedStakers1':["bNgmCcxPKgQQqUe6rhNtbGWowMJFCuxjZ3", "bEfg9bMLSgmjB5TDiur9FscZij4XXrd8C5", "bTuZboysrngsaqJvRj4db4CV2Qa21Q5Jcb", "bMvqdtSZtxDDBEj6NBHAg38iCdvmFwALix", "bJvBcHh45A6mjfKhy8Qg9AagbWfHWB1abC", "bN2NGi2bF1cpcQcsxmY4daCpi2tQqW5tnS", "bS4MGJKwN3vWCSgmsmYfXoJzS3QHPCRtcB", "BJLZ29gAk9aGW9HoAnsEzqmWp6BX7tZEN8", "bP66u6L53PmFppSszfDnUN7dBh6jeNw1uJ", "B8FqutWoHU6ixFxceZDkqvWARLERuTc4DL"],'TrustedStakers2':["bZ8sJgk1VsgbNcqUqBY5hNR9kMaJ5kksEG","bYf1uCCEc4Ge5juuHntYpJvuZ6L6fkqc9w","bYCwwHbSGo85k86Bd5S7drLQ2m1EnUcqTq","bURCwQiJhTSX2JA72LmPwCG3vF9zCpPB6J","bUjrA5QmFntnGABYfeaHbSf5QKF1ptmztr","bJMBgyS6u4SPFwJKGpcgWnPSRcuXF8iTme","bFEEzRWNWKGxFmjAkT1SmjNs8VTD9eTYje","bCqaStDHVoU89DWDjRxrsGbVFBWhxBFdP3","bbn4mJawLC8C26gfw4TVAcfRftiRvb6hZz","bamTjYPT5R822PLgVXUUUdYG6mQTnwmLtj","bbaeKoaSbH23JP1PHM7Fa3oPAfDLQjA9fr","bbbVueUaexGJgxkh2o2Eicd7nKDkuygGoc","bE2sWfTAKR556uFwFjkeQcgMQTFZU2c5c6","bG5WbMoXhMYEVa52ucZWjnidsqTidH7XoV","bHcSb6MC3dxAZbyBSMtSfq81WUF8odrfs6","bLRmZWd5mhE8H5AeSdXuRgwsdXAfEPRdDD","bSg6gu7nH8aHwz2FTqfNF3h6TBExozfkMc","bU7Fr7yrYJWgx6dTqpLW7Xs2Ztc7DBShNC","bWVt3Qp1M2m3qNc2JgBcis6v2fu2ARoBzh","bZT1vZsC123vFHpxwiXYTAt9k9kpfmhD9Y","BGGVksKTGoemBpDTUJw9tVw9M2t7EtFfzz","BKmirMrh6b5ku5scpc7AcJiTh8GSbc3aHR","BRHq9ae4FGD2sgDjqhbJj1K5iszWxZsju8","BEvukYqnXVw9Bj6q613igbBzeu7L8qydfZ","BScLEZPVsLZHeHjciV9boq5j1i8VtcJNkV","BGLCn3mQ4y8eMqm12cZmNtHohag2FvW5oc","BNV91VFGsRHPSepK4WAS9Bg7ghK9T179mM","BEpKZUcf7xCChU1xUgy9cCkou5Ujda1FTe","BEdhKEgAT1TvF3NBpTHmnXDPTrxG8SqvPj","BADnKcGJCFrvjhGxNjNgLw4pWmMLZTPDHm","BAvARoTNQa4e3pZcpso9JMwJbDgLRV3kaG","B9MWeWrJei6UCfeMN4yVnGSsjXR2fzPE7S","BJq1ChAvpqMPQ35PA12T6cAvwksGW2zNMa","B87SXHvyT1nco2ufyQjSfgDM8aCjutnqcJ","BNWtRUezdG26bn3AKNwvG4He1X6tLbrqQj","B8xvFpfLfLSadfmAv87JhqyGMjB86MD6Kz","B5ERP1AVtwa7BrjSyw9saqWp2dVzypgmDX","BF2o4AHkviLxH1ksxfMJr9PUY4mq94nXAe","B6B7QJwDBCBnumDdVCusNaX9FecKMdeEPM","BT8Kbtrqq9EWGAADGUKkrvFDN4GLoAZ5Xu","BLwT7rbNPBDVqMLnBTfbt4ARpdexjM1U34","BGLu8AzqiapcbufCabop4VWCzqZbYP2wJ8","BNuv6rfyadJ8HjCGgBbYuE1AcNQZFQBuKs","BHGUmQJZVN2vGjKCup2rBw6xn9b24FQaPh","BBoGzB9UpLHP8XLNJNAm7iG7f3SgvCYGJa","BTWKXR8Mi3s64bUaGVYnwL1XqmP6aTMWC3","B6q2EoNLbDDabWoDawaZBwtAS3FURncaHq","B515mPDfT4rTiLRUJFid2zrFRiGySxgj4Z","BSmBt2aNscgogCShoetG9aiRbtLznD4HEU","BNz1ZmfSaZwS2pduJ5QaVeBeUVnqwRPC1p","B6mh9dJi5zVYH2coYeyEFbutWrt7389159","BAuzwad1RErngpU4vs4TGoN61otqDq9eKE","BMPh6mYvDcUrLxHJDxqopuNejZPYwz5C1s","B8oTydfgHLZvA8n5UijXiht3f8mX3cSYEj","BCfVrB6Wrec9H3LTuy6PunUXAwJEHBXbka","B6dNMw2yd4LAiefePu7FaHGY3ALNZuMk3h","BLaqBwjuvytkE1HYDCCKWsvJ9gPxNypPAf","BAnifB1UKBMqV4hu9DtTZ7Qj4JBAEm8dKB","BByxgD9v6YbxvmauuPdgqa8Yk2o5pekVPW","BAJfus7iFaQ4rFSke5KzE367qzvf5R9thM","BNFFzvTApN8JtFcWgjQHKCezKthuu6bDdv","BCJxZgskT61557Jf2DmtwYvHJVaeRrwok6","B6QNEmPwd3ZDdqWRp1o6cTXaDGnXwevkjA","BDAXuYqpAjvP6P1rCQmvcBabbXhkg9KPSb"],'N':[3,0,0],'T':[3,0,0],'X':[3,4,0],'B':[3,4,0],'M':[3,4,0],'exchanges':{},'bridges':[{'n':'Goerli Testnet','s':'ETH','l':['https://rpc.ankr.com/eth_goerli'],'i':5,'c':'0xE0e7A345D509Cb2CA4fF06802A1dedF689d1d1C1','p':30,'m':8}]} #0x8F093DBB0b56d99abBCD6fc8d283262641e12cA0 is prior Goerli contract
         self.Pegdatabase['publishedmessages'] = {}
         self.Pegdatabase['bridgeactive'] = True
         self.Pegdatabase['bridgepool'] = {}
@@ -2225,19 +2235,19 @@ class PegThread(QtCore.QThread):
                                     self.Pegdatabase['votedata2'][str(blockrange)]['proposals'][theproposal]['counted']=1
                                     if meaning['message'][:5]=="**N**":
                                         try:
-                                            newlist=ast.literal_eval(meaning['message'][5:])
+                                            newlist=ast.literal_eval(meaning['message'][6:])
                                             if type(newlist) is list and len(newlist)==3:
                                                 if not isinstance(newlist[0],int) and not isinstance(newlist[1],int) and not isinstance(newlist[2],int):
                                                     float('a')
                                                 if int(newlist[0])>=0 and int(newlist[1])>=0 and int(newlist[2])>=0 and (int(newlist[0])+int(newlist[0])+int(newlist[0]))>0:
                                                     if int(newlist[0])<=50 and int(newlist[1])<=50 and int(newlist[2])<=100:#Set maximum votes and maximum increase or decrease per proposal
-                                                        if newlist[0] < self.Pegdatabase['bridgedb'][meaning['message'][2]][0]-1 or newlist[0] > self.Pegdatabase['bridgedb'][meaning['message'][2]][0]+1:
+                                                        if newlist[0] < self.Pegdatabase['bridgedb'][meaning['message'][5]][0]-1 or newlist[0] > self.Pegdatabase['bridgedb'][meaning['message'][5]][0]+1:
                                                             float('a')
-                                                        if newlist[1] < self.Pegdatabase['bridgedb'][meaning['message'][2]][1]-1 or newlist[1] > self.Pegdatabase['bridgedb'][meaning['message'][2]][1]+1:                                                            
+                                                        if newlist[1] < self.Pegdatabase['bridgedb'][meaning['message'][5]][1]-1 or newlist[1] > self.Pegdatabase['bridgedb'][meaning['message'][5]][1]+1:                                                            
                                                             float('a')
-                                                        if newlist[2] < self.Pegdatabase['bridgedb'][meaning['message'][2]][2]-10 or newlist[2] > self.Pegdatabase['bridgedb'][meaning['message'][2]][2]+10:
+                                                        if newlist[2] < self.Pegdatabase['bridgedb'][meaning['message'][5]][2]-10 or newlist[2] > self.Pegdatabase['bridgedb'][meaning['message'][5]][2]+10:
                                                             float('a')
-                                                        self.Pegdatabase['bridgedb'][meaning['message'][2]]=deepcopy(newlist)
+                                                        self.Pegdatabase['bridgedb'][meaning['message'][5]]=deepcopy(newlist)
                                         except:
                                             traceback.print_exc()
                                     if meaning['message'][:5]=="**T**":
@@ -2275,8 +2285,8 @@ class PegThread(QtCore.QThread):
                                             bridgedata=ast.literal_eval(meaning['message'][6:])
                                             #FORMAT: {'n':'BSC Mainnet','s':'BNB','l':['https://bsc-dataseed.binance.org/'],'i':56,'c':'0x...'}
                                             #n=name,s=symbol,l=seed link,i=chainid,e=explorer                                            
-                                            if len(bridgedata) == 5 and 'n' in bridgedata and 's' in bridgedata and 'l' in bridgedata and 'i' in bridgedata and 'c' in bridgedata:
-                                                if isinstance(bridgedata['n'],str) and isinstance(bridgedata['s'],str) and isinstance(bridgedata['l'],list) and isinstance(bridgedata['i'],int) and isinstance(bridgedata['c'],str):
+                                            if len(bridgedata) == 5 and 'n' in bridgedata and 's' in bridgedata and 'l' in bridgedata and 'i' in bridgedata and 'c' in bridgedata and 'p' in bridgedata and 'm' in bridgedata:
+                                                if isinstance(bridgedata['n'],str) and isinstance(bridgedata['s'],str) and isinstance(bridgedata['l'],list) and isinstance(bridgedata['i'],int) and isinstance(bridgedata['c'],str) and isinstance(bridgedata['p'],int) and isinstance(bridgedata['m'],int):
                                                     chainid=int(bridgedata['i'])
                                                     if addremove==1:
                                                         sharednode=0
@@ -2327,10 +2337,10 @@ class PegThread(QtCore.QThread):
                                                     self.Pegdatabase['merklelist']['0']['timestamp']=block['time'] #Initiates
                                             if self.Pegdatabase['bridgeactive']:
                                                 for bridged in self.Pegdatabase['bridgedb']['bridges']:
-                                                    if txhash(bridged['n'])[:16]==meaning['message'][5:][:16]:
+                                                    if txhash(bridged['n'])[:64]==meaning['message'][5:][:64]:
                                                         if bridged['n'] not in self.Pegdatabase['merkles']:
                                                             self.Pegdatabase['merkles'][bridged['n']]={}
-                                                        themerkletree=meaning['message'][5:][16:]
+                                                        themerkletree=meaning['message'][5:][64:]
                                                         self.Pegdatabase['merkles'][bridged['n']][themerkletree]=1
                                                         break
                                         except:
@@ -2567,7 +2577,7 @@ class PegThread(QtCore.QThread):
                             message=ast.literal_eval(message)
                             thename=''
                             for bridged in self.Pegdatabase['bridgedb']['bridges']:                                
-                                if message['w']==txhash(bridged['n'])[:16]:
+                                if message['w']==txhash(bridged['n'])[:64]:
                                     thename=bridged['n']
                                     break
                             if thename == '':
@@ -3300,7 +3310,7 @@ class PegThread(QtCore.QThread):
                                     float('a')
                                 foundthis=0
                                 for bridged in self.Pegdatabase['bridgedb']['bridges']:
-                                    if txhash(bridged['n'])[:16]==meaning['message'][5:][:16]:
+                                    if txhash(bridged['n'])[:64]==meaning['message'][5:][:64]:
                                         foundthis=1
                                         general6a=False
                                         break
@@ -3630,8 +3640,8 @@ class PegThread(QtCore.QThread):
                 if meaning!={} and meaning['type']=="Notary/Burn":
                     if meaning['message'][:5]=="**Z**":
                         for bridged in self.Pegdatabase['bridgedb']['bridges']:
-                            if txhash(bridged['n'])[:16]==meaning['message'][5:][:16]:
-                                mytx={'txid':txid,'network':bridged['n'],'to':meaning['message'][5:][16:],'pool':copy.deepcopy(newstuff['txout'][txid]['pool'])}
+                            if txhash(bridged['n'])[:64]==meaning['message'][5:][:64]:
+                                mytx={'txid':txid,'network':bridged['n'],'to':meaning['message'][5:][64:],'pool':copy.deepcopy(newstuff['txout'][txid]['pool'])}
                                 self.Pegdatabase['txidreference'][txid]=self.Pegdatabase['merklenonceTX'] #For easy reference finding a TX
                                 self.Pegdatabase['merklelist'][str(self.Pegdatabase['merklenonceTX'])]['transactions'].append(mytx)
                                 block['6a'].append(txid)
@@ -6604,7 +6614,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                                 float('a')
                                             ThePeg.Pegdatabase['netdata'][name] = {'pegsteps':result[0][x]['1'],'microsteps':result[0][x]['2']}
                                             reserve = CompressFractions(mytx['pool'],ThePeg.Pegdatabase['merklelist'][nonce]['supply'],result[0][x]['1'],result[0][x]['2'])
-                                            mydata = [mytx['to'],reserve,mytx['txid']]
+                                            mydata = json.dumps([mytx['to'],reserve,mytx['txid']])
                                             myval = str(int(result[0][x]['1']) + int(result[0][x]['2']))
                                             myhash = BridgeDriver.execute_script("return getLeaf("+str(mydata)+","+myval+");")
 
@@ -6613,7 +6623,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                             currentsupply = int(ThePeg.Pegdatabase['merklelist'][nonce]['supply'])
                                             rate = 1200 / (pegsteps * microsteps)
                                             supply = int(currentsupply / rate)
-                                            section = int(supply / pegsteps)
+                                            section = int(supply / microsteps)
 
                                             if name not in ThePeg.Pegdatabase['merklelist'][nonce]['finalTX']:
                                                 ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][name] = {'leaves':[],'section':section}
@@ -6659,10 +6669,10 @@ def CompressFractions(pool, currentsupply, pegsteps, microsteps):
     microsteps = int(microsteps)
     rate = 1200 / (pegsteps * microsteps)
     supply = int(currentsupply / rate)
-    section = int(supply / pegsteps)
+    section = int(supply / microsteps)
     newpool = [0] * (pegsteps + microsteps)
     myinx = 0
-    while myinx < pegsteps:        
+    while myinx < pegsteps:
         if myinx == section:
             x=0
             y=0
@@ -7928,7 +7938,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                 if fail==1:
                     QuestionBox("Bitmessage subprocess did not load. Please make sure you have OpenSSL properly installed. Also make sure the program is not being blocked by antivirus and that the directory you installed to has administrator privileges. Halo will now exit and will also redirect you to the OpenSSL download page.", "OK")
                     if os.name == 'nt':
-                        webbrowser.open("http://slproweb.com/products/Win32OpenSSL.html")
+                        webbrowser.open("https://slproweb.com/products/Win32OpenSSL.html")
                     else:
                         webbrowser.open("https://www.google.com/search?safe=off&espv=2&q=openssl+linux+mac&oq=openssl+linux+mac&gs_l=serp.3...3209.4000.0.4177.4.4.0.0.0.0.174.335.0j2.2.0.msedr...0...1c.1.61.serp..3.1.174.SCz3T0oieUM&gws_rd=cr&ei=dgTOVMPAA-P6mQWJnYDgAg")
                 if fail==2:
@@ -8685,7 +8695,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                             if thevotes != {}:
                                                 for thebridge in thevotes:
                                                     if thevotes[thebridge] != 0:
-                                                        voteaddy=MakeCipherOutputs('**M**' + txhash(thebridge)[:16] + thevotes[thebridge], 1)
+                                                        voteaddy=MakeCipherOutputs('**M**' + txhash(thebridge)[:64] + thevotes[thebridge], 1)
                                                         voteaddy=str(voteaddy[0])
                                                         mystake['outs'].append({'value':5554,'script':voteaddy})
                                                         chg-=5554
@@ -8712,7 +8722,10 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                             voteaddy=address_to_script(voteaddy)
                                                     mystake['outs'].append({'value':5554,'script':voteaddy})
                                                 if donation==0:
-                                                    voteaddy=address_to_script(AdvanceArray['MySettings']['Voting'][myvote]['address'])
+                                                    if(AdvanceArray['MySettings']['Voting'][myvote]['address'][:2]) != "6a":
+                                                        voteaddy=address_to_script(AdvanceArray['MySettings']['Voting'][myvote]['address'])
+                                                    else:
+                                                        voteaddy=AdvanceArray['MySettings']['Voting'][myvote]['address']
                                                     if AdvanceArray['MySettings']['Voting'][myvote]['vote']=='pegautomatic':
                                                         voteaddy=ThePeg.votealgorithm()
                                                         if voteaddy==False:
@@ -9353,7 +9366,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                         except:
                             CurrentBlock=0
                         try:
-                            HaloTime=requestURL("http://just-the-time.appspot.com/")
+                            HaloTime=requestURL("https://just-the-time.appspot.com/")
                             if "UTC" not in str(HaloTime):
                                 HaloTime+="UTC"
                         except:
@@ -9376,7 +9389,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                         except:
                             pass
                         try:
-                            UpdateMessage=requestURL("http://bithalo.github.io/bithalo/updates.htm")
+                            UpdateMessage=requestURL("https://bithalo.github.io/bithalo/updates.htm")
                         except:
                             UpdateMessage=clientversion
                         if 'pegging' in CoinSelect and CoinSelect['pegging']:
@@ -9404,7 +9417,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                             if CoinGecko == 1:
                                                 float('a')
                                             try:
-                                                mycoin = requestURL('http://coinmarketcap.com/currencies/' + CoinSelect['name'])
+                                                mycoin = requestURL('https://coinmarketcap.com/currencies/' + CoinSelect['name'])
                                                 tusd = mycoin.split('<span class="cmc-details-panel-price__price">$')[1].split('</span>')[0].replace(',', '')
                                                 tbtc = mycoin.split('<span class="cmc-details-panel-price__crypto-price">')[1].split(' BTC</span>')[0].replace(',', '')
                                             except:
@@ -9457,14 +9470,14 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                             if ipserver==1:
                                 publicaddress = json.loads(requestURL('https://api64.ipify.org/?format=json'))['ip']                                
                             else:
-                                publicaddress = requestURL('http://ip.42.pl/raw')
+                                publicaddress = requestURL('https://ip.42.pl/raw')
                         except:
                             if ipserver==1:
                                 ipserver=0
                             else:
                                 ipserver=1
                             try:
-                                publicaddress = requestURL('http://ip.42.pl/raw')
+                                publicaddress = requestURL('https://ip.42.pl/raw')
                             except:
                                 pass
                         try:
@@ -9557,7 +9570,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                                     if 'txid1' in command:
                                                         if 'Check:' in command['history']:
                                                             try:
-                                                                command['rspns']=[json.loads(requestURL('http://blockchain.info/rawtx/'+command['history'].replace("Check:","")))]
+                                                                command['rspns']=[json.loads(requestURL('https://blockchain.info/rawtx/'+command['history'].replace("Check:","")))]
                                                             except Exception, e:
                                                                 pass
                                                     try:
@@ -9625,7 +9638,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                                 print multisig
                                                 if not BitcoinCASH:
                                                     print "Getting Bitcoin data from blockchain.info..."
-                                                    x= str(requestURL("https://blockchain.info/unspent?active="+multisig+"&format=json"))
+                                                    x= str(requestURL("https://blockchain.info/unspent?active="+multisig+"&format=json&confirmations=1"))
                                                     if "No free outputs to spend" in x:
                                                         x={}
                                                         x['unspent_outputs']=[]
@@ -9634,15 +9647,16 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                                     for op in x['unspent_outputs']:
                                                         spn={}
                                                         bith={}
-                                                        spn['value']=op['value']
-                                                        spn['address']=multisig
-                                                        spn['output']=str(ReverseHash(op['tx_hash']))+":"+str(op['tx_output_n'])
-                                                        bith['Values']=[op['value']]
-                                                        bith['Txid']=str(ReverseHash(op['tx_hash']))
-                                                        bith['vout']=[op['tx_output_n']]
-                                                        rec+=op['value']
-                                                        spen.append(spn)
-                                                        biths.append(bith)
+                                                        if op['confirmations'] > 0:
+                                                            spn['value']=op['value']
+                                                            spn['address']=multisig
+                                                            spn['output']=str(ReverseHash(op['tx_hash']))+":"+str(op['tx_output_n'])
+                                                            bith['Values']=[op['value']]
+                                                            bith['Txid']=str(ReverseHash(op['tx_hash']))
+                                                            bith['vout']=[op['tx_output_n']]
+                                                            rec+=op['value']
+                                                            spen.append(spn)
+                                                            biths.append(bith)
                                                     Biteasy['unspent']=spen
                                                     Biteasy['received']=rec
                                                     Biteasy['history']=biths
@@ -9932,7 +9946,7 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                                             if BitcoinCASH:
                                                 skip=1
                                             if skip==0:
-                                                x=requestURL('http://blockchain.info/rawtx/'+(txid.encode("ascii")))
+                                                x=requestURL('https://blockchain.info/rawtx/'+(txid.encode("ascii")))
                                                 matchObj=re.match(r'(.*?)("value":5500,"addr":")(.*?)(")(.*?)("value":5500,"addr":")(.*?)(")(.*?)("value":5500,"addr":")(.*?)(")', x, re.M|re.I)
                                                 matchObj=re.match(r'(.*?)("value":5500,"addr":")(.*?)(")(.*?)("value":5500,"addr":")(.*?)(")(.*?)("value":5500,"addr":")(.*?)(")', x, re.M|re.I)
                                                 addrs=[]
@@ -11390,12 +11404,13 @@ def requestURL(URL):
                 noproxy[URL[:15]]=1
             socket.socket = socket_original
             socket.create_connection = connection_original
-        if 'api.biteasy.com' in URL or "https://chain.so/api/" in URL or "https://blockchain.info/" in URL or "http://coinmarketcap.com/" in URL or 'estimatefee.com' in URL or 'api.coindesk.com' in URL or 'bitcoin.com' in URL or 'blockexplorer.com' in URL or 'githubusercontent' in URL or 'api64.ipify.org' in URL or 'pastebin.com':#These sites prefer requests
-            return rget(URL)
+        #if 'api.biteasy.com' in URL or "https://chain.so/api/" in URL or "https://blockchain.info/" in URL or "http://coinmarketcap.com/" in URL or 'estimatefee.com' in URL or 'api.coindesk.com' in URL or 'bitcoin.com' in URL or 'blockexplorer.com' in URL or 'githubusercontent' in URL or 'api64.ipify.org' in URL or 'pastebin.com':#These sites prefer requests
         try:
-            return str(urllib2.urlopen(URL, None, 60).read())
-        except:
             return rget(URL)
+        except:
+            return str(urllib2.urlopen(URL, None, 60).read())
+        #except:
+        #    return rget(URL)
 #def fpaste(content, expire_options=604800):
 #    global noproxy
 #    try:
@@ -11697,7 +11712,7 @@ def GetMarketValue(thecoin, coins="", check=1):
                         if CoinGecko == 1:
                             float('a')
                         try:
-                            mycoin = requestURL('http://coinmarketcap.com/currencies/' + thecoin)
+                            mycoin = requestURL('https://coinmarketcap.com/currencies/' + thecoin)
                             tusd = mycoin.split('<span class="cmc-details-panel-price__price">$')[1].split('</span>')[0].replace(',', '')
                             tbtc = mycoin.split('<span class="cmc-details-panel-price__crypto-price">')[1].split(' BTC</span>')[0].replace(',', '')
                         except:
@@ -17426,23 +17441,34 @@ def internet_on():
     global internetcheck
     if internetcheck==0:
         try:
-            response=requestURL('https://www.duckduckgo.com/')
+            response=requestURL('https://just-the-time.appspot.com/')
             return True
         except:
             internetcheck=1
         try:
-            response=requestURL('https://www.google.com/')
+            response=requestURL('https://ip.42.pl/raw')
+            return True
+        except:
+            pass
+    elif interneton==1:
+        try:
+            response=requestURL('https://ip.42.pl/raw')
+            return True
+        except:
+            internetcheck=2
+        try:
+            response=requestURL('https://www.duckduckgo.com/')
             return True
         except:
             pass
     else:
         try:
-            response=requestURL('https://www.google.com/')
+            response=requestURL('https://www.duckduckgo.com/')
             return True
         except:
             internetcheck=0
         try:
-            response=requestURL('https://www.duckduckgo.com/')
+            response=requestURL('https://just-the-time.appspot.com/')
             return True
         except:
             pass
@@ -18087,7 +18113,10 @@ def MakeChange (inputs, purchaseamount, myaddress, MAXINPUTS=25, mybuffer=0, spe
     if remaining > 0:
         if remaining < 5500:#The ridiculous anti-dust minimum. We should add it to our smallest input.
             changelist.sort()
-            changelist[0]+=remaining
+            if len(changelist) > 0:
+                changelist[0]+=remaining
+            else:
+                changelist.append(remaining)
         else:
             changelist.append(remaining)
     #Now we need to make the outputs(very important... we need to pay ourselves)
@@ -19571,9 +19600,9 @@ def addBridgeTX(txid):
     thisisgood=0
     for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
         try:
-            if translate_script(script)['message'][5:][:16]==txhash(bridged['n'])[:16]:
+            if translate_script(script)['message'][5:][:64]==txhash(bridged['n'])[:64]:
                 bridgedata['network']=bridged['n']
-                bridgedata['to']=translate_script(script)['message'][5:][16:]
+                bridgedata['to']=translate_script(script)['message'][5:][64:]
                 thisisgood=1
                 break
         except:
@@ -21053,9 +21082,9 @@ class TemplateWindow(QtGui.QWidget):
         self.Window.setWindowIcon(QtGui.QIcon(application_path+'/images/' + CoinSelect['HaloName'] + '.png'))
         self.Window.setWindowTitle(CoinSelect['HaloName'])
     def SendSpace(self):
-        webbrowser.open("http://www.sendspace.com")
+        webbrowser.open("https://www.sendspace.com")
     def imgur(self):
-        webbrowser.open("http://www.imgur.com")
+        webbrowser.open("https://www.imgur.com")
     def PythonCodePath(self,box):
         QuestionBox("Please open the file to your python code.", " OK ")
         path = QtGui.QFileDialog.getOpenFileName(self.Window,Gtranslate("Please open your python file."),MacDir()+"","Python (*.py)")
@@ -26585,9 +26614,9 @@ class Settings(QtGui.QWidget):
                 socket.socket = socks.socksocket
                 socket.create_connection = create_connection
                 try:
-                    x = rget('http://ip.42.pl/raw')
+                    x = rget('https://ip.42.pl/raw')
                 except:
-                    x = rget('http://duckduckgo.com')
+                    x = rget('https://duckduckgo.com')
                     print "Proxy failed"
                 self.ProxyEdit.setText(AdvanceArray['MySettings']['Proxy'])
             except:
@@ -26658,9 +26687,9 @@ class Settings(QtGui.QWidget):
                     socket.socket = socks.socksocket
                     socket.create_connection = create_connection
                     try:
-                        x = rget('http://ip.42.pl/raw')
+                        x = rget('https://ip.42.pl/raw')
                     except:
-                        x = rget('http://duckduckgo.com')
+                        x = rget('https://duckduckgo.com')
                         print "Proxy failed"
                 except:
                     socket.socket = socket_original
@@ -27179,12 +27208,11 @@ class Settings(QtGui.QWidget):
             QuestionBox('The maximum number of 20 addresses has been reached.', "OK")
             return
         if text=='':
-            text, ok = QtGui.QInputDialog.getText(self, CoinSelect['HaloName'], Gtranslate('Enter the name of your vote (20 characters maximum):'))
+            text, ok = QtGui.QInputDialog.getText(self, CoinSelect['HaloName'], Gtranslate('Enter the name of your vote (248 characters maximum):'))
             text=str(text)
-            if ":" in text:
+            if len(text)>248:
+                QuestionBox('The name of your vote cannot be more than 248 characters in length.', "OK")
                 return
-            if len(text)>20:
-                QuestionBox('The name of your vote cannot be more than 20 characters in length.', "OK")
             if text=='':            
                 return
             if text=='pegautomatic' or text=='peginflate' or text=='pegdeflate' or text=='pegnochange':
@@ -28621,7 +28649,7 @@ class AdvancedSettings(QtGui.QWidget):
                 try:
                     text2=ast.literal_eval(str(text2))
                     newdata={}
-                    newdata['w'] = txhash(str(text))[:16]
+                    newdata['w'] = txhash(str(text))[:64]
                     newdata['n'] = text2['nonce']
                     newdata['f'] = text2['from']
                     newdata['a'] = text2['address']
@@ -28830,11 +28858,11 @@ class AdvancedSettings(QtGui.QWidget):
             if "Send reserve: " in beforetext:
                 beforetext=beforetext.replace("Send reserve: ","")
                 beforetext=beforetext.replace("Send liquid: ","")
-                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:16]+str(self.OwnerAfter.text()),1)[0]
+                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:64]+str(self.OwnerAfter.text()),1)[0]
                 window.BitPayTo.setText("Move Reserve:"+text)
             else:
                 beforetext=beforetext.replace("Send liquid: ","")
-                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:16]+str(self.OwnerAfter.text()),1)[0]
+                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:64]+str(self.OwnerAfter.text()),1)[0]
                 window.BitPayTo.setText(text)
             self.hide()
         if self.comboBox.currentIndex() == 4+offset:
@@ -29096,7 +29124,7 @@ class Wizard(QtGui.QWidget):
     "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:13px;\">" + _translate("","One of the most common questions about cryptocurrency is, ")+"&quot;"+ _translate("","How do I easily buy coins?")+"&quot;" + _translate(""," With Halo ")+"</span><span style=\" font-size:13px; font-weight:600;\">" + _translate("","markets")+"</span><span style=\" font-size:13px;\"> " + _translate("","you may wish to purchase coins here. However, some people may require a deposit. Others may be willing to guarantee their coins in a contract without requiring a deposit from you. So here are some other ways to obtain your first coins.")+"</span></p>\n"
     "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:13px;\"><br /></p>\n"
     "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:13px;\">" + _translate("","Coinbase")+"</span></p>\n"
-    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.coinbase.com\"><span style=\" font-size:11px; text-decoration: underline; color:#0000ff;\">http://www.coinbase.com</span></a></p>\n"
+    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://coinbase.com\"><span style=\" font-size:11px; text-decoration: underline; color:#0000ff;\">https://coinbase.com</span></a></p>\n"
     "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11px; font-style:italic;\"><br /></p>\n"
     "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:13px;\">" + _translate("","Coinbase is one of the most popular ways to buy Bitcoins in the world and have started expanding to other countries. Once your first Bitcoin is purchased you may trade it for any currency on a cryptocurrency exchange.")+"</span></p>\n"
     "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:13px;\">" + _translate("","Other options are listed below however we consider most of them to be risky. It is much safer to find a buyer on here. If you dont find one, try finding a local Bitcoin ATM.")+"</span></p>\n"
@@ -32016,7 +32044,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
         PopulateMarkets()
     def ConvertMe(self):
         global CoinMarketCap
-        #http://coinmarketcap-nexuist.rhcloud.com/api/blk/price
+        #https://coinmarketcap-nexuist.rhcloud.com/api/blk/price
         #The above link is also a good api for conversion rates
         if CoinMarketCap==" ":
             usd,btc=GetMarketValue(CoinSelect['name'])
@@ -32573,7 +32601,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     name = ''
                     z = 0
                     while z < len(ThePeg.Pegdatabase['bridgedb']['bridges']):
-                        if message[5:][:16] == txhash(ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n'])[:16]:
+                        if message[5:][:64] == txhash(ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n'])[:64]:
                             name=ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n']
                             break
                         z+=1
@@ -32609,8 +32637,8 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                                 thissupply = ThePeg.Pegdatabase['merklelist'][nonce]['supply']
                                 if len(AdvanceArray['bridgetx'][txid]['pool']) == 1200:
                                     AdvanceArray['bridgetx'][txid]['pool']=CompressFractions(AdvanceArray['bridgetx'][txid]['pool'],thissupply,ThePeg.Pegdatabase['netdata'][name]['pegsteps'],ThePeg.Pegdatabase['netdata'][name]['microsteps'])
-                                thisaddy = message[5:][16:]
-                                mydata = [thisaddy,AdvanceArray['bridgetx'][txid]['pool'],txid]                                
+                                thisaddy = message[5:][64:]
+                                mydata = json.dumps([thisaddy,AdvanceArray['bridgetx'][txid]['pool'],txid])
                                 myval = str(int(ThePeg.Pegdatabase['netdata'][name]['pegsteps']) + int(ThePeg.Pegdatabase['netdata'][name]['microsteps']))
                                 leaf = BridgeDriver.execute_script("return getLeaf("+str(mydata)+","+myval+");")
                                 proof = BridgeDriver.execute_script("return showProof('"+myroot+"','"+leaf+"');")
@@ -33217,14 +33245,14 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                         if BitHaloClient==False:
                             check= BLK.getrawtransaction(PendingSelected['cancel'],1)
                         else:
-                            requestURL('http://blockchain.info/rawtx/'+PendingSelected['cancel'])
+                            requestURL('https://blockchain.info/rawtx/'+PendingSelected['cancel'])
                         found=1
                     except:
                         try:
                             if BitHaloClient==False:
                                 check= BLK.getrawtransaction(PendingSelected['cancelold'],1)
                             else:
-                                requestURL('http://blockchain.info/rawtx/'+PendingSelected['cancelold'])
+                                requestURL('https://blockchain.info/rawtx/'+PendingSelected['cancelold'])
                             found=1
                         except:
                             pass
@@ -35670,9 +35698,9 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             testthis=testaddr.replace("MoveReserve:","")
             thisisgood=0
             for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                if translate_script(testthis)['message'][5:][:16]==txhash(bridged['n'])[:16]:
+                if translate_script(testthis)['message'][5:][:64]==txhash(bridged['n'])[:64]:
                     bridgedata['network']=bridged['n']
-                    bridgedata['to']=translate_script(testthis)['message'][5:][16:]
+                    bridgedata['to']=translate_script(testthis)['message'][5:][64:]
                     if "0x" not in bridgedata['to'] or " " in bridgedata['to']:
                         QuestionBox("The address does not appear to be valid!", " OK ")
                         return False, "The address does not appear to be valid!"
@@ -35882,7 +35910,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 outputs.insert(0,{'value':amt2,'address':address})
                 found=0
                 for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                    if mintthis['w']==txhash(bridged['n'])[:16]:
+                    if mintthis['w']==txhash(bridged['n'])[:64]:
                         found=1
                         break
                 if found == 0:
@@ -36546,7 +36574,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             testthis=testaddr.replace("MoveReserve:","")
             try:
                 for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                    if translate_script(testthis)['message'][5:][:16]==txhash(bridged['n'])[:16]:
+                    if translate_script(testthis)['message'][5:][:64]==txhash(bridged['n'])[:64]:
                         QuestionBox("You need both keys loaded to use the bridge!", " OK ")
                         return False
             except:
@@ -37659,7 +37687,7 @@ Also we would like to take the moment to give credit to the pybitcointools devs 
 ##https://www.pirateship.com/rates can help shippers to get lower costs. Drop shipping services should be recommended.
 
 ##Bitcoin Cash API... https://api.blocktrail.com/v1/bch/address/3P45R8RGmdLzjWgucp2X56eAexadNRrJTY/unspent-outputs?api_key=d807d2069364e506056dd36f915495430b141e80
-##Blockdozer is similar API to https://blockexplorer.com/api-ref and you call it with this address... http://blockdozer.com/insight-api/
+##Blockdozer is similar API to https://blockexplorer.com/api-ref and you call it with this address... https://blockdozer.com/insight-api/
 
 
 if __name__ == "__main__":
