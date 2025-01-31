@@ -16,6 +16,7 @@
 <script type="text/javascript" src="./BAYAdmin.js"></script>
 <script type="text/javascript" src="./BAYData.js"></script>
 <script type="text/javascript" src="./elliptic.min.js"></script>
+<script type="text/javascript" src="./purify.js"></script>
 <script type="text/javascript">
 document.getElementById("Loaded").innerHTML = "Welcome to the BitBay bridge"
 var web3 = [];
@@ -28,8 +29,10 @@ var currentSupply = "";
 var nonce = {};
 var theroots = {};
 var treedb = {}; //Python test
+
 //First index is Goerli
-var mypairs = [['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']];
+//var mypairs = [['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']];
+var mypairs = [[],[],[],[],[],[],[]]
 
 //Useful for knowing the address before unlocking the wallet
 function pubKeyToAddress(compressedPubkey) {
@@ -82,6 +85,7 @@ async function loadBridges(bridges, publickey) {
     var mynonce;
     var thenode;
     var pos;
+    var gasOptions;
     while(x < bridges.length) {
         y = 0;        
         while(y < bridges[x].l.length) {
@@ -91,31 +95,55 @@ async function loadBridges(bridges, publickey) {
                 web3[x] = new Web3(bridges[x].l[y]);
                 contractData[x] = new web3[x].eth.Contract(BAYDataAbi,bridges[x].c);
                 await contractData[x].methods.minter().call().then(function (result) {
-                    admincontract = result;
+                    admincontract = DOMPurify.sanitize(result);
                 });
                 await contractData[x].methods.getState().call().then(function (result) {
-                    returnvals[x] = result;
+                    returnvals[x] = JSON.parse(DOMPurify.sanitize(JSON.stringify(result)));
                 });
                 contractAdmin[x] = new web3[x].eth.Contract(BAYAdminAbi,admincontract);
                 addy = pubKeyToAddress(publickey);
                 bal = await checkbalance(x, addy);
                 text1 = bridges[x].n + "<br>Address: " + addy + "<br>Balance: " + bal + "<br>";
-                if(parseFloat(bal) < parseFloat(.5)) {
+                if(parseFloat(bal) < parseFloat(2)) {
                     checkthis = 0;
-                    text1 += "Your balance is low for this network. Please increase it above .5 coins for managing the bridge.<br>"
+                    text1 += "Your balance is low for this network. Please increase it above 2 coins for managing the bridge.<br>"
                     text1 += "Bridge operations temporarily halted.<br>";
                 }
                 await contractAdmin[x].methods.isActive().call().then(function (result) {
-                    if(parseInt(result) > 1) {
+                    if(parseInt(DOMPurify.sanitize(result)) > 1) {
                         checkthis = 0;
-                        text1 += "This network is currently paused until: "+(parseInt(result)+1814400)+"(estimated timestamp)<br>";
+                        text1 += "This network is currently paused until: "+(parseInt(DOMPurify.sanitize(result))+1814400)+"(estimated timestamp)<br>";
                     }
                 });
-                if(checkthis == 1) {                    
-                    await contractAdmin[x].methods.isCurator(addy).call().then(function (result) {
-                        myresult = result;
+                myStartingNonce = 0;
+                if(checkthis == 1) {
+                    var gasPrice;
+                    await web3[x].eth.getGasPrice().then(function (theGasPrice) {
+                      gasPrice = window.web3.utils.toWei(parseInt(parseInt(DOMPurify.sanitize(theGasPrice)) * 1.5).toString(), 'wei');
+                      if(parseInt(gasPrice) > 2500000000000) {
+                        gasPrice = "2500000000000";
+                      }
                     });
-                    myblock = await web3[x].eth.getBlock(await web3[x].eth.getBlockNumber());
+                    gasOptions = {
+                      gasLimit: 9000000,
+                      gasPrice: gasPrice
+                    };
+                    await contractAdmin[x].methods.isCurator(addy).call().then(function (result) {
+                        myresult = DOMPurify.sanitize(result) == "true";
+                    });
+                    await contractAdmin[x].methods.startingNonce().call().then(function (mynonce2) {
+                        myStartingNonce = DOMPurify.sanitize(mynonce2);
+                    });
+                    await contractAdmin[x].methods.merkleLen().call().then(async function (myX) {
+                        returnvals[x]['lastMerkle'] = "0x0";
+                        myX=parseInt(DOMPurify.sanitize(myX))
+                        if(myX > 0) {
+                            await contractAdmin[x].methods.Merkles(myX-1).call().then(function (lastMerkle) {
+                                returnvals[x]['lastMerkle'] = DOMPurify.sanitize(lastMerkle);
+                            });
+                        }
+                    });                    
+                    myblock = DOMPurify.sanitize(await web3[x].eth.getBlock(await web3[x].eth.getBlockNumber()));
                     timest = parseInt(myblock.timestamp);
                     if(myresult == true) {
                         if(mypriv != "") {
@@ -137,19 +165,19 @@ async function loadBridges(bridges, publickey) {
                                             supply = supply2 + 10;
                                         }
                                         await contractAdmin[x].methods.myvotetimes(addy,7).call().then(function (result) {
-                                            myresult = parseInt(result);
+                                            myresult = parseInt(DOMPurify.sanitize(result));
                                         });
                                         if(myresult < timest) {
                                             await contractAdmin[x].methods.votetimelimit(7).call().then(function (result) {
-                                                timelimit = parseInt(result);
+                                                timelimit = parseInt(DOMPurify.sanitize(result));
                                             });
                                             await contractAdmin[x].methods.startingtime(7).call().then(function (result) {
-                                                myresult = parseInt(result);
+                                                myresult = parseInt(DOMPurify.sanitize(result));
                                             });                             
                                             if((timest < myresult + parseInt((timelimit * 15) / 10)) && (timest > myresult + timelimit)) {
                                                 //There is a cooldown to make sure all users submit at similar times.
                                             } else { //We don't wait for confirmation, just submit the transaction
-                                                contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount,"gasLimit": 9000000});
+                                                contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount,...gasOptions});
                                                 console.log("Voted on supply: ");
                                                 console.log(supply);
                                             }
@@ -168,7 +196,10 @@ async function loadBridges(bridges, publickey) {
                                         web3temp = new Web3(bridges[x].l[pos]);
                                         contractAdmin2 = new web3temp.eth.Contract(BAYAdminAbi,admincontract);
                                         await contractAdmin2.methods.MerkleConfirm(myVotes[bridges[x].n]['root']).call().then(function (result) {
-                                            myresult = result;
+                                            myresult = DOMPurify.sanitize(result);
+                                            if(parseInt(result)==0) {
+                                                foundthis = 0;
+                                            }
                                             if(pos==0) {
                                                 prevdata = myresult;
                                             } else {
@@ -186,21 +217,29 @@ async function loadBridges(bridges, publickey) {
                                 if(parseInt(myresult) == 0) {
                                     //proposal = web3[x].utils.keccak256(web3[x].eth.abi.encodeParameters(['string','bytes32','uint256'],['addMerkle',myVotes[bridges[x].n]['root'],myVotes[bridges[x].n]['section']]));
                                     await contractAdmin[x].methods.myvotetimes(addy,9).call().then(function (result) {
-                                        myresult = parseInt(result);
+                                        myresult = parseInt(DOMPurify.sanitize(result));
                                     });
                                     if(myresult < timest) {
                                         await contractAdmin[x].methods.votetimelimit(9).call().then(function (result) {
-                                            timelimit = parseInt(result);
+                                            timelimit = parseInt(DOMPurify.sanitize(result));
                                         });
                                         await contractAdmin[x].methods.startingtime(9).call().then(function (result) {
-                                            myresult = parseInt(result);
+                                            myresult = parseInt(DOMPurify.sanitize(result));
                                         });                             
                                         if((timest < myresult + parseInt((timelimit * 15) / 10)) && (timest > myresult + timelimit)) {
                                             //There is a cooldown to make sure all users submit at similar times.
                                         } else { //We don't wait for confirmation, just submit the transaction
-                                            contractAdmin[x].methods.addMerkle(myVotes[bridges[x].n]['root'],myVotes[bridges[x].n]['section']).send({"from":myAccount,"gasLimit": 2500000});
-                                            console.log("Voted on merkle: ");
-                                            console.log(myVotes[bridges[x].n]['root']);                                            
+                                            var foundthis2 = 1;
+                                            await contractAdmin[x].methods.MerkleConfirm(myVotes[bridges[x].n]['root']).call().then(function (resultM) {
+                                                if(parseInt(DOMPurify.sanitize(resultM))==0) {
+                                                    foundthis2 = 0;
+                                                }
+                                            });
+                                            if(foundthis2 == 0){
+                                                contractAdmin[x].methods.addMerkle(myVotes[bridges[x].n]['root'],myVotes[bridges[x].n]['section']).send({"from":myAccount,...gasOptions});
+                                                console.log("Voted on merkle: ");
+                                                console.log(myVotes[bridges[x].n]['root']);
+                                            }
                                         }
                                     }
                                 } else {
@@ -228,12 +267,12 @@ async function loadBridges(bridges, publickey) {
                             mynonce = nonce[bridges[x].n];
                             if(mynonce in treedb[bridges[x].n]) {                                
                             } else {
-                                await contractAdmin[x].methods.processingTime(mynonce).call().then(function (myresults) {
-                                    processingTime = myresults;
+                                await contractAdmin[x].methods.processingTime(parseInt(mynonce)+parseInt(myStartingNonce)).call().then(function (myresults) {
+                                    processingTime = DOMPurify.sanitize(myresults);
                                 });
                                 if (parseInt(processingTime) > 0) {
                                     await contractAdmin[x].methods.intervaltime().call().then(function (myresults) {
-                                        intervaltime = myresults;
+                                        intervaltime = DOMPurify.sanitize(myresults);
                                     });
                                     if ((parseInt(processingTime) + parseInt(intervaltime) + parseInt(intervaltime)) < parseInt(timest)) {
                                         console.log('Processing merkle')
@@ -242,8 +281,8 @@ async function loadBridges(bridges, publickey) {
                                         while(pos < bridges[x].l.length) { //Get multiple confirmations
                                             web3temp = new Web3(bridges[x].l[pos]);
                                             contractAdmin2 = new web3temp.eth.Contract(BAYAdminAbi,admincontract);
-                                            await contractAdmin2.methods.listHashes(mynonce).call().then(function (myresults) {
-                                                myleaves = myresults;
+                                            await contractAdmin2.methods.listHashes(parseInt(mynonce)+parseInt(myStartingNonce)).call().then(function (myresults) {
+                                                myleaves = JSON.parse(DOMPurify.sanitize(JSON.stringify(myresults)));
                                                 if(pos==0) {
                                                     prevdata = myleaves;
                                                 } else {
@@ -294,19 +333,13 @@ async function loadBridges(bridges, publickey) {
     return returnvals2;
 }
 
-//web3[0] = new Web3("https://cloudflare-eth.com");
-//web3[1] = new Web3("https://bsc-dataseed.binance.org");
-//pk=web3[1].utils.sha3(Array(2000 + 1).join("thus" + "am"));
-//myAccount1 = web3[0].eth.accounts.privateKeyToAccount("089f50039067aae7b10bc392b6a54ade6ec06812d04d2a7650a27d32db53a28f");        
-//myAccount=myAccount1.address;
-
 async function checkbalance(mypos, myaddy) {
     var ETHBalance = 0;
     await web3[mypos].eth.getBalance(myaddy, function(err, result2) {
         if (err) {
             ETHBalance = err;
         } else {
-            ETHBalance = web3[mypos].utils.fromWei(result2, "ether");
+            ETHBalance = web3[mypos].utils.fromWei(DOMPurify.sanitize(result2), "ether");
         }
     });
     return ETHBalance;
@@ -418,9 +451,6 @@ function showProof(myroot,leaf) {
 }
 function showRoot(mytree) {
     return mytree.getRoot().toString('hex');
-}
-
-async function showBAYProof() {
 }
 </script>
 </body>

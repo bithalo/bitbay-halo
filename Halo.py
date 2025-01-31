@@ -352,6 +352,7 @@ global YandexAPI
 global BridgeAdmin
 global BridgeDriver
 global MySettingsInfo
+global merkleHashes
 
 reqsession=""
 
@@ -443,7 +444,7 @@ mycfg='default'
 globperc=0
 globcount=0
 rescanning=0
-clientversion="3.0"
+clientversion="4.0"
 UpdateMessage=clientversion
 versioncheck=0#After we check, we set this to one
 changearray=[]
@@ -504,6 +505,7 @@ lockdownload2=0
 BridgeAdmin = False
 BridgeDriver = ""
 MySettingsInfo = ""
+merkleHashes = False
 
 #https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list
 Coins=[]#Soon will need more variables like the minimum fee and magic byte
@@ -1622,7 +1624,7 @@ def kill_subprocesses():
 def Loop():
     global MyContracts, OnOrders, Spendable, BitHaloClient, downloadThread, bitmessThread, blackcoindThread, RPC, FileSave, RunPython, ThePeg
     global updatesomething, Markets, SALT, AdvanceArray, CoinSelect, addrlist, MasterOrders, MyEmail, ApprovedContracts, globliq
-    global window
+    global window, merkleHashes
     #Just for extra security, salt all random numbers.
     SALT = str(time.time())
     SALT+=str(QtGui.QCursor.pos())
@@ -1965,8 +1967,8 @@ class PegThread(QtCore.QThread):
         
         #Bridge and voting system:
         #To add a bridge the address will refer to the BitBay data contract
-        self.testthis=1
-        self.Pegdatabase['bridgedb'] = {'TrustedStakers1':["bNgmCcxPKgQQqUe6rhNtbGWowMJFCuxjZ3", "bEfg9bMLSgmjB5TDiur9FscZij4XXrd8C5", "bTuZboysrngsaqJvRj4db4CV2Qa21Q5Jcb", "bMvqdtSZtxDDBEj6NBHAg38iCdvmFwALix", "bJvBcHh45A6mjfKhy8Qg9AagbWfHWB1abC", "bN2NGi2bF1cpcQcsxmY4daCpi2tQqW5tnS", "bS4MGJKwN3vWCSgmsmYfXoJzS3QHPCRtcB", "BJLZ29gAk9aGW9HoAnsEzqmWp6BX7tZEN8", "bP66u6L53PmFppSszfDnUN7dBh6jeNw1uJ", "B8FqutWoHU6ixFxceZDkqvWARLERuTc4DL"],'TrustedStakers2':["bZ8sJgk1VsgbNcqUqBY5hNR9kMaJ5kksEG","bYf1uCCEc4Ge5juuHntYpJvuZ6L6fkqc9w","bYCwwHbSGo85k86Bd5S7drLQ2m1EnUcqTq","bURCwQiJhTSX2JA72LmPwCG3vF9zCpPB6J","bUjrA5QmFntnGABYfeaHbSf5QKF1ptmztr","bJMBgyS6u4SPFwJKGpcgWnPSRcuXF8iTme","bFEEzRWNWKGxFmjAkT1SmjNs8VTD9eTYje","bCqaStDHVoU89DWDjRxrsGbVFBWhxBFdP3","bbn4mJawLC8C26gfw4TVAcfRftiRvb6hZz","bamTjYPT5R822PLgVXUUUdYG6mQTnwmLtj","bbaeKoaSbH23JP1PHM7Fa3oPAfDLQjA9fr","bbbVueUaexGJgxkh2o2Eicd7nKDkuygGoc","bE2sWfTAKR556uFwFjkeQcgMQTFZU2c5c6","bG5WbMoXhMYEVa52ucZWjnidsqTidH7XoV","bHcSb6MC3dxAZbyBSMtSfq81WUF8odrfs6","bLRmZWd5mhE8H5AeSdXuRgwsdXAfEPRdDD","bSg6gu7nH8aHwz2FTqfNF3h6TBExozfkMc","bU7Fr7yrYJWgx6dTqpLW7Xs2Ztc7DBShNC","bWVt3Qp1M2m3qNc2JgBcis6v2fu2ARoBzh","bZT1vZsC123vFHpxwiXYTAt9k9kpfmhD9Y","BGGVksKTGoemBpDTUJw9tVw9M2t7EtFfzz","BKmirMrh6b5ku5scpc7AcJiTh8GSbc3aHR","BRHq9ae4FGD2sgDjqhbJj1K5iszWxZsju8","BEvukYqnXVw9Bj6q613igbBzeu7L8qydfZ","BScLEZPVsLZHeHjciV9boq5j1i8VtcJNkV","BGLCn3mQ4y8eMqm12cZmNtHohag2FvW5oc","BNV91VFGsRHPSepK4WAS9Bg7ghK9T179mM","BEpKZUcf7xCChU1xUgy9cCkou5Ujda1FTe","BEdhKEgAT1TvF3NBpTHmnXDPTrxG8SqvPj","BADnKcGJCFrvjhGxNjNgLw4pWmMLZTPDHm","BAvARoTNQa4e3pZcpso9JMwJbDgLRV3kaG","B9MWeWrJei6UCfeMN4yVnGSsjXR2fzPE7S","BJq1ChAvpqMPQ35PA12T6cAvwksGW2zNMa","B87SXHvyT1nco2ufyQjSfgDM8aCjutnqcJ","BNWtRUezdG26bn3AKNwvG4He1X6tLbrqQj","B8xvFpfLfLSadfmAv87JhqyGMjB86MD6Kz","B5ERP1AVtwa7BrjSyw9saqWp2dVzypgmDX","BF2o4AHkviLxH1ksxfMJr9PUY4mq94nXAe","B6B7QJwDBCBnumDdVCusNaX9FecKMdeEPM","BT8Kbtrqq9EWGAADGUKkrvFDN4GLoAZ5Xu","BLwT7rbNPBDVqMLnBTfbt4ARpdexjM1U34","BGLu8AzqiapcbufCabop4VWCzqZbYP2wJ8","BNuv6rfyadJ8HjCGgBbYuE1AcNQZFQBuKs","BHGUmQJZVN2vGjKCup2rBw6xn9b24FQaPh","BBoGzB9UpLHP8XLNJNAm7iG7f3SgvCYGJa","BTWKXR8Mi3s64bUaGVYnwL1XqmP6aTMWC3","B6q2EoNLbDDabWoDawaZBwtAS3FURncaHq","B515mPDfT4rTiLRUJFid2zrFRiGySxgj4Z","BSmBt2aNscgogCShoetG9aiRbtLznD4HEU","BNz1ZmfSaZwS2pduJ5QaVeBeUVnqwRPC1p","B6mh9dJi5zVYH2coYeyEFbutWrt7389159","BAuzwad1RErngpU4vs4TGoN61otqDq9eKE","BMPh6mYvDcUrLxHJDxqopuNejZPYwz5C1s","B8oTydfgHLZvA8n5UijXiht3f8mX3cSYEj","BCfVrB6Wrec9H3LTuy6PunUXAwJEHBXbka","B6dNMw2yd4LAiefePu7FaHGY3ALNZuMk3h","BLaqBwjuvytkE1HYDCCKWsvJ9gPxNypPAf","BAnifB1UKBMqV4hu9DtTZ7Qj4JBAEm8dKB","BByxgD9v6YbxvmauuPdgqa8Yk2o5pekVPW","BAJfus7iFaQ4rFSke5KzE367qzvf5R9thM","BNFFzvTApN8JtFcWgjQHKCezKthuu6bDdv","BCJxZgskT61557Jf2DmtwYvHJVaeRrwok6","B6QNEmPwd3ZDdqWRp1o6cTXaDGnXwevkjA","BDAXuYqpAjvP6P1rCQmvcBabbXhkg9KPSb"],'N':[3,0,0],'T':[3,0,0],'X':[3,4,0],'B':[3,4,0],'M':[3,4,0],'exchanges':{},'bridges':[{'n':'Goerli Testnet','s':'ETH','l':['https://rpc.ankr.com/eth_goerli'],'i':5,'c':'0xE0e7A345D509Cb2CA4fF06802A1dedF689d1d1C1','p':30,'m':8}]} #0x8F093DBB0b56d99abBCD6fc8d283262641e12cA0 is prior Goerli contract
+        self.testthis=0
+        self.Pegdatabase['bridgedb'] = {'TrustedStakers1':["bNgmCcxPKgQQqUe6rhNtbGWowMJFCuxjZ3", "bEfg9bMLSgmjB5TDiur9FscZij4XXrd8C5", "bTuZboysrngsaqJvRj4db4CV2Qa21Q5Jcb", "bMvqdtSZtxDDBEj6NBHAg38iCdvmFwALix", "bJvBcHh45A6mjfKhy8Qg9AagbWfHWB1abC", "bN2NGi2bF1cpcQcsxmY4daCpi2tQqW5tnS", "bS4MGJKwN3vWCSgmsmYfXoJzS3QHPCRtcB", "BJLZ29gAk9aGW9HoAnsEzqmWp6BX7tZEN8", "bP66u6L53PmFppSszfDnUN7dBh6jeNw1uJ", "BAaGqLMM8sFRvAzPAReAxDFbAwzBMQuTni", "B8FqutWoHU6ixFxceZDkqvWARLERuTc4DL", "bKu6ZW9QhaURfanGs66VW78LnHHfThbsJK"],'TrustedStakers2':["bZ8sJgk1VsgbNcqUqBY5hNR9kMaJ5kksEG","bYf1uCCEc4Ge5juuHntYpJvuZ6L6fkqc9w","bYCwwHbSGo85k86Bd5S7drLQ2m1EnUcqTq","bURCwQiJhTSX2JA72LmPwCG3vF9zCpPB6J","bUjrA5QmFntnGABYfeaHbSf5QKF1ptmztr","bJMBgyS6u4SPFwJKGpcgWnPSRcuXF8iTme","bFEEzRWNWKGxFmjAkT1SmjNs8VTD9eTYje","bCqaStDHVoU89DWDjRxrsGbVFBWhxBFdP3","bbn4mJawLC8C26gfw4TVAcfRftiRvb6hZz","bamTjYPT5R822PLgVXUUUdYG6mQTnwmLtj","bbaeKoaSbH23JP1PHM7Fa3oPAfDLQjA9fr","bbbVueUaexGJgxkh2o2Eicd7nKDkuygGoc","bE2sWfTAKR556uFwFjkeQcgMQTFZU2c5c6","bG5WbMoXhMYEVa52ucZWjnidsqTidH7XoV","bHcSb6MC3dxAZbyBSMtSfq81WUF8odrfs6","bLRmZWd5mhE8H5AeSdXuRgwsdXAfEPRdDD","bSg6gu7nH8aHwz2FTqfNF3h6TBExozfkMc","bU7Fr7yrYJWgx6dTqpLW7Xs2Ztc7DBShNC","bWVt3Qp1M2m3qNc2JgBcis6v2fu2ARoBzh","bZT1vZsC123vFHpxwiXYTAt9k9kpfmhD9Y","BGGVksKTGoemBpDTUJw9tVw9M2t7EtFfzz","BKmirMrh6b5ku5scpc7AcJiTh8GSbc3aHR","BRHq9ae4FGD2sgDjqhbJj1K5iszWxZsju8","BEvukYqnXVw9Bj6q613igbBzeu7L8qydfZ","BScLEZPVsLZHeHjciV9boq5j1i8VtcJNkV","BGLCn3mQ4y8eMqm12cZmNtHohag2FvW5oc","BNV91VFGsRHPSepK4WAS9Bg7ghK9T179mM","BEpKZUcf7xCChU1xUgy9cCkou5Ujda1FTe","BEdhKEgAT1TvF3NBpTHmnXDPTrxG8SqvPj","BADnKcGJCFrvjhGxNjNgLw4pWmMLZTPDHm","BAvARoTNQa4e3pZcpso9JMwJbDgLRV3kaG","B9MWeWrJei6UCfeMN4yVnGSsjXR2fzPE7S","BJq1ChAvpqMPQ35PA12T6cAvwksGW2zNMa","B87SXHvyT1nco2ufyQjSfgDM8aCjutnqcJ","BNWtRUezdG26bn3AKNwvG4He1X6tLbrqQj","B8xvFpfLfLSadfmAv87JhqyGMjB86MD6Kz","B5ERP1AVtwa7BrjSyw9saqWp2dVzypgmDX","BF2o4AHkviLxH1ksxfMJr9PUY4mq94nXAe","B6B7QJwDBCBnumDdVCusNaX9FecKMdeEPM","BT8Kbtrqq9EWGAADGUKkrvFDN4GLoAZ5Xu","BLwT7rbNPBDVqMLnBTfbt4ARpdexjM1U34","BGLu8AzqiapcbufCabop4VWCzqZbYP2wJ8","BNuv6rfyadJ8HjCGgBbYuE1AcNQZFQBuKs","BHGUmQJZVN2vGjKCup2rBw6xn9b24FQaPh","BBoGzB9UpLHP8XLNJNAm7iG7f3SgvCYGJa","BTWKXR8Mi3s64bUaGVYnwL1XqmP6aTMWC3","B6q2EoNLbDDabWoDawaZBwtAS3FURncaHq","B515mPDfT4rTiLRUJFid2zrFRiGySxgj4Z","BSmBt2aNscgogCShoetG9aiRbtLznD4HEU","BNz1ZmfSaZwS2pduJ5QaVeBeUVnqwRPC1p","B6mh9dJi5zVYH2coYeyEFbutWrt7389159","BAuzwad1RErngpU4vs4TGoN61otqDq9eKE","BMPh6mYvDcUrLxHJDxqopuNejZPYwz5C1s","B8oTydfgHLZvA8n5UijXiht3f8mX3cSYEj","BCfVrB6Wrec9H3LTuy6PunUXAwJEHBXbka","B6dNMw2yd4LAiefePu7FaHGY3ALNZuMk3h","BLaqBwjuvytkE1HYDCCKWsvJ9gPxNypPAf","BAnifB1UKBMqV4hu9DtTZ7Qj4JBAEm8dKB","BByxgD9v6YbxvmauuPdgqa8Yk2o5pekVPW","BAJfus7iFaQ4rFSke5KzE367qzvf5R9thM","BNFFzvTApN8JtFcWgjQHKCezKthuu6bDdv","BCJxZgskT61557Jf2DmtwYvHJVaeRrwok6","B6QNEmPwd3ZDdqWRp1o6cTXaDGnXwevkjA","BDAXuYqpAjvP6P1rCQmvcBabbXhkg9KPSb"],'N':[4,0,0],'T':[4,0,0],'X':[4,0,0],'B':[4,0,0],'M':[4,0,0],'exchanges':{},'bridges':[]} #0x8F093DBB0b56d99abBCD6fc8d283262641e12cA0 is prior Goerli contract #{'n':'Goerli Testnet','s':'ETH','l':['https://rpc.ankr.com/eth_goerli'],'i':5,'c':'0xE0e7A345D509Cb2CA4fF06802A1dedF689d1d1C1','p':30,'m':8}
         self.Pegdatabase['publishedmessages'] = {}
         self.Pegdatabase['bridgeactive'] = True
         self.Pegdatabase['bridgepool'] = {}
@@ -2568,7 +2570,7 @@ class PegThread(QtCore.QThread):
                                 print "Bridge is not currently active"
                                 float('a')
                             message=thescript['message'][5:]
-                            x=2
+                            x=1
                             while(x<len(trans['outs'])):
                                 if '6a' not in trans['outs'][x]['script'][:2]:
                                     break
@@ -6443,11 +6445,12 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
         self.votemerkles={}
         self.BridgeRefresh=0
         self.waitingconf=0
+        self.lastHash={}
         self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
     def stop(self):
         self.amrunning=False
     def run(self):
-        global BridgeAdmin, BridgeDriver, MySettingsInfo
+        global BridgeAdmin, BridgeDriver, MySettingsInfo, globperc, merkleHashes
         loaded = 0
         thecount = 0
         time.sleep(10)
@@ -6463,7 +6466,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
             else:
                 restart = False
             try:
-                if BridgeAdmin:
+                if BridgeAdmin and globperc > 98:
                     if not ThePeg.Pegdatabase['bridgeactive']:
                         MySettingsInfo = "Bridge is currently not active"
                         continue
@@ -6505,14 +6508,21 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                     else:                    
                         if thecount % 120 == 0:
                             try:
+                                somebridges = {}
                                 if ThePeg.testthis == 1:
                                     result = BridgeDriver.execute_script("return loadBridges("+str(ThePeg.Pegdatabase['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                                    somebridges = ThePeg.Pegdatabase['bridgedb']['bridges']
                                 else:
                                     result = BridgeDriver.execute_script("return loadBridges("+str(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                                    somebridges = AdvanceArray['bridgedb']['bridges']
                                 try:
                                     x = 0
-                                    for abridge in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                                    for abridge in somebridges:
                                         name=abridge['n']
+                                        if name not in self.lastHash:
+                                            self.lastHash[name] = "0x0"
+                                        if 'lastMerkle' in result[0][x]:
+                                            self.lastHash[name] = result[0][x]['lastMerkle']
                                         ThePeg.Pegdatabase['netdata'][name] = {'pegsteps':result[0][x]['1'],'microsteps':result[0][x]['2']}
                                         x+=1
                                 except:
@@ -6540,6 +6550,8 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                 text,check=DecryptPrivateKey(PrivKeyFilename2,PrivKeyFiledir2,"")
                                 if privtopub(text) == pubs[0]:
                                     thepriv = text
+                            if self.brainKey != "":
+                                thepriv = txhash(thepriv + self.brainKey)
                         else:
                             if "Please unlock your wallet for staking to maintain the bridge" not in MySettingsInfo:
                                 MySettingsInfo = "Please unlock your wallet for staking to maintain the bridge!<br>" + MySettingsInfo
@@ -6549,37 +6561,78 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     result2 = BridgeDriver.execute_script("return updateSupply("+str(ThePeg.CurrentSupply(ThePeg.Pegdatabase['blockcount']))+",'"+thepriv+"',"+str(self.mypairs)+");")
                             except:
                                 traceback.print_exc()
-                        if ThePeg.testthis == 1 and thecount % 180 == 0:
+                        if thecount % 180 == 0:
                             if ThePeg.noncesync == {}: #For python testing this will sync slowly. In production merkle trees are saved in peg database
-                                for bridges in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                                    ThePeg.noncesync[bridges['n']] = 0;
+                                if ThePeg.testthis == 1:
+                                    for bridges in ThePeg.Pegdatabase['bridgedb']['bridges']:
+                                        ThePeg.noncesync[bridges['n']] = 0;
                             try:
-                                result2 = BridgeDriver.execute_script("return updateNonce("+str(ThePeg.noncesync)+");")
+                                if ThePeg.testthis == 1:
+                                    result2 = BridgeDriver.execute_script("return updateNonce("+str(ThePeg.noncesync)+");")
+                                else:
+                                    if merkleHashes != False and 'noncesync' in merkleHashes:
+                                        result2 = BridgeDriver.execute_script("return updateNonce("+str(merkleHashes['noncesync'])+");")                                    
                             except:
                                 traceback.print_exc()
                             try:
                                 result2 = BridgeDriver.execute_script("return getRoots();")
                                 for bridges in result2:
-                                    mynonce = ThePeg.noncesync[bridges]
-                                    if result2[bridges][0] == mynonce:
-                                        if bridges not in ThePeg.Pegdatabase['merkles']:
-                                            ThePeg.Pegdatabase['merkles'][bridges]={}
-                                        if result2[bridges][1] in ThePeg.Pegdatabase['merkles'][bridges]:
-                                            ThePeg.noncesync[bridges] += 1
-                                        else:
-                                            if result2[bridges][1] == 0:
-                                                self.votemerkles[bridges] = 0
+                                    if ThePeg.testthis == 1:
+                                        mynonce = ThePeg.noncesync[bridges]
+                                        if result2[bridges][0] == mynonce:
+                                            if bridges not in ThePeg.Pegdatabase['merkles']:
+                                                ThePeg.Pegdatabase['merkles'][bridges]={}
+                                            if result2[bridges][1] in ThePeg.Pegdatabase['merkles'][bridges]:
+                                                ThePeg.noncesync[bridges] += 1
                                             else:
-                                                self.votemerkles[bridges] = result2[bridges][1]
+                                                if result2[bridges][1] == 0:
+                                                    self.votemerkles[bridges] = 0
+                                                else:
+                                                    self.votemerkles[bridges] = result2[bridges][1]
+                                    else:
+                                        if merkleHashes != False:
+                                            if bridges in merkleHashes:
+                                                if result2[bridges][0] == merkleHashes[bridges]['mylen']:
+                                                    if result2[bridges][1] in merkleHashes[bridges]:
+                                                        merkleHashes[bridges]['mylen'] += 1
+                                                    else:
+                                                        if result2[bridges][1] == 0:
+                                                            self.votemerkles[bridges] = 0
+                                                        else:
+                                                            self.votemerkles[bridges] = result2[bridges][1]
                             except:
                                 traceback.print_exc()     
                         if thecount % 180 == 0:
-                            if 'bridgeautomation' in AdvanceArray:
+                            if ThePeg.testthis == 1:
+                                if 'bridgeautomation' in AdvanceArray:
+                                    if self.waitingconf == 0:
+                                        if AdvanceArray['bridgeautomation']['votes'] != {} and self.confirmedvotes == {}:
+                                            try:
+                                                if thepriv != "":
+                                                    result2 = BridgeDriver.execute_script("return sendVotes("+str(AdvanceArray['bridgeautomation']['votes'])+",'"+thepriv+"');")
+                                                    if result2 == True:
+                                                        self.waitingconf = 1
+                                            except:
+                                                traceback.print_exc()
+                                    else:
+                                        try:
+                                            result2 = BridgeDriver.execute_script("return getVotes();")
+                                            if result2 == True:
+                                                self.confirmedvotes = copy.deepcopy(AdvanceArray['bridgeautomation']['votes'])
+                                                self.waitingconf = 0
+                                        except:
+                                            traceback.print_exc()
+                            else:
+                                newvotes = {}                                
+                                for key, val in merkleHashes['out'].iteritems():
+                                    if merkleHashes['out'][key]['lastIndex'] < len(merkleHashes['out'][key]['list']):
+                                        newvotes[key]['root'] = merkleHashes['out'][key]['list'][merkleHashes['out'][key]['lastIndex']][0]
+                                        newvotes[key]['section'] = merkleHashes['out'][key]['list'][merkleHashes['out'][key]['lastIndex']][1]
                                 if self.waitingconf == 0:
-                                    if AdvanceArray['bridgeautomation']['votes'] != {} and self.confirmedvotes == {}:
+                                    if newvotes != {}:
                                         try:
                                             if thepriv != "":
-                                                result2 = BridgeDriver.execute_script("return sendVotes("+str(AdvanceArray['bridgeautomation']['votes'])+",'"+thepriv+"');")
+                                                result2 = BridgeDriver.execute_script("return sendVotes("+str(newvotes)+",'"+thepriv+"');")
                                                 if result2 == True:
                                                     self.waitingconf = 1
                                         except:
@@ -6588,7 +6641,6 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     try:
                                         result2 = BridgeDriver.execute_script("return getVotes();")
                                         if result2 == True:
-                                            self.confirmedvotes = copy.deepcopy(AdvanceArray['bridgeautomation']['votes'])
                                             self.waitingconf = 0
                                     except:
                                         traceback.print_exc()
@@ -7875,6 +7927,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
         global loadtime
         global notDownloading
         global coininfo
+        global merkleHashes
         disconnect=0
         conn=False
         BLK = None
@@ -8151,13 +8204,141 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                 try:
                                     if 'pegging' in CoinSelect and CoinSelect['pegging'] and globperc==100:
                                         if ThePeg.testthis==0:
-                                            bdb=BLK.getbridgeinfo()
-                                            if bdb==False:
+                                            #bdb=BLK.getbridgeinfo()
+                                            bdb2=BLK.bridges()
+                                            isPaused = 'a'
+                                            try:
+                                                isPaused = BLK.is_paused()
+                                            except:
+                                                traceback.print_exc()
+                                            if bdb2==False:
                                                 float('a')
-                                            ThePeg.Pegdatabase['bridgeactive']=bdb[0]
-                                            ThePeg.Pegdatabase['bridgedb']=copy.deepcopy(bdb[1])
+                                            myBridges = []
+                                            for key, val in bdb2.items():
+                                                myBridges.append({'n':val['name'],'s':val['symb'],'l':val['links'],'i':val['chain_id'],'c':val['contract'],'p':val['pegsteps'],'m':val['microsteps']})
+                                            try:
+                                                pass
+                                                #BLK.tstakers1()
+                                                #BLK.tstakers2()
+                                                #BLK.consensus()
+                                                #BLK.timelockpasses()
+                                            except:
+                                                pass
+                                            ThePeg.Pegdatabase['bridgeactive']=True#bdb[0]
+                                            if isPaused != 'a':
+                                                if isPaused:
+                                                    ThePeg.Pegdatabase['bridgeactive']=False
+                                                else:
+                                                    ThePeg.Pegdatabase['bridgeactive']=True
+                                            ThePeg.Pegdatabase['bridgedb']['bridges']=copy.deepcopy(myBridges)
+                                            lenchange = False
+                                            lenchange2 = False
+                                            if merkleHashes == False:
+                                                merkleHashes = {'out':{}}
+                                                if 'merkleHashes' in AdvanceArray:
+                                                    merkleHashes = copy.deepcopy(AdvanceArray['merkleHashes'])
+                                                merkleHashes2 = BLK.merklesin(0)
+                                                for key, val in merkleHashes2.iteritems():
+                                                    thename = ''
+                                                    for bridgeName in myBridges:
+                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                            thename = bridgeName['n']
+                                                    if thename != '':
+                                                        if thename not in merkleHashes:
+                                                            merkleHashes[thename] = {}
+                                                        lenchange = True
+                                                        merkleHashes[thename][key] = 1
+                                                        if 'mylen' not in merkleHashes[thename]:
+                                                            merkleHashes[thename]['mylen'] = 0
+                                                merkleHashes3 = BLK.merklesout(0)
+                                                templist = {}
+                                                for key, val in merkleHashes3.iteritems():
+                                                    thename = ''
+                                                    for bridgeName in myBridges:
+                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                            thename = bridgeName['n']
+                                                    if thename != '':
+                                                        if thename not in merkleHashes['out']:
+                                                            merkleHashes['out'][thename] = {}
+                                                            merkleHashes['out'][thename]['list'] = []
+                                                            merkleHashes['out'][thename]['inx'] = {}
+                                                            merkleHashes['out'][thename]['lastHash'] = "0x0"
+                                                            merkleHashes['out'][thename]['lastIndex'] = 0
+                                                        if thename not in templist:
+                                                            templist[thename] = []
+                                                        if key not in merkleHashes['out'][thename]["inx"]:
+                                                            templist[thename].insert(0,[key,val['section']])
+                                                            lenchange2 = True
+                                                        else:
+                                                            break
+                                                if lenchange2:
+                                                    for nm in templist:
+                                                        for el in templist[nm]:
+                                                            merkleHashes['out'][nm]['list'].append(el)
+                                            else:
+                                                merkleHashes2 = BLK.merklesin(25)
+                                                for key, val in merkleHashes2.iteritems():
+                                                    thename = ''
+                                                    for bridgeName in myBridges:
+                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                            thename = bridgeName['n']
+                                                    if thename != '':
+                                                        if thename not in merkleHashes:
+                                                            merkleHashes[thename] = {}
+                                                        if key not in merkleHashes[thename]:
+                                                            lenchange = True
+                                                            merkleHashes[thename][key] = 1
+                                                        if 'mylen' not in merkleHashes[thename]:
+                                                            merkleHashes[thename]['mylen'] = 0
+                                                merkleHashes3 = BLK.merklesout(0)
+                                                templist2 = {}
+                                                for key, val in merkleHashes3.iteritems():
+                                                    thename = ''
+                                                    for bridgeName in myBridges:
+                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                            thename = bridgeName['n']
+                                                    if thename != '':                                                        
+                                                        if thename not in merkleHashes['out']:
+                                                            merkleHashes['out'][thename] = {}
+                                                            merkleHashes['out'][thename]['list'] = []
+                                                            merkleHashes['out'][thename]['inx'] = {}
+                                                            merkleHashes['out'][thename]['lastHash'] = "0x0"
+                                                            merkleHashes['out'][thename]['lastIndex'] = 0
+                                                        if thename not in templist2:
+                                                            templist2[thename] = []
+                                                        if key not in merkleHashes['out'][thename]["inx"]:
+                                                            templist2[thename].insert(0,[key,val['section']])
+                                                            lenchange2 = True
+                                                        else:
+                                                            break
+                                                if lenchange2:
+                                                    for nm in templist2:
+                                                        for el in templist2[nm]:
+                                                            merkleHashes['out'][nm]['list'].append(el)
+                                            if merkleHashes != False:
+                                                if 'noncesync' not in merkleHashes:
+                                                    merkleHashes['noncesync'] = {}
+                                                if lenchange:
+                                                    for key, val in merkleHashes:
+                                                        merkleHashes[key]['mylen'] = len(merkleHashes[key]) - 1
+                                                        merkleHashes['noncesync'][key] = merkleHashes[key]['mylen']
+                                                if lenchange2:
+                                                    for key, val in merkleHashes['out'].iteritems():
+                                                        myxpos = len(merkleHashes['out'][key]['list']) - 1  # Start from the last index
+                                                        for myHash in reversed(merkleHashes['out'][key]['list']):  # Reverse iteration
+                                                            if myHash[0] not in merkleHashes['out'][key]["inx"]:  # Only add if not present
+                                                                merkleHashes['out'][key]["inx"][myHash[0]] = myxpos
+                                                            else:
+                                                                break
+                                                            myxpos -= 1  # Decrement position
+                                                for key, val in merkleHashes['out'].iteritems():
+                                                    if key in TheBridgeThread.lastHash:
+                                                        merkleHashes['out'][key]['lastHash'] = TheBridgeThread.lastHash[key]
+                                                        if TheBridgeThread.lastHash[key] in merkleHashes['out'][key]["inx"]:
+                                                            merkleHashes['out'][key]['lastIndex'] = merkleHashes['out'][key]["inx"][TheBridgeThread.lastHash[key]] + 1
                                             if waitlock() == True:
                                                 AdvanceArray['bridgedb'] = ThePeg.Pegdatabase['bridgedb']
+                                                AdvanceArray['merkleHashes'] = copy.deepcopy(merkleHashes)
 
                                 except:
                                     traceback.print_exc()
@@ -8303,30 +8484,31 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                 if 'bridgeautomation' not in AdvanceArray:
                                     if waitlock() == True:
                                         AdvanceArray['bridgeautomation'] = {'processnonce':0,'votes':{}}
-                                if BridgeAdmin:
+                                if BridgeAdmin and ThePeg.testthis==1:
                                     nonce = str(AdvanceArray['bridgeautomation']['processnonce'])
-                                    if ThePeg.testthis==1:
+                                    #if ThePeg.testthis==1:
+                                    if True:
                                         if nonce in ThePeg.Pegdatabase['merklelist']:
                                             if 'finalTX' in ThePeg.Pegdatabase['merklelist'][nonce] and AdvanceArray['bridgeautomation']['votes'] == {}:
                                                 for myname in ThePeg.Pegdatabase['merklelist'][nonce]['finalTX']:
                                                     if myname not in AdvanceArray['bridgeautomation']['votes']:
                                                         if waitlock() == True:
                                                             AdvanceArray['bridgeautomation']['votes'][myname] = {'root':ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][myname]['root'],'section':ThePeg.Pegdatabase['merklelist'][nonce]['finalTX'][myname]['section']}
-                                    else:
-                                        try:
-                                            if AdvanceArray['bridgeautomation']['votes'] == {}:
-                                                while(BLK.getroot(int(nonce)+3) != False):
-                                                    if waitlock() == True:
-                                                        AdvanceArray['bridgeautomation']['processnonce'] += 1
-                                                    else:
-                                                        break
-                                                    nonce = str(AdvanceArray['bridgeautomation']['processnonce'])
-                                                myroots=BLK.getroot(int(nonce))
-                                                if myroots != False:
-                                                    if waitlock() == True:
-                                                        AdvanceArray['bridgeautomation']['votes'] = copy.deepcopy(myroots)
-                                        except:
-                                            traceback.print_exc()
+                                    #else:
+                                    #    try:
+                                    #        if AdvanceArray['bridgeautomation']['votes'] == {}:
+                                    #            while(BLK.getroot(int(nonce)+3) != False):
+                                    #                if waitlock() == True:
+                                    #                    AdvanceArray['bridgeautomation']['processnonce'] += 1
+                                    #                else:
+                                    #                    break
+                                    #                nonce = str(AdvanceArray['bridgeautomation']['processnonce'])
+                                    #            myroots=BLK.getroot(int(nonce))
+                                    #            if myroots != False:
+                                    #                if waitlock() == True:
+                                    #                    AdvanceArray['bridgeautomation']['votes'] = copy.deepcopy(myroots)
+                                    #    except:
+                                    #        traceback.print_exc()
                                     completethis = 0
                                     if AdvanceArray['bridgeautomation']['votes'] != {}:
                                         if TheBridgeThread.confirmedvotes == AdvanceArray['bridgeautomation']['votes']:
@@ -19589,6 +19771,9 @@ def get_ordered_pubkeys(uniqueid1, dir1="", sort=1, fline=0):
         return pubs, firstline
 
 #This is used for when a user needs to recover lost data on a bridge TX in the GUI
+def showBridgeTX():
+    res = BLK.listbridgetransactions()
+    return res
 def addBridgeTX(txid):
     global CurrentBlock, timestamp, PrivKeyFilename1
     multisig,mscript=create_multisig_address(PrivKeyFilename1)
@@ -26082,6 +26267,12 @@ def shippingcalculator(clientinfo="", manualoffer=0):
     global bestcalcrate
     global AdvanceArray
     global CoinMarketCap
+    try:
+        if window.EnableShippingCalc:
+            pass
+    except:
+        res=QuestionBox("Shipping calculator is not enabled.","OK")
+        return
     if 'shippingtip' not in AdvanceArray and manualoffer==0:
         res=QuestionBox("The program will now launch a shipping calculator to help you estimate the cost of shipping. Please understand there are many companies and options for shipping. When a seller or buyer calculates the shipping they might find better rates.", " Okay, I understand ", " Do not show this message again. ")
         if res==1:
@@ -26657,7 +26848,7 @@ class Settings(QtGui.QWidget):
         else:
             BridgeAdmin = False
             AdvanceArray['MySettings']['EnableBridge'] = False
-            self.BridgeInfo.setText(Gtranslate("Information will display once administration is enabled"))
+            self.BridgeInfo.setText(Gtranslate("Information will be displayed once administration is enabled. You will need altcoins to manage each bridge to vote on supply and merkles. The costs are typically low because efficient networks are used. It is important for all users who manage bridges to coordinate in order to synchronize AMMs. This would require replacing the line in bridge.htm that specifies the pairs everyone wishes to actively maintain. This helps the users so their transactions are not denied on exchanges such as Uniswap due to the contract being out of sync. For security users still must manage this manually."))
     def changetab(self):
         pass
     def closeEvent(self, event):
@@ -28858,10 +29049,16 @@ class AdvancedSettings(QtGui.QWidget):
             if "Send reserve: " in beforetext:
                 beforetext=beforetext.replace("Send reserve: ","")
                 beforetext=beforetext.replace("Send liquid: ","")
+                if beforetext == "":
+                    res=QuestionBox("Invalid bridge","OK")
+                    return
                 text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:64]+str(self.OwnerAfter.text()),1)[0]
                 window.BitPayTo.setText("Move Reserve:"+text)
             else:
                 beforetext=beforetext.replace("Send liquid: ","")
+                if beforetext == "":
+                    res=QuestionBox("Invalid bridge","OK")
+                    return
                 text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:64]+str(self.OwnerAfter.text()),1)[0]
                 window.BitPayTo.setText(text)
             self.hide()
@@ -32653,9 +32850,12 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     else:
                         try:
                             busy=NetSplash(1, checkwait=1)
-                            mymerkle=BLK.getmerkle(txid)
-                            if mymerkle==False:
+                            mymerkle=BLK.bridgereceipt(txid)
+                            if mymerkle['receipt_is_ready']==False or mymerkle['receipt_is_found']==False:
                                 QuestionBox("This merkle has not been processed yet. Please check back later.", " OK ")
+                                mymerkle=False
+                            else:
+                                mymerkle=mymerkle['receipt']
                             NetSplash(0)
                         except:
                             NetSplash(0)
