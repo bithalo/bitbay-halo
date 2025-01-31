@@ -1,3 +1,13 @@
+
+Halo v4.0
+Updates for the bridge mainnet
+Making fee per byte required in BitHalo
+Updates to the automation scripts
+bitbayd32 bit builds no longer able to run due to pegdb resources
+Linux32 users must switch to Linux64
+Mac users who use Wine will now be encouraged to use LinuxVM
+Dynamic peg can now bridge to other networks
+
 Halo v3.0
 Created entire system for BitBay bridge so BitBay can go from/to other networks
 Automation of bridge management and voting system using selenium
