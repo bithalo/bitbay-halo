@@ -444,7 +444,7 @@ mycfg='default'
 globperc=0
 globcount=0
 rescanning=0
-clientversion="4.0"
+clientversion="4.1"
 UpdateMessage=clientversion
 versioncheck=0#After we check, we set this to one
 changearray=[]
@@ -1980,6 +1980,7 @@ class PegThread(QtCore.QThread):
         self.Pegdatabase['txidreference'] = {}
         self.Pegdatabase['fundsout'] = {}
         self.Pegdatabase['netdata'] = {}
+        self.approvePairs = False
         #Mint to BAY network merkles
         #Some of the processing and storage may be in JavaScript for python testing
         #We don't keep this persistent for testing because JavaScript recalculates it when it loads
@@ -6446,7 +6447,8 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
         self.BridgeRefresh=0
         self.waitingconf=0
         self.lastHash={}
-        self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
+        self.mypairs=[[],[],[],[]]
+        #self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
     def stop(self):
         self.amrunning=False
     def run(self):
@@ -8871,7 +8873,8 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                         if 'pegging' in CoinSelect and CoinSelect['pegging']:
                                             thevotes={}
                                             if ThePeg.testthis==0:
-                                                thevotes=BLK.getmerklevotes()
+                                                thevotes=copy.deepcopy(TheBridgeThread.votemerkles)
+                                                #thevotes=BLK.getmerklevotes()
                                             else:                                                
                                                 thevotes=copy.deepcopy(TheBridgeThread.votemerkles)
                                             if thevotes != {}:
@@ -9576,7 +9579,8 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                             UpdateMessage=clientversion
                         if 'pegging' in CoinSelect and CoinSelect['pegging']:
                             try:
-                                TheBridgeThread.mypairs=json.loads(requestURL("https://github.com/bitbaymarket/Bitbay-Solidity/Html/bridgepairs.txt"))
+                                if ThePeg.approvePairs:
+                                    TheBridgeThread.mypairs=json.loads(requestURL("https://bitbaymarket.github.io/bridge/bridgepairs.txt"))
                             except:
                                 pass
                         try:
@@ -32889,6 +32893,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 if mymerkle != False:
                     data+="<br />Network to redeem the funds: " + str(name)
                     data+="<br />Merkle Proof Receipt:<br />" + str(mymerkle)
+                    data+="<br />Link to redeem funds:<br />https://bitbaymarket.github.io/bridge/?m=" + str(mymerkle)
             MyDetails.textBrowser.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
