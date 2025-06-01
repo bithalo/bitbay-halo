@@ -444,7 +444,7 @@ mycfg='default'
 globperc=0
 globcount=0
 rescanning=0
-clientversion="4.1"
+clientversion="4.12"
 UpdateMessage=clientversion
 versioncheck=0#After we check, we set this to one
 changearray=[]
@@ -560,7 +560,7 @@ NewCoin1['rpcpassword']="32w54er56t7y89j8h34w5e6t7y8u9ik34sAs4"
 NewCoin1['rpcport']="19915"
 NewCoin1['port']="19914"
 NewCoin1['blocktime']="64"
-NewCoin1['6aLength']=248
+NewCoin1['6aLength']=248 #true limit is actually over 10kb using pushdata4 but we limit it for practical use
 NewCoin1['pegging']=True
 NewCoin1['checksequenceverify']=False
 NewCoin1['staking']=True
@@ -1367,6 +1367,8 @@ def json_deep_copy(data, useast=0):
         except:
             data_copy = ast.literal_eval(str(data))
     return data_copy
+def bytesString(s):
+    return chr(len(s)) +  s
 
 def retranslateUi2():
     global translations, globfont
@@ -2340,7 +2342,7 @@ class PegThread(QtCore.QThread):
                                                     self.Pegdatabase['merklelist']['0']['timestamp']=block['time'] #Initiates
                                             if self.Pegdatabase['bridgeactive']:
                                                 for bridged in self.Pegdatabase['bridgedb']['bridges']:
-                                                    if txhash(bridged['n'])[:64]==meaning['message'][5:][:64]:
+                                                    if txhash(bytesString(bridged['n']))[:64]==meaning['message'][5:][:64]:
                                                         if bridged['n'] not in self.Pegdatabase['merkles']:
                                                             self.Pegdatabase['merkles'][bridged['n']]={}
                                                         themerkletree=meaning['message'][5:][64:]
@@ -2580,7 +2582,7 @@ class PegThread(QtCore.QThread):
                             message=ast.literal_eval(message)
                             thename=''
                             for bridged in self.Pegdatabase['bridgedb']['bridges']:                                
-                                if message['w']==txhash(bridged['n'])[:64]:
+                                if message['w']==txhash(bytesString(bridged['n']))[:64]:
                                     thename=bridged['n']
                                     break
                             if thename == '':
@@ -3313,7 +3315,7 @@ class PegThread(QtCore.QThread):
                                     float('a')
                                 foundthis=0
                                 for bridged in self.Pegdatabase['bridgedb']['bridges']:
-                                    if txhash(bridged['n'])[:64]==meaning['message'][5:][:64]:
+                                    if txhash(bytesString(bridged['n']))[:64]==meaning['message'][5:][:64]:
                                         foundthis=1
                                         general6a=False
                                         break
@@ -3643,7 +3645,7 @@ class PegThread(QtCore.QThread):
                 if meaning!={} and meaning['type']=="Notary/Burn":
                     if meaning['message'][:5]=="**Z**":
                         for bridged in self.Pegdatabase['bridgedb']['bridges']:
-                            if txhash(bridged['n'])[:64]==meaning['message'][5:][:64]:
+                            if txhash(bytesString(bridged['n']))[:64]==meaning['message'][5:][:64]:
                                 mytx={'txid':txid,'network':bridged['n'],'to':meaning['message'][5:][64:],'pool':copy.deepcopy(newstuff['txout'][txid]['pool'])}
                                 self.Pegdatabase['txidreference'][txid]=self.Pegdatabase['merklenonceTX'] #For easy reference finding a TX
                                 self.Pegdatabase['merklelist'][str(self.Pegdatabase['merklenonceTX'])]['transactions'].append(mytx)
@@ -6448,6 +6450,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
         self.waitingconf=0
         self.lastHash={}
         self.mypairs=[[],[],[],[]]
+        self.brainKey=""
         #self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
     def stop(self):
         self.amrunning=False
@@ -6490,7 +6493,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                             if ThePeg.testthis == 1:
                                 result = BridgeDriver.execute_script("return loadBridges("+str(ThePeg.Pegdatabase['bridgedb']['bridges'])+",'"+pubs[0]+"');")
                             else:
-                                result = BridgeDriver.execute_script("return loadBridges("+str(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                                result = BridgeDriver.execute_script("return loadBridges("+json.dumps(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
                             MySettingsInfo = str(result[1])
                             if 'bridgeautomation' in AdvanceArray:
                                 if AdvanceArray['bridgeautomation']['votes'] != {} and self.confirmedvotes == {}:
@@ -6515,7 +6518,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     result = BridgeDriver.execute_script("return loadBridges("+str(ThePeg.Pegdatabase['bridgedb']['bridges'])+",'"+pubs[0]+"');")
                                     somebridges = ThePeg.Pegdatabase['bridgedb']['bridges']
                                 else:
-                                    result = BridgeDriver.execute_script("return loadBridges("+str(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
+                                    result = BridgeDriver.execute_script("return loadBridges("+json.dumps(AdvanceArray['bridgedb']['bridges'])+",'"+pubs[0]+"');")
                                     somebridges = AdvanceArray['bridgedb']['bridges']
                                 try:
                                     x = 0
@@ -6563,7 +6566,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     result2 = BridgeDriver.execute_script("return updateSupply("+str(ThePeg.CurrentSupply(ThePeg.Pegdatabase['blockcount']))+",'"+thepriv+"',"+str(self.mypairs)+");")
                             except:
                                 traceback.print_exc()
-                        if thecount % 180 == 0:
+                        if thecount % 180 == 0: #Publishing merkles to another network
                             if ThePeg.noncesync == {}: #For python testing this will sync slowly. In production merkle trees are saved in peg database
                                 if ThePeg.testthis == 1:
                                     for bridges in ThePeg.Pegdatabase['bridgedb']['bridges']:
@@ -6573,7 +6576,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     result2 = BridgeDriver.execute_script("return updateNonce("+str(ThePeg.noncesync)+");")
                                 else:
                                     if merkleHashes != False and 'noncesync' in merkleHashes:
-                                        result2 = BridgeDriver.execute_script("return updateNonce("+str(merkleHashes['noncesync'])+");")                                    
+                                        result2 = BridgeDriver.execute_script("return updateNonce("+json.dumps(merkleHashes['noncesync'])+");")                                    
                             except:
                                 traceback.print_exc()
                             try:
@@ -6594,24 +6597,25 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     else:
                                         if merkleHashes != False:
                                             if bridges in merkleHashes:
-                                                if result2[bridges][0] == merkleHashes[bridges]['mylen']:
-                                                    if result2[bridges][1] in merkleHashes[bridges]:
-                                                        merkleHashes[bridges]['mylen'] += 1
-                                                    else:
-                                                        if result2[bridges][1] == 0:
-                                                            self.votemerkles[bridges] = 0
+                                                if 'mylen' in merkleHashes[bridges]:
+                                                    if result2[bridges][0] == merkleHashes[bridges]['mylen']:
+                                                        if result2[bridges][1] in merkleHashes[bridges]:
+                                                            pass #length should update on RPC calls
                                                         else:
-                                                            self.votemerkles[bridges] = result2[bridges][1]
+                                                            if result2[bridges][1] == 0:
+                                                                self.votemerkles[bridges] = 0
+                                                            else:
+                                                                self.votemerkles[bridges] = result2[bridges][1] + ":" + result2[bridges][2]
                             except:
                                 traceback.print_exc()     
-                        if thecount % 180 == 0:
+                        if thecount % 180 == 0: #Publishing merkles to another network
                             if ThePeg.testthis == 1:
                                 if 'bridgeautomation' in AdvanceArray:
                                     if self.waitingconf == 0:
                                         if AdvanceArray['bridgeautomation']['votes'] != {} and self.confirmedvotes == {}:
                                             try:
                                                 if thepriv != "":
-                                                    result2 = BridgeDriver.execute_script("return sendVotes("+str(AdvanceArray['bridgeautomation']['votes'])+",'"+thepriv+"');")
+                                                    result2 = BridgeDriver.execute_script("return sendVotes("+json.dumps(AdvanceArray['bridgeautomation']['votes'])+",'"+thepriv+"');")
                                                     if result2 == True:
                                                         self.waitingconf = 1
                                             except:
@@ -6625,16 +6629,18 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                         except:
                                             traceback.print_exc()
                             else:
-                                newvotes = {}                                
-                                for key, val in merkleHashes['out'].iteritems():
-                                    if merkleHashes['out'][key]['lastIndex'] < len(merkleHashes['out'][key]['list']):
-                                        newvotes[key]['root'] = merkleHashes['out'][key]['list'][merkleHashes['out'][key]['lastIndex']][0]
-                                        newvotes[key]['section'] = merkleHashes['out'][key]['list'][merkleHashes['out'][key]['lastIndex']][1]
+                                newvotes = {}
+                                if merkleHashes != False:
+                                    for key, val in merkleHashes['out'].iteritems():
+                                        if merkleHashes['out'][key]['lastIndex'] < len(merkleHashes['out'][key]['list']):
+                                            newvotes[key] = {}
+                                            newvotes[key]['root'] = merkleHashes['out'][key]['list'][merkleHashes['out'][key]['lastIndex']][0]
+                                            newvotes[key]['section'] = merkleHashes['out'][key]['list'][merkleHashes['out'][key]['lastIndex']][1]
                                 if self.waitingconf == 0:
                                     if newvotes != {}:
                                         try:
                                             if thepriv != "":
-                                                result2 = BridgeDriver.execute_script("return sendVotes("+str(newvotes)+",'"+thepriv+"');")
+                                                result2 = BridgeDriver.execute_script("return sendVotes("+json.dumps(newvotes)+",'"+thepriv+"');")
                                                 if result2 == True:
                                                     self.waitingconf = 1
                                         except:
@@ -8210,7 +8216,8 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                             bdb2=BLK.bridges()
                                             isPaused = 'a'
                                             try:
-                                                isPaused = BLK.is_paused()
+                                                pass
+                                                #isPaused = BLK.is_paused()
                                             except:
                                                 traceback.print_exc()
                                             if bdb2==False:
@@ -8236,14 +8243,14 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                             lenchange = False
                                             lenchange2 = False
                                             if merkleHashes == False:
-                                                merkleHashes = {'out':{}}
+                                                merkleHashes = {'out':{}, 'noncesync':{}}
                                                 if 'merkleHashes' in AdvanceArray:
                                                     merkleHashes = copy.deepcopy(AdvanceArray['merkleHashes'])
                                                 merkleHashes2 = BLK.merklesin(0)
                                                 for key, val in merkleHashes2.iteritems():
                                                     thename = ''
                                                     for bridgeName in myBridges:
-                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                        if txhash(bytesString(bridgeName['n']))[:64] == val['brhash']:
                                                             thename = bridgeName['n']
                                                     if thename != '':
                                                         if thename not in merkleHashes:
@@ -8257,7 +8264,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                 for key, val in merkleHashes3.iteritems():
                                                     thename = ''
                                                     for bridgeName in myBridges:
-                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                        if txhash(bytesString(bridgeName['n']))[:64] == val['brhash']:
                                                             thename = bridgeName['n']
                                                     if thename != '':
                                                         if thename not in merkleHashes['out']:
@@ -8282,7 +8289,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                 for key, val in merkleHashes2.iteritems():
                                                     thename = ''
                                                     for bridgeName in myBridges:
-                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                        if txhash(bytesString(bridgeName['n']))[:64] == val['brhash']:
                                                             thename = bridgeName['n']
                                                     if thename != '':
                                                         if thename not in merkleHashes:
@@ -8297,7 +8304,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                 for key, val in merkleHashes3.iteritems():
                                                     thename = ''
                                                     for bridgeName in myBridges:
-                                                        if txhash(bridgeName['n'])[:64] == val['brhash']:
+                                                        if txhash(bytesString(bridgeName['n']))[:64] == val['brhash']:
                                                             thename = bridgeName['n']
                                                     if thename != '':                                                        
                                                         if thename not in merkleHashes['out']:
@@ -8320,10 +8327,16 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                             if merkleHashes != False:
                                                 if 'noncesync' not in merkleHashes:
                                                     merkleHashes['noncesync'] = {}
+                                                for bridgeName in myBridges:
+                                                    if bridgeName['n'] not in merkleHashes['noncesync']:
+                                                        merkleHashes['noncesync'][bridgeName['n']] = 0
+                                                    if bridgeName['n'] not in merkleHashes:
+                                                        merkleHashes[bridgeName['n']] = {'mylen':0}
                                                 if lenchange:
                                                     for key, val in merkleHashes:
-                                                        merkleHashes[key]['mylen'] = len(merkleHashes[key]) - 1
-                                                        merkleHashes['noncesync'][key] = merkleHashes[key]['mylen']
+                                                        if isinstance(val, dict) and 'mylen' in val:
+                                                            merkleHashes[key]['mylen'] = len(merkleHashes[key]) - 1
+                                                            merkleHashes['noncesync'][key] = merkleHashes[key]['mylen']
                                                 if lenchange2:
                                                     for key, val in merkleHashes['out'].iteritems():
                                                         myxpos = len(merkleHashes['out'][key]['list']) - 1  # Start from the last index
@@ -8880,7 +8893,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                             if thevotes != {}:
                                                 for thebridge in thevotes:
                                                     if thevotes[thebridge] != 0:
-                                                        voteaddy=MakeCipherOutputs('**M**' + txhash(thebridge)[:64] + thevotes[thebridge], 1)
+                                                        voteaddy=MakeCipherOutputs('**M**' + txhash(bytesString(thebridge))[:64] + thevotes[thebridge], 1)
                                                         voteaddy=str(voteaddy[0])
                                                         mystake['outs'].append({'value':5554,'script':voteaddy})
                                                         chg-=5554
@@ -9669,11 +9682,20 @@ class DownloadThread(QtCore.QThread):#For BitHalo electrum server and general do
                         try:
                             startdate=datetime.datetime(2018, 6, 1, 0, 0, 0, 0)
                             if 'btchistory' not in AdvanceArray:
-                                AdvanceArray['btchistory']={'peak':'20000', 'date': (2018, 6, 1, 0, 0, 0, 0)}
-                            
+                                AdvanceArray['btchistory']={'peak':'100000', 'date': (2025, 1, 1, 0, 0, 0, 0)}
                             curtime = str(HaloTime)[:7]+'-01'
                             if curtime not in AdvanceArray['btchistory']:
-                                btchist=json.loads(requestURL('https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-06-01' + '&end=' + curtime))['bpi']
+                                try:
+                                    # Blockchain.info does not provide historical data, only current. Coindesk API is no longer working
+                                    current_price = str(int(json.loads(requestURL('https://blockchain.info/ticker'))['USD']['last']))
+                                    today = curtime
+                                    btchist = {today: current_price}
+                                except:
+                                    try:
+                                        btchist = json.loads(requestURL('https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-06-01&end=' + curtime))['bpi']                                        
+                                    except:
+                                        print "Failed to retrieve BTC price feed"
+                                        btchist = {}
                                 while startdate<HaloTime:
                                     mydate=ConvertDate(startdate,0)
                                     if str(startdate)[:10] in btchist: #Keep checking until it appears
@@ -19789,7 +19811,7 @@ def addBridgeTX(txid):
     thisisgood=0
     for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
         try:
-            if translate_script(script)['message'][5:][:64]==txhash(bridged['n'])[:64]:
+            if translate_script(script)['message'][5:][:64]==txhash(bytesString(bridged['n']))[:64]:
                 bridgedata['network']=bridged['n']
                 bridgedata['to']=translate_script(script)['message'][5:][64:]
                 thisisgood=1
@@ -28571,7 +28593,8 @@ class AdvancedSettings(QtGui.QWidget):
             self.comboBox.setItemText(3, _translate("Form", "Advanced Time Lock", None))
             self.comboBox.setItemText(4, _translate("Form", "Notarize/Burn Message", None))
             self.comboBox.setItemText(5, _translate("Form", "Bridge to another chain", None))
-            self.comboBox.setItemText(6, _translate("Form", "Mint from another chain", None))
+            if ThePeg.testthis == 1:
+                self.comboBox.setItemText(6, _translate("Form", "Mint from another chain", None))
         self.comboBox.setCurrentIndex(0)
         self.comboBox.blockSignals(False)
         if CoinSelect['HaloName']!="BitBay":
@@ -28844,7 +28867,7 @@ class AdvancedSettings(QtGui.QWidget):
                 try:
                     text2=ast.literal_eval(str(text2))
                     newdata={}
-                    newdata['w'] = txhash(str(text))[:64]
+                    newdata['w'] = txhash(bytesString(str(text)))[:64]
                     newdata['n'] = text2['nonce']
                     newdata['f'] = text2['from']
                     newdata['a'] = text2['address']
@@ -29056,14 +29079,14 @@ class AdvancedSettings(QtGui.QWidget):
                 if beforetext == "":
                     res=QuestionBox("Invalid bridge","OK")
                     return
-                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:64]+str(self.OwnerAfter.text()),1)[0]
+                text=MakeCipherOutputs("**Z**"+txhash(bytesString(beforetext))[:64]+str(self.OwnerAfter.text()),1)[0]
                 window.BitPayTo.setText("Move Reserve:"+text)
             else:
                 beforetext=beforetext.replace("Send liquid: ","")
                 if beforetext == "":
                     res=QuestionBox("Invalid bridge","OK")
                     return
-                text=MakeCipherOutputs("**Z**"+txhash(beforetext)[:64]+str(self.OwnerAfter.text()),1)[0]
+                text=MakeCipherOutputs("**Z**"+txhash(bytesString(beforetext))[:64]+str(self.OwnerAfter.text()),1)[0]
                 window.BitPayTo.setText(text)
             self.hide()
         if self.comboBox.currentIndex() == 4+offset:
@@ -32802,7 +32825,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     name = ''
                     z = 0
                     while z < len(ThePeg.Pegdatabase['bridgedb']['bridges']):
-                        if message[5:][:64] == txhash(ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n'])[:64]:
+                        if message[5:][:64] == txhash(bytesString(ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n']))[:64]:
                             name=ThePeg.Pegdatabase['bridgedb']['bridges'][z]['n']
                             break
                         z+=1
@@ -32855,6 +32878,10 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                         try:
                             busy=NetSplash(1, checkwait=1)
                             mymerkle=BLK.bridgereceipt(txid)
+                            tt=0
+                            for val in mymerkle['reserve']:
+                                mymerkle['reserve'][tt]=str(mymerkle['reserve'][tt])
+                                tt+=1
                             if mymerkle['receipt_is_ready']==False or mymerkle['receipt_is_found']==False:
                                 QuestionBox("This merkle has not been processed yet. Please check back later.", " OK ")
                                 mymerkle=False
@@ -32865,9 +32892,9 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                             NetSplash(0)
                             QuestionBox("Pool data failed to load please wait a moment or try again.", " OK ")
                     if mymerkle != False:
-                        QuestionBox("Network to redeem the funds:\n" + name + "\n\nReceipt:\n" + str(mymerkle), " Copy to Clipboard ", 1)
+                        QuestionBox("Network to redeem the funds:\n" + name + "\n\nReceipt:\n" + str(json.dumps(mymerkle)), " Copy to Clipboard ", 1)
                         clipboard = app.clipboard()
-                        clipboard.setText(str(mymerkle))
+                        clipboard.setText(str(json.dumps(mymerkle)))
                         QuestionBox("The receipt has been copied to the clipboard. Please redeem the coins at the official bridge website after the merkle proof confirms(usually within 48 hours).", " OK ")
                 data+=HistoryDetail[multisig][x]['Type']+": <br />"
                 data+="Message: " + message +"<br /><br />"
@@ -32892,8 +32919,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                     pass
                 if mymerkle != False:
                     data+="<br />Network to redeem the funds: " + str(name)
-                    data+="<br />Merkle Proof Receipt:<br />" + str(mymerkle)
-                    data+="<br />Link to redeem funds:<br />https://bitbaymarket.github.io/bridge/?m=" + str(mymerkle)
+                    data+="<br />Link to redeem funds:<br /><br />https://bitbaymarket.github.io/bridge/?m=" + str(json.dumps(mymerkle))
             MyDetails.textBrowser.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
@@ -35903,7 +35929,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             testthis=testaddr.replace("MoveReserve:","")
             thisisgood=0
             for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                if translate_script(testthis)['message'][5:][:64]==txhash(bridged['n'])[:64]:
+                if translate_script(testthis)['message'][5:][:64]==txhash(bytesString(bridged['n']))[:64]:
                     bridgedata['network']=bridged['n']
                     bridgedata['to']=translate_script(testthis)['message'][5:][64:]
                     if "0x" not in bridgedata['to'] or " " in bridgedata['to']:
@@ -35966,6 +35992,9 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 address=address.replace("VoluntaryFreeze:", "")
                 special=2
             if "Mint:" in testaddr:
+                if ThePeg.testthis != 1:
+                    QuestionBox("This function is only used for testing mode", "OK")
+                    return False, "This function is only used for testing mode"
                 valid=1
                 address=address.replace("Mint:", "")                
                 mintthis=ast.literal_eval(address)
@@ -36115,7 +36144,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 outputs.insert(0,{'value':amt2,'address':address})
                 found=0
                 for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                    if mintthis['w']==txhash(bridged['n'])[:64]:
+                    if mintthis['w']==txhash(bytesString(bridged['n']))[:64]:
                         found=1
                         break
                 if found == 0:
@@ -36779,7 +36808,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
             testthis=testaddr.replace("MoveReserve:","")
             try:
                 for bridged in ThePeg.Pegdatabase['bridgedb']['bridges']:
-                    if translate_script(testthis)['message'][5:][:64]==txhash(bridged['n'])[:64]:
+                    if translate_script(testthis)['message'][5:][:64]==txhash(bytesString(bridged['n']))[:64]:
                         QuestionBox("You need both keys loaded to use the bridge!", " OK ")
                         return False
             except:

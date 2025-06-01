@@ -125,9 +125,9 @@ BAYDataAbi = [
 		"name": "FrozenTXDB",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "uint64",
 				"name": "",
-				"type": "uint256"
+				"type": "uint64"
 			}
 		],
 		"stateMutability": "view",
@@ -191,9 +191,9 @@ BAYDataAbi = [
 		"name": "Rbalances",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "uint64",
 				"name": "",
-				"type": "uint256"
+				"type": "uint64"
 			}
 		],
 		"stateMutability": "view",
@@ -462,40 +462,6 @@ BAYDataAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "proxyaddy",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "BAY_BAYR",
-				"type": "uint256"
-			}
-		],
-		"name": "decreaseAllowance",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "bool",
 				"name": "status",
 				"type": "bool"
@@ -518,7 +484,7 @@ BAYDataAbi = [
 		"outputs": [
 			{
 				"internalType": "uint256[30][4]",
-				"name": "",
+				"name": "output",
 				"type": "uint256[30][4]"
 			}
 		],
@@ -594,40 +560,6 @@ BAYDataAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "proxyaddy",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "BAY_BAYR",
-				"type": "uint256"
-			}
-		],
-		"name": "increaseAllowance",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
@@ -641,6 +573,25 @@ BAYDataAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "AMM",
+				"type": "address"
+			}
+		],
+		"name": "isAMMExchange",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -975,19 +926,6 @@ BAYDataAbi = [
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "version",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",

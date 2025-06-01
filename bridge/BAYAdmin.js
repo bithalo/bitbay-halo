@@ -69,9 +69,9 @@ BAYAdminAbi = [
 		"name": "BAYdata",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "uint64",
 				"name": "",
-				"type": "uint256"
+				"type": "uint64"
 			}
 		],
 		"stateMutability": "view",
@@ -298,11 +298,11 @@ BAYAdminAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newminter",
+				"name": "newpool",
 				"type": "address"
 			}
 		],
-		"name": "changeMinter",
+		"name": "changeLiquidityPool",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -317,11 +317,11 @@ BAYAdminAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newpool",
+				"name": "newminter",
 				"type": "address"
 			}
 		],
-		"name": "changePoolProxy",
+		"name": "changeMinter",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -389,7 +389,7 @@ BAYAdminAbi = [
 			},
 			{
 				"internalType": "address",
-				"name": "newminter",
+				"name": "newproxy",
 				"type": "address"
 			}
 		],
@@ -441,6 +441,58 @@ BAYAdminAbi = [
 			{
 				"internalType": "address",
 				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "delayTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "delayedChanges",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "changeType",
+				"type": "uint8"
+			},
+			{
+				"internalType": "address",
+				"name": "newProxy",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "status",
+				"type": "bool"
+			},
+			{
+				"internalType": "address",
+				"name": "targetProxy",
 				"type": "address"
 			}
 		],
@@ -602,19 +654,6 @@ BAYAdminAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "isActive",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -628,6 +667,19 @@ BAYAdminAbi = [
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastProxyPosition",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -676,6 +728,11 @@ BAYAdminAbi = [
 			{
 				"internalType": "uint256",
 				"name": "locktime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "pos",
 				"type": "uint256"
 			}
 		],
@@ -764,6 +821,24 @@ BAYAdminAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "target",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "addThis",
+				"type": "bool"
+			}
+		],
+		"name": "modifySync",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -929,7 +1004,18 @@ BAYAdminAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "proxylock",
 		"outputs": [
 			{
@@ -1037,6 +1123,11 @@ BAYAdminAbi = [
 				"internalType": "address",
 				"name": "curator",
 				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "reset",
+				"type": "bool"
 			}
 		],
 		"name": "removeCurator",
@@ -1090,6 +1181,11 @@ BAYAdminAbi = [
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "address",
+				"name": "targetProxy",
+				"type": "address"
+			},
 			{
 				"internalType": "address",
 				"name": "LP",
@@ -1258,6 +1354,25 @@ BAYAdminAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "syncAMM",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "timeLimit",
 		"outputs": [
@@ -1273,6 +1388,25 @@ BAYAdminAbi = [
 	{
 		"inputs": [],
 		"name": "totalMinted",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "totalSpent",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -1307,6 +1441,19 @@ BAYAdminAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "updateProxies",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
