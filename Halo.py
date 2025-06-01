@@ -28586,7 +28586,6 @@ class AdvancedSettings(QtGui.QWidget):
             self.comboBox.addItem(_fromUtf8(""))
             self.comboBox.addItem(_fromUtf8(""))
             self.comboBox.addItem(_fromUtf8(""))
-            self.comboBox.addItem(_fromUtf8(""))
             self.comboBox.setItemText(0, _translate("Form", "Move Reserve Funds(1 month freeze)", None))
             self.comboBox.setItemText(1, _translate("Form", "Voluntary Liquid Freeze(4 month freeze)", None))
             self.comboBox.setItemText(2, _translate("Form", "Freeze", None))
@@ -28594,6 +28593,7 @@ class AdvancedSettings(QtGui.QWidget):
             self.comboBox.setItemText(4, _translate("Form", "Notarize/Burn Message", None))
             self.comboBox.setItemText(5, _translate("Form", "Bridge to another chain", None))
             if ThePeg.testthis == 1:
+                self.comboBox.addItem(_fromUtf8(""))
                 self.comboBox.setItemText(6, _translate("Form", "Mint from another chain", None))
         self.comboBox.setCurrentIndex(0)
         self.comboBox.blockSignals(False)
