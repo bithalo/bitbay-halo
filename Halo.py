@@ -6451,6 +6451,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
         self.lastHash={}
         self.mypairs=[[],[],[],[]]
         self.brainKey=""
+        self.multipleKeys=[]
         #self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
     def stop(self):
         self.amrunning=False
@@ -6557,6 +6558,10 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                     thepriv = text
                             if self.brainKey != "":
                                 thepriv = txhash(thepriv + self.brainKey)
+                            if self.multipleKeys != []:
+                                thepriv = copy.deepcopy(self.multipleKeys)
+                                thepriv.insert(0, text)
+                                thepriv = json.dumps(thepriv)
                         else:
                             if "Please unlock your wallet for staking to maintain the bridge" not in MySettingsInfo:
                                 MySettingsInfo = "Please unlock your wallet for staking to maintain the bridge!<br>" + MySettingsInfo

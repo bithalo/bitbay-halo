@@ -141,8 +141,12 @@ async function loadBridges(bridges, publickey) {
                     timest = parseInt(myblock.timestamp);
                     if(myresult == true) {
                         if(mypriv != "") {
-                            myAccount = web3[x].eth.accounts.privateKeyToAccount(mypriv);
-                            web3[x].eth.accounts.wallet.add(mypriv);
+                            var priv2 = mypriv;
+                            if (Array.isArray(mypriv)) {
+                                priv2 = mypriv[0];
+                            }
+                            myAccount = web3[x].eth.accounts.privateKeyToAccount(priv2);
+                            web3[x].eth.accounts.wallet.add(priv2);
                             myAccount = myAccount.address;
                             try {
                                 if(currentSupply != "") {
@@ -185,6 +189,17 @@ async function loadBridges(bridges, publickey) {
                                                     thepairs = [];
                                                 }
                                                 await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount,...gasOptions});
+                                                if (Array.isArray(mypriv)) {
+                                                    for(var inx = 1; inx < mypriv.length; inx+=1) {
+                                                        var propstatus2 = parseInt(DOMPurify.sanitize(await contractAdmin[x].methods.proposals(proposalId, 0).call()));
+                                                        if(propstatus2 != 1) {
+                                                            var myAccount2 = web3[x].eth.accounts.privateKeyToAccount(mypriv[inx]);
+                                                            web3[x].eth.accounts.wallet.add(mypriv[inx]);
+                                                            myAccount2 = myAccount2.address;
+                                                            await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount2,...gasOptions});
+                                                        }
+                                                    }
+                                                }
                                                 text1 += "<br>Voted on supply: " + supply + "<br>";
                                                 console.log("Voted on supply: ");
                                                 console.log(supply);
@@ -254,6 +269,17 @@ async function loadBridges(bridges, publickey) {
                                             });
                                             if(foundthis2 == 0){
                                                 await contractAdmin[x].methods.addMerkle("0x"+myVotes[bridges[x].n]['root'],myVotes[bridges[x].n]['section']).send({"from":myAccount,...gasOptions});
+                                                if (Array.isArray(mypriv)) {
+                                                    for(var inx = 1; inx < mypriv.length; inx+=1) {
+                                                        var propstatus3 = parseInt(DOMPurify.sanitize(await contractAdmin[x].methods.proposals(proposalId, 0).call()));
+                                                        if(propstatus3 != 1) {
+                                                            var myAccount3 = web3[x].eth.accounts.privateKeyToAccount(mypriv[inx]);
+                                                            web3[x].eth.accounts.wallet.add(mypriv[inx]);
+                                                            myAccount3 = myAccount3.address;
+                                                            await contractAdmin[x].methods.addMerkle("0x"+myVotes[bridges[x].n]['root'],myVotes[bridges[x].n]['section']).send({"from":myAccount3,...gasOptions});
+                                                        }
+                                                    }
+                                                }
                                                 text1 += "<br>Voted on merkle: " + myVotes[bridges[x].n]['root'] + "<br>";
                                                 console.log("Voted on merkle: ");
                                                 console.log(myVotes[bridges[x].n]['root']);
@@ -374,14 +400,26 @@ async function checkbalance(mypos, myaddy) {
 
 function sendVotes(votes, privkey) {
     mypriv = privkey;
+    try {
+        mypriv = JSON.parse(mypriv);
+    } catch {
+    }
     myVotes = votes; //Network Name: {root: hash, section: section}...
     return true;
 }
 
 function updateSupply(mysupply, privkey, pairs) {
     mypriv = privkey;
+    try {
+        mypriv = JSON.parse(mypriv);
+    } catch {
+    }
     currentSupply = mysupply; //Network Name: {root: hash, section: section}...
-    mypairs = pairs;
+    try {
+        mypairs = JSON.parse(DOMPurify.sanitize(JSON.stringify(pairs)));
+    } catch (e) {
+        console.log(e)        
+    }
     console.log(currentSupply)
     return true;
 }
