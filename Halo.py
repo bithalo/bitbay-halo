@@ -353,6 +353,7 @@ global BridgeAdmin
 global BridgeDriver
 global MySettingsInfo
 global merkleHashes
+global skipBM
 
 reqsession=""
 
@@ -506,6 +507,7 @@ BridgeAdmin = False
 BridgeDriver = ""
 MySettingsInfo = ""
 merkleHashes = False
+skipBM = False
 
 #https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list
 Coins=[]#Soon will need more variables like the minimum fee and magic byte
@@ -727,6 +729,12 @@ try:
             debug=int(line.split('#Debug#')[1].split('#')[0])
         except:
             debug=0
+        try:
+            isRunningBridge = line.split('#EnableBM#')[1].split('#')[0]
+            if isRunningBridge == "Z":
+                skipBM = True
+        except:
+            pass
         line=line.split('#CoinSelect#')[1].split('#')[0]
         f.close()
     if line=="BTC":
@@ -966,7 +974,8 @@ if os.name == 'nt':
             BlackHalo=subprocess.Popen(CoinSelect['daemon']+'.exe -port='+CoinSelect['port']+' -rpcport='+CoinSelect['rpcport']+' -datadir="'+sdir+'"',creationflags=win32process.CREATE_NO_WINDOW)#stdout=PIPE, stderr=PIPE
         else:
             BlackHalo=None
-        BitMHalo=subprocess.Popen(("BitMHalo.exe path="+application_path),creationflags=win32process.CREATE_NO_WINDOW)# shell=True)#stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
+        if skipBM != True:
+            BitMHalo=subprocess.Popen(("BitMHalo.exe path="+application_path),creationflags=win32process.CREATE_NO_WINDOW)# shell=True)#stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
         #BitMHalo=subprocess.Popen(("BitMHalo.py path="+application_path),shell=True)
     except:
         traceback.print_exc()
@@ -981,13 +990,17 @@ else:
             BlackHalo=subprocess.Popen([application_path+"/"+CoinSelect['daemon'], "-port="+CoinSelect['port'], "-rpcport="+CoinSelect['rpcport'], "-datadir="+sdir])
         else:
             BlackHalo=None
-        BitMHalo=subprocess.Popen([application_path+"/BitMHalo", "path="+application_path])
+        if skipBM != True:
+            BitMHalo=subprocess.Popen([application_path+"/BitMHalo", "path="+application_path])
     except:
         traceback.print_exc()
         print "Could not find necessary executables."
         print application_path+"/"+CoinSelect['daemon'], "\n", "BitMHalo"
         sys.exit(1)
-procs.append(BitMHalo)
+if skipBM:
+    procs.append(None)
+else:
+    procs.append(BitMHalo)
 procs.append(BlackHalo)
 
 class DecimalEncoder2(json.JSONEncoder):
@@ -1639,7 +1652,8 @@ def Loop():
     downloadThread = DownloadThread("Hello world")
     downloadThread.start()
     bitmessThread = BitMessageThread("My BitMessage")
-    bitmessThread.start()
+    if skipBM != True:
+        bitmessThread.start()
     blackcoindThread = BlackCoinThread("BlackCoin")
     blackcoindThread.start()
     Select=GetfromCfg("#CoinSelect#")
@@ -1658,6 +1672,8 @@ def Loop():
         window.icon.show()
         window.hide()
     BM=GetfromCfg("#EnableBM#")
+    if BM == "Z":
+        BM = "N"
     EM=GetfromCfg("#EnableEmail#")
     NM=GetfromCfg("#Notify#")
     MM=GetfromCfg("#Market#")
@@ -1821,6 +1837,14 @@ def Loop():
         AdvanceArray['InboxCleanTime']=time.time()
     if 'MySettings' not in AdvanceArray:
         AdvanceArray['MySettings']={'Proxy':'', 'AntiLogger':False, 'ManualLogin':False, 'ClearLocation':False, 'FilterOther':False, 'CreateDebug':False, 'Staking':False, 'ColdStake':'', 'PeggingVote':0, 'Voting':[]}
+    else:
+        if 'EnableBridge' in AdvanceArray['MySettings']:
+            if AdvanceArray['MySettings']['EnableBridge'] != True:
+                try:
+                    bitmessThread.amrunning = False
+                except:
+                    pass
+                UpdateCfg("#EnableBM#","Z")
     if 'bridgedb' not in AdvanceArray:
         AdvanceArray['bridgedb']=ThePeg.Pegdatabase['bridgedb']
     MySettings.Load()
@@ -1829,6 +1853,8 @@ def Loop():
         AdvanceArray['StakingAccounts']={}
     if 'StakedOrders' not in AdvanceArray:
         AdvanceArray['StakedOrders']={}
+    if 'merkleHashes' in AdvanceArray:
+        merkleHashes = copy.deepcopy(AdvanceArray['merkleHashes'])
     #This is for custom loops that run outside of Qt.
     app.processEvents()
     SaveTranslations()
@@ -6612,8 +6638,13 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                                             else:
                                                                 self.votemerkles[bridges] = result2[bridges][1] + ":" + result2[bridges][2]
                             except:
-                                traceback.print_exc()     
+                                traceback.print_exc()
                         if thecount % 180 == 0: #Publishing merkles to another network
+                            if 'notify' in merkleHashes:
+                                try:
+                                    result2 = BridgeDriver.execute_script("return notify('"+merkleHashes['notify']+"')")
+                                except:
+                                    traceback.print_exc()
                             if ThePeg.testthis == 1:
                                 if 'bridgeautomation' in AdvanceArray:
                                     if self.waitingconf == 0:
@@ -7941,6 +7972,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
         global notDownloading
         global coininfo
         global merkleHashes
+        global skipBM
         disconnect=0
         conn=False
         BLK = None
@@ -7962,8 +7994,9 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                 prevsupply=ThePeg.CurrentSupply(ThePeg.Pegdatabase['blockcount'])
             else:
                 prevsupply=(-1)
-        if BitMHalo.poll() != None:
-            fail=1
+        if skipBM != True:
+            if BitMHalo.poll() != None:
+                fail=1
         while not conn:
             try:
                 BLKurl = 'http://'+CoinSelect['rpcuser']+':'+CoinSelect['rpcpassword']+'@localhost:'+CoinSelect['rpcport']
@@ -8355,7 +8388,14 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                     if key in TheBridgeThread.lastHash:
                                                         merkleHashes['out'][key]['lastHash'] = TheBridgeThread.lastHash[key]
                                                         if TheBridgeThread.lastHash[key] in merkleHashes['out'][key]["inx"]:
-                                                            merkleHashes['out'][key]['lastIndex'] = merkleHashes['out'][key]["inx"][TheBridgeThread.lastHash[key]] + 1
+                                                            if merkleHashes['out'][key]['lastIndex'] < merkleHashes['out'][key]["inx"][TheBridgeThread.lastHash[key]] + 1:
+                                                                merkleHashes['out'][key]['lastIndex'] = merkleHashes['out'][key]["inx"][TheBridgeThread.lastHash[key]] + 1
+                                                for key, val in TheBridgeThread.lastHash.iteritems():
+                                                    if key in merkleHashes['out']:
+                                                        if TheBridgeThread.lastHash[key] not in merkleHashes['out'][key]['inx']:
+                                                            if TheBridgeThread.lastHash[key] != "0x0":
+                                                                merkleHashes['notify'] = TheBridgeThread.lastHash[key]
+
                                             if waitlock() == True:
                                                 AdvanceArray['bridgedb'] = ThePeg.Pegdatabase['bridgedb']
                                                 AdvanceArray['merkleHashes'] = copy.deepcopy(merkleHashes)
@@ -10292,6 +10332,7 @@ def Update():
     global notDownloading
     global coininfo
     global OffSetNotify
+    global skipBM
     notDownloading = 0
     starttime=time.time()
     multisig,multiscript=create_multisig_address(PrivKeyFilename1)
@@ -10397,7 +10438,7 @@ def Update():
                             window.Website()
             except Exception, e:
                 print "Version checking error",e
-        if matchObj and matchObj.group(4)!=" ":
+        if matchObj and matchObj.group(4)!=" " and skipBM != True:
             ourmatch=matchObj.group(4)
         if matchObj and matchObj.group(6)!=" ":
             Markets['Enable']=0
@@ -10405,7 +10446,7 @@ def Update():
         if matchObj and matchObj.group(6)==" ":
             window.OfferTable.show()
             Markets['Enable']=1
-        if matchObj and matchObj.group(8)!=" ":
+        if matchObj and matchObj.group(8)!=" " and skipBM != True:
             try:
                 serverban=ast.literal_eval(str(matchObj.group(8)))
                 for bn in serverban:

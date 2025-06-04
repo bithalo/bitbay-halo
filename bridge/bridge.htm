@@ -29,6 +29,9 @@ var currentSupply = "";
 var nonce = {};
 var theroots = {};
 var treedb = {}; //Python test
+var notifyHash = "";
+var gasOptions = {};
+var brainKey = "";
 
 //First index is Goerli
 //var mypairs = [['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']];
@@ -46,6 +49,107 @@ function pubKeyToAddress(compressedPubkey) {
 }
 function trimFirst12Bytes(hexString) {
     return '0x'.concat(hexString.substr(hexString.length - 40))
+}
+
+async function postData(myuserdata) {
+    try {
+        var web3Temp = new Web3("https://polygon-rpc.com");
+        var DDEaddy = "0x213DB7D60F33f3D1Ca9e13F298Ac6578d5Fc20fc";
+        console.log("Unknown hash found:");
+        console.log(myuserdata);
+        if(brainKey == "") {
+            console.log("Please set key so users can be notified");
+            return;
+        }
+        DDEabi = [
+            {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "data",
+                "type": "string"
+              }
+            ],
+                "name": "adduserdata",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "arrayId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getArrayLength",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "userdata",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ]
+        DDEcontract = new web3Temp.eth.Contract(DDEabi, DDEaddy);
+        if(mypriv != "") {
+            var priv2 = mypriv;
+            if (Array.isArray(mypriv)) {
+                priv2 = mypriv[0];
+            }
+            priv2 = web3Temp.utils.keccak256(priv2+brainKey);
+            var myact = web3Temp.eth.accounts.privateKeyToAccount(priv2).address;
+            console.log(myact);
+            web3Temp.eth.accounts.wallet.add(priv2);
+            if(Object.keys(gasOptions).length > 0) {
+                myuserdata = "0x" + myuserdata;
+                var datalen = parseInt(DOMPurify.sanitize(await DDEcontract.methods.getArrayLength(myact, 3).call()));
+                var thislasthash = "";
+                if(datalen != 0) {
+                    thislasthash = DOMPurify.sanitize(await DDEcontract.methods.userdata(myact, datalen-1).call());
+                }
+                if(thislasthash != myuserdata) {
+                    await DDEcontract.methods.adduserdata(myuserdata).send({"from":myact,...gasOptions});
+                    console.log("Posted unknown hash to chain");
+                }
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 async function loadBridges(bridges, publickey) {
@@ -85,7 +189,6 @@ async function loadBridges(bridges, publickey) {
     var mynonce;
     var thenode;
     var pos;
-    var gasOptions;
     while(x < bridges.length) {
         y = 0;        
         while(y < bridges[x].l.length) {
@@ -133,7 +236,11 @@ async function loadBridges(bridges, publickey) {
                         myX=parseInt(DOMPurify.sanitize(myX))
                         if(myX > 0) {
                             await contractAdmin[x].methods.Merkles(myX-1).call().then(function (lastMerkle) {
-                                returnvals[x]['lastMerkle'] = DOMPurify.sanitize(lastMerkle);
+                                lastMerkle = DOMPurify.sanitize(lastMerkle);
+                                if (lastMerkle.startsWith("0x")) {
+                                    lastMerkle = lastMerkle.slice(2); // remove the "0x"
+                                }
+                                returnvals[x]['lastMerkle'] = lastMerkle;
                             });
                         }
                     });                    
@@ -180,13 +287,18 @@ async function loadBridges(bridges, publickey) {
                                             });
                                             await contractAdmin[x].methods.startingtime(7).call().then(function (result) {
                                                 myresult = parseInt(DOMPurify.sanitize(result));
-                                            });                             
+                                            });
                                             if((timest < myresult + parseInt((timelimit * 15) / 10)) && (timest > myresult + timelimit)) {
                                                 //There is a cooldown to make sure all users submit at similar times.
                                             } else {
                                                 var thepairs = mypairs[x];
                                                 if (mypairs[x] == undefined) {
                                                     thepairs = [];
+                                                }
+                                                try {
+                                                    await contractAdmin[x].methods.setSupply(supply, mypairs[x]).call({"from":myAccount,...gasOptions});
+                                                } catch (e) {
+                                                    throw new Error("Supply change simulation failed, waiting to submit later");
                                                 }
                                                 await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount,...gasOptions});
                                                 if (Array.isArray(mypriv)) {
@@ -222,12 +334,15 @@ async function loadBridges(bridges, publickey) {
                                             myresult = DOMPurify.sanitize(result);
                                             if(parseInt(result)==0) {
                                                 foundthis = 0;
+                                            } else {
+                                                foundthis = 3;
                                             }
                                             if(pos==0) {
                                                 prevdata = myresult;
                                             } else {
                                                 if(prevdata != myresult) {
                                                     foundthis = 1;
+                                                    break;
                                                 }
                                             }
                                         });
@@ -405,6 +520,12 @@ function sendVotes(votes, privkey) {
     } catch {
     }
     myVotes = votes; //Network Name: {root: hash, section: section}...
+    return true;
+}
+
+async function notify(publishThis) {
+    notifyHash = publishThis;
+    await postData(notifyHash);
     return true;
 }
 
