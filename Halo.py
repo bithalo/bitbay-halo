@@ -1839,7 +1839,7 @@ def Loop():
         AdvanceArray['MySettings']={'Proxy':'', 'AntiLogger':False, 'ManualLogin':False, 'ClearLocation':False, 'FilterOther':False, 'CreateDebug':False, 'Staking':False, 'ColdStake':'', 'PeggingVote':0, 'Voting':[]}
     else:
         if 'EnableBridge' in AdvanceArray['MySettings']:
-            if AdvanceArray['MySettings']['EnableBridge'] != True:
+            if AdvanceArray['MySettings']['EnableBridge'] == True:
                 try:
                     bitmessThread.amrunning = False
                 except:
@@ -6604,7 +6604,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                         ThePeg.noncesync[bridges['n']] = 0;
                             try:
                                 if ThePeg.testthis == 1:
-                                    result2 = BridgeDriver.execute_script("return updateNonce("+str(ThePeg.noncesync)+");")
+                                    result2 = BridgeDriver.execute_script("return updateNonce("+json.dumps(ThePeg.noncesync)+");")
                                 else:
                                     if merkleHashes != False and 'noncesync' in merkleHashes:
                                         result2 = BridgeDriver.execute_script("return updateNonce("+json.dumps(merkleHashes['noncesync'])+");")                                    
@@ -32925,8 +32925,8 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                             busy=NetSplash(1, checkwait=1)
                             mymerkle=BLK.bridgereceipt(txid)
                             tt=0
-                            for val in mymerkle['reserve']:
-                                mymerkle['reserve'][tt]=str(mymerkle['reserve'][tt])
+                            for val in mymerkle['receipt']['reserve']:
+                                mymerkle['receipt']['reserve'][tt]=str(mymerkle['receipt']['reserve'][tt])
                                 tt+=1
                             if mymerkle['receipt_is_ready']==False or mymerkle['receipt_is_found']==False:
                                 QuestionBox("This merkle has not been processed yet. Please check back later.", " OK ")
@@ -32938,10 +32938,11 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                             NetSplash(0)
                             QuestionBox("Pool data failed to load please wait a moment or try again.", " OK ")
                     if mymerkle != False:
-                        QuestionBox("Network to redeem the funds:\n" + name + "\n\nReceipt:\n" + str(json.dumps(mymerkle)), " Copy to Clipboard ", 1)
-                        clipboard = app.clipboard()
-                        clipboard.setText(str(json.dumps(mymerkle)))
-                        QuestionBox("The receipt has been copied to the clipboard. Please redeem the coins at the official bridge website after the merkle proof confirms(usually within 48 hours).", " OK ")
+                        res=QuestionBox("Network to redeem the funds:\n" + name + "\n\nReceipt:\n" + str(json.dumps(mymerkle)), " Copy to Clipboard ", " OK ", 1)
+                        if res == 0:
+                            clipboard = app.clipboard()
+                            clipboard.setText(str(json.dumps(mymerkle)))
+                            QuestionBox("The receipt has been copied to the clipboard. Please redeem the coins at the official bridge website after the merkle proof confirms(usually within 48 hours).", " OK ")
                 data+=HistoryDetail[multisig][x]['Type']+": <br />"
                 data+="Message: " + message +"<br /><br />"
                 #type, timestamp, spendable, description, script
