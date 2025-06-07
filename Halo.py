@@ -6631,7 +6631,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                                 if 'mylen' in merkleHashes[bridges]:
                                                     if result2[bridges][0] == merkleHashes[bridges]['mylen']:
                                                         if result2[bridges][1] in merkleHashes[bridges]:
-                                                            pass #length should update on RPC calls
+                                                            self.votemerkles[bridges] = 0 #length should update on RPC calls, however we stop voting on it
                                                         else:
                                                             if result2[bridges][1] == 0:
                                                                 self.votemerkles[bridges] = 0
@@ -8298,8 +8298,9 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                         if 'mylen' not in merkleHashes[thename]:
                                                             merkleHashes[thename]['mylen'] = 0
                                                 merkleHashes3 = BLK.merklesout(0)
+                                                sorted_merkles = sorted(merkleHashes3.iteritems(), key=lambda item: int(item[1]['blocknum']), reverse=True)
                                                 templist = {}
-                                                for key, val in merkleHashes3.iteritems():
+                                                for key, val in sorted_merkles:
                                                     thename = ''
                                                     for bridgeName in myBridges:
                                                         if txhash(bytesString(bridgeName['n']))[:64] == val['brhash']:
@@ -8323,7 +8324,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                         for el in templist[nm]:
                                                             merkleHashes['out'][nm]['list'].append(el)
                                             else:
-                                                merkleHashes2 = BLK.merklesin(25)
+                                                merkleHashes2 = BLK.merklesin(0)
                                                 for key, val in merkleHashes2.iteritems():
                                                     thename = ''
                                                     for bridgeName in myBridges:
@@ -8338,13 +8339,14 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                         if 'mylen' not in merkleHashes[thename]:
                                                             merkleHashes[thename]['mylen'] = 0
                                                 merkleHashes3 = BLK.merklesout(0)
+                                                sorted_merkles = sorted(merkleHashes3.iteritems(), key=lambda item: int(item[1]['blocknum']), reverse=True)
                                                 templist2 = {}
-                                                for key, val in merkleHashes3.iteritems():
+                                                for key, val in sorted_merkles:
                                                     thename = ''
                                                     for bridgeName in myBridges:
                                                         if txhash(bytesString(bridgeName['n']))[:64] == val['brhash']:
                                                             thename = bridgeName['n']
-                                                    if thename != '':                                                        
+                                                    if thename != '':
                                                         if thename not in merkleHashes['out']:
                                                             merkleHashes['out'][thename] = {}
                                                             merkleHashes['out'][thename]['list'] = []
@@ -8371,7 +8373,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                                     if bridgeName['n'] not in merkleHashes:
                                                         merkleHashes[bridgeName['n']] = {'mylen':0}
                                                 if lenchange:
-                                                    for key, val in merkleHashes:
+                                                    for key, val in merkleHashes.iteritems():
                                                         if isinstance(val, dict) and 'mylen' in val:
                                                             merkleHashes[key]['mylen'] = len(merkleHashes[key]) - 1
                                                             merkleHashes['noncesync'][key] = merkleHashes[key]['mylen']
@@ -8404,7 +8406,7 @@ class BlackCoinThread(QtCore.QThread):#For any Halo that uses daemon.
                                     traceback.print_exc()
                                     print "Bridge not loaded"
                         except:
-                            print "Check coin info failed"                            
+                            print "Check coin info failed"
                         try:
                             try:
                                 if 'pegging' in CoinSelect and CoinSelect['pegging'] and globperc==100:
