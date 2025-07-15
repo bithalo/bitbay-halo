@@ -32,6 +32,9 @@ var treedb = {}; //Python test
 var notifyHash = "";
 var gasOptions = {};
 var brainKey = "";
+var ltime1 = 0;
+var ltime2 = 0;
+let lastTrustedBlock = 0;
 
 //First index is Goerli
 //var mypairs = [['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']];
@@ -200,13 +203,22 @@ async function loadBridges(bridges, publickey) {
                 await contractData[x].methods.minter().call().then(function (result) {
                     admincontract = DOMPurify.sanitize(result);
                 });
-                await contractData[x].methods.getState().call().then(function (result) {
-                    returnvals[x] = JSON.parse(DOMPurify.sanitize(JSON.stringify(result)));
-                });
                 contractAdmin[x] = new web3[x].eth.Contract(BAYAdminAbi,admincontract);
                 addy = pubKeyToAddress(publickey);
                 bal = await checkbalance(x, addy);
                 text1 = bridges[x].n + "<br>Address: " + addy + "<br>Balance: " + bal + "<br>";
+                myblock = JSON.parse(DOMPurify.sanitize(JSON.stringify(await web3[x].eth.getBlock(await web3[x].eth.getBlockNumber()))));
+                if (myblock.number <= lastTrustedBlock) {
+                    returnvals[x] = 0;
+                    console.log("Newest block not yet available");
+                    text1 += "<br>";
+                    continue;
+                } else {
+                    lastTrustedBlock = myblock.number;
+                }
+                await contractData[x].methods.getState().call({},myblock.number).then(function (result) {
+                    returnvals[x] = JSON.parse(DOMPurify.sanitize(JSON.stringify(result)));
+                });
                 if(parseFloat(bal) < parseFloat(5)) {
                     checkthis = 0;
                     text1 += "Your balance is low for this network. Please increase it above 5 coins for managing the bridge.<br>"
@@ -228,14 +240,14 @@ async function loadBridges(bridges, publickey) {
                     await contractAdmin[x].methods.isCurator(addy).call().then(function (result) {
                         myresult = DOMPurify.sanitize(result) == "true";
                     });
-                    await contractAdmin[x].methods.startingNonce().call().then(function (mynonce2) {
+                    await contractAdmin[x].methods.startingNonce().call({},myblock.number).then(function (mynonce2) {
                         myStartingNonce = DOMPurify.sanitize(mynonce2);
                     });
-                    await contractAdmin[x].methods.merkleLen().call().then(async function (myX) {
+                    await contractAdmin[x].methods.merkleLen().call({},myblock.number).then(async function (myX) {
                         returnvals[x]['lastMerkle'] = "0x0";
                         myX=parseInt(DOMPurify.sanitize(myX))
                         if(myX > 0) {
-                            await contractAdmin[x].methods.Merkles(myX-1).call().then(function (lastMerkle) {
+                            await contractAdmin[x].methods.Merkles(myX-1).call({},myblock.number).then(function (lastMerkle) {
                                 lastMerkle = DOMPurify.sanitize(lastMerkle);
                                 if (lastMerkle.startsWith("0x")) {
                                     lastMerkle = lastMerkle.slice(2); // remove the "0x"
@@ -244,7 +256,6 @@ async function loadBridges(bridges, publickey) {
                             });
                         }
                     });                    
-                    myblock = JSON.parse(DOMPurify.sanitize(JSON.stringify(await web3[x].eth.getBlock(await web3[x].eth.getBlockNumber()))));
                     timest = parseInt(myblock.timestamp);
                     if(myresult == true) {
                         if(mypriv != "") {
@@ -300,21 +311,24 @@ async function loadBridges(bridges, publickey) {
                                                 } catch (e) {
                                                     throw new Error("Supply change simulation failed, waiting to submit later");
                                                 }
-                                                await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount,...gasOptions});
-                                                if (Array.isArray(mypriv)) {
-                                                    for(var inx = 1; inx < mypriv.length; inx+=1) {
-                                                        var propstatus2 = parseInt(DOMPurify.sanitize(await contractAdmin[x].methods.proposals(proposalId, 0).call()));
-                                                        if(propstatus2 != 1) {
-                                                            var myAccount2 = web3[x].eth.accounts.privateKeyToAccount(mypriv[inx]);
-                                                            web3[x].eth.accounts.wallet.add(mypriv[inx]);
-                                                            myAccount2 = myAccount2.address;
-                                                            await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount2,...gasOptions});
+                                                if(Math.floor(Date.now() / 1000) > ltime1) {
+                                                    ltime1 = Math.floor(Date.now() / 1000) + (100 * 60);
+                                                    await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount,...gasOptions});
+                                                    if (Array.isArray(mypriv)) {
+                                                        for(var inx = 1; inx < mypriv.length; inx+=1) {
+                                                            var propstatus2 = parseInt(DOMPurify.sanitize(await contractAdmin[x].methods.proposals(proposalId, 0).call()));
+                                                            if(propstatus2 != 1) {
+                                                                var myAccount2 = web3[x].eth.accounts.privateKeyToAccount(mypriv[inx]);
+                                                                web3[x].eth.accounts.wallet.add(mypriv[inx]);
+                                                                myAccount2 = myAccount2.address;
+                                                                await contractAdmin[x].methods.setSupply(supply, mypairs[x]).send({"from":myAccount2,...gasOptions});
+                                                            }
                                                         }
                                                     }
+                                                    text1 += "<br>Voted on supply: " + supply + "<br>";
+                                                    console.log("Voted on supply: ");
+                                                    console.log(supply);
                                                 }
-                                                text1 += "<br>Voted on supply: " + supply + "<br>";
-                                                console.log("Voted on supply: ");
-                                                console.log(supply);
                                             }
                                         }
                                     }
@@ -381,7 +395,8 @@ async function loadBridges(bridges, publickey) {
                                                     foundthis2 = 0;
                                                 }
                                             });
-                                            if(foundthis2 == 0){
+                                            if(foundthis2 == 0 && Math.floor(Date.now() / 1000) > ltime2){
+                                                ltime2 = Math.floor(Date.now() / 1000) + (100 * 60);
                                                 await contractAdmin[x].methods.addMerkle("0x"+myVotes[bridges[x].n]['root'],myVotes[bridges[x].n]['section']).send({"from":myAccount,...gasOptions});
                                                 if (Array.isArray(mypriv)) {
                                                     for(var inx = 1; inx < mypriv.length; inx+=1) {
@@ -478,7 +493,7 @@ async function loadBridges(bridges, publickey) {
                         }
                     }
                 }
-                text1 += "<br>"
+                text1 += "<br>";
             } catch (e){
                 console.log(e)
                 //web3[x] = 0;

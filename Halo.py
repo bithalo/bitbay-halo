@@ -6478,6 +6478,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
         self.mypairs=[[],[],[],[]]
         self.brainKey=""
         self.multipleKeys=[]
+        self.keepOpen=False
         #self.mypairs=[['0xA563E960C3BD3EA13cF5eC3c55F925c9a1C1bDA6','0x566561B14eD45b3Ad4f0B864Bd10E43aA9bB4088','0xE349B271075B53062fde900657BDFB567cad6f92','0x10f5f17B0455bb8365Ed72471718e3E0a0984674']]
     def stop(self):
         self.amrunning=False
@@ -6515,6 +6516,7 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                 myexe = "bridge/geckodriver"
                             myhtml = "bridge/bridge.htm"
                             BridgeDriver = webdriver.Firefox(executable_path = os.path.join(application_path, myexe), options=options)
+                            BridgeDriver.set_script_timeout(360)
                             BridgeDriver.get("file:///" + os.path.join(application_path, myhtml))
                             time.sleep(1)
                             if ThePeg.testthis == 1:
@@ -6530,7 +6532,8 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                             traceback.print_exc()
                             try:
                                 print "Restarting bridge driver"
-                                BridgeDriver.quit()
+                                if not self.keepOpen:
+                                    BridgeDriver.quit()
                             except:
                                 pass
                             restart = True
@@ -6564,7 +6567,8 @@ class BridgeThread(QtCore.QThread):#Safe File saving thread
                                 traceback.print_exc()
                                 try:
                                     print "Restarting bridge driver"
-                                    BridgeDriver.quit()
+                                    if not self.keepOpen:
+                                        BridgeDriver.quit()
                                 except:
                                     pass
                                 restart = True
@@ -35981,7 +35985,7 @@ class MyApp(QtGui.QMainWindow, SKIN):#Ui_MainWindow is the one in this file. Its
                 if translate_script(testthis)['message'][5:][:64]==txhash(bytesString(bridged['n']))[:64]:
                     bridgedata['network']=bridged['n']
                     bridgedata['to']=translate_script(testthis)['message'][5:][64:]
-                    if "0x" not in bridgedata['to'] or " " in bridgedata['to']:
+                    if "0x" not in bridgedata['to'] or " " in bridgedata['to'] or len(bridgedata['to']) != 42 or "\n" in bridgedata['to'] or "\r" in bridgedata['to'] or bridgedata['to'] == "0x5119E704BCDF8e81229E19d0794C33A12caCc7Ce" or bridgedata['to'] == "0xA177cB6ae813230618Af26F059d9370af9f4AEE9":
                         QuestionBox("The address does not appear to be valid!", " OK ")
                         return False, "The address does not appear to be valid!"
                     try:
